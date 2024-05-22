@@ -1,0 +1,17 @@
+Dataframe 
+print(livePriceDf) -> stampa intero DF
+
+CHIAVI
+print(livePriceDf.keys()) -> stampa le chiavi
+
+INDICI
+print(livePriceDf.index) -> stamp agli indici
+print(livePriceDf.index[0][1]) -> stampo il valore dell'indice 1 in caso di multiindice
+
+print( livePriceDf.iloc[0][3]) -> stampo il singolo elemento
+transact = transact[transact['STATO'] == 'Aperto']  -> filtro DF
+transact = transact.sort_values(by=['Asset']) -> Ordino Df
+
+
+GITHUB guida
+https://medium.com/analytics-vidhya/how-to-use-google-colab-with-github-via-google-drive-68efb23a42d
