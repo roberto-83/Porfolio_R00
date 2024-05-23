@@ -77,6 +77,7 @@ def readEuronext(isin):
   histprice['Date'] = pd.to_datetime(histprice['Date'], format='%d/%m/%Y')
   #aggiungo nome btp
   histprice['Name'] = nameBtp
+  histprice['Isin'] = isin
   return histprice
 #print(readEuronext('IT0005580003'))
 

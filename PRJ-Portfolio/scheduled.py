@@ -7,11 +7,11 @@ import yfinance as yf
 ### INIZIO PROCEDURA
 port = Portfolio()
 #scrivo la tabella degli Isin
-#print(port.writeAllIsins())
+print(port.writeAllIsins())
 #Crea la tabella del portafoglio
 print(port.writePortfolio())
 #creo calendar
-#print(port.updateCalendarTab())
+print(port.updateCalendarTab())
 
 
 #tabella trabsazioni filtrata come dataframe

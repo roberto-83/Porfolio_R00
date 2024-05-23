@@ -4,7 +4,7 @@ from functions_sheets import read_range
 from functions_sheets import write_range
 from functions_sheets import delete_range
 from functions_bonds import getBtpData
-from functions_bonds import getBotData
+from functions_bonds import getBotData,readEuronext
 from functions_stocks import getStockInfo
 from functions_stocks import verifKey
 from functions_etf import sectorsEtf
@@ -14,11 +14,11 @@ from settings import * #importa variabili globali
 from currency_converter import CurrencyConverter, currency_converter
 import pandas as pd
 import datetime
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime,timedelta
 import time
 import pytz
 import numpy as np
+import yfinance as yf
 
 from yfinance.utils import empty_earnings_dates_df
 pd.options.mode.chained_assignment = None #toglie errori quando sovrascrivo un dataframe
@@ -31,18 +31,14 @@ class Portfolio:
   todDateTime0 = datetime.now(rome)
   todayDateHour  = todDateTime0.strftime("%d/%m/%Y %H:%M:%S")
 
-  #todayDateHour = datetime.today().strftime('%d/%m/%Y %H:%M')
   #metodo costruttore
   def __init__(self):
-    #todayDate = datetime.today().strftime('%d/%m/%Y')
     #tutte le transazioni fino ad oggi
     self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate)
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
-    #tutti i dati da tab_isin originale
-    #self.allIsins = Portfolio.readListIsin(self)#occhio che è il VECCHIO !! NON LO USO!
-    
+   
 
   def readActiveIsinByDate(self,date):
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
@@ -63,7 +59,6 @@ class Portfolio:
     
   def getLivePrice(row):
     #funzione che mi da il prezzo a mercato dei vari asset
-    #print(f'Funzione chiamata per {row}')
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
@@ -190,8 +185,6 @@ class Portfolio:
         'peforward','pegratio','beta', 'earnings', 'ptb', 'book', 'shares', 'divrate', 'divyield','divlastval',
         'divlastdate','divexdate','payout','avg52','dist52','avg200','dist200']) 
 
-    #tolgo prima riga
-    #portaf2.drop(index=portaf2.index[0], axis=0, inplace=True)
     #concateno i due DF tramite JOIN
     result = pd.concat([portaf, portaf2], axis=1,join="inner")
     #rimuovo colonne di join
@@ -212,72 +205,91 @@ class Portfolio:
     #scrivo portafolgio
     write_range('tab_portfolio!A2:AR'+lastRowSt,listPrint,newPrj)
     #print(portfin.head())
-    return 'Scritto il Portafoglio'
+    return 'Ho completato aggiornamento del portafoglio'
 
+  def getHistPrice(row):
+    #funzione che mi da il prezzo a mercato dei vari asset
+    dateRead = row['dataHist']
+    if row['Asset'] == 'P2P':
+      histPrice = float(row['TotInvest'])+float(row['Divid'])
+    elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
+      histTot = readEuronext(row['Isin'])
+      histPriceDf = histTot[histTot['Date'] == dateRead]     
+      histPrice = histPriceDf['Close'].values[0]
+    elif row['Asset'] == 'AZIONI' or row['Asset'] == 'ETF-AZIONI':
+      #converto la data di lettura
+      dateRead1 = datetime.strptime(dateRead, '%d/%m/%Y').strftime('%Y-%m-%d')
+      #converto la data di oggi
+      todayCon = datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y-%m-%d')
+      #trovo i prezzi
+      prices = yf.download(row['Ticker'],dateRead1,todayCon,progress=False)
+      histPrice = prices['Close'].iloc[0]
+      #trovo valuta
+      infoStock = getStockInfo(row['Ticker'])
+      currency=infoStock['currency']
+      #cambio valuta
+      histPrice = Portfolio.calcCurren(histPrice,currency)
+    else:
+      histPrice='0'
+    return histPrice
 
+  def getHistctvMerc(row):
+    ctvMerc = row['Qta']*row['HistPrice']
+    if row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
+      ctvMerc=ctvMerc/100      
+    return ctvMerc
 
-
-
-##################################################
-  #def livePrices(ticker, asset, date):
-    #prices=[]
-    #if asset == 'P2P':
-        #livprice = part2[4] + part2[5] #valore totale+dividendi
-        #ctvMerc = part2[1] * livprice
-      #elif asset == 'BTP':
-        #part3 = getBtpData(portfDf.iloc[i][0])
-        #livprice = float(part3['pric'])
-        #ctvMerc = part2[1] * livprice /100
-      #elif asset == 'ETF':
-        #part3 = getPriceETF(tick)
-        #livprice = part3[1]
-        #ctvMerc = part2[1] * livprice
-      #else:
-      #live
-        #test2 = histData('RACE.MI','1do')
-        #fino a ieri
-        #data32 = yf.download('RACE.MI','2024-05-07','2024-05-08')
-        #infoStock = getStockInfo(ticker)
-        #price = infoStock['currentPrice']
-        #curre = infoStock['currency']
-        #price1d = infoStock['prevClose']
-
-     #return prices
-######################################################
  #Tabella tab_calendar
-  def updateCalendarTab(self):
-    #fase 1 - leggere ultima data del foglio
-    calend =  read_range('tab_calendar!A:K',newPrj)
-    lastDate = calend.iloc[-1]["Data"] #get last row
-    newDate = Portfolio.sumDayToDate(lastDate) #giorno che andrò a scrivere
-    print(f"Sto lavorando i dati di {newDate}")
-    #fase 2 - prendere le info a quella data dalle trabsazioni
-    isinsDate = Portfolio.readActiveIsinByDate(self,newDate)
-    #prendo solo valori attivi e unici
-    isinDefin = Portfolio.transactActive(self,isinsDate)
-    #DF con dati calcolati da transazioni
-    portf = Portfolio.calcDataPortREV2(self,isinDefin)
-    print(portf)
-
-    ###################################################
-    # per adesso non è univoco
-    #mi serve avere:
-    
-
-    #forse mi conviene prendere la funzione già pronta del portafoglio e usarla qui
-    #quella però ha
-    #-piu dati economici che non mi servono -> snellire senza ricopiare
-    #-non guarda la data-> impostare
-
-
-
-    #print(isinsDate)
-    #tolgo 
-    #fase 3 - prendere tutti i dati necessari
-    #fase 4 - mettere i prezzi
-    #fase 5 - chiamare la funzione che scrive sui totali-> meglio fare funzione separata
-    return 'updated'  
+  def histDf(self, histdate):
+    #mi prendo gli isin attivi alla data interessata
+    isins = Portfolio.readActiveIsinByDate(self,histdate)
+    #prendo i dati calcolati
+    portHist = Portfolio.calcDataPortREV2(self, isins)
+    #aggiungo la data
+    portHist['dataHist'] = histdate
+    #aggiungo prezzo storico
+    portHist['HistPrice']=portHist.apply(Portfolio.getHistPrice,axis=1 )
+    portHist['HistPriceEur']=portHist['HistPrice']
+    #calcolo controvalore mercato
+    portHist['ctvMerc']=portHist.apply(Portfolio.getHistctvMerc,axis=1 )
+    #tolgo currency
+    #portHist.drop(['CURRENCY','ISIN-JOIN'], axis=1,  inplace=True)
+    #riordino
+    portHist = portHist[['dataHist','Ticker','Qta','PrezzoPond','HistPrice','HistPriceEur','Divid','TotInvest','ctvMerc']]
+    return portHist  
   
+   #Tabella tab_calendar
+  def updateCalendarTab(self):
+    #leggo il calendar e prendo ultima data
+    lastDateDf=read_range('tab_calendar!A:K',newPrj)
+    lastDate = lastDateDf['Data'].iloc[-1]
+    #lunghezza DF = righe compilate nel foglio+1 perchè c'è intestazione+1perch
+    numRows = len(lastDateDf) + 1 
+    #oggi e ieri
+    today = Portfolio.todayDate
+    yesterday = (datetime.now()+timedelta(days=-1)).strftime('%d/%m/%Y')
+    #differenza tra ultima data e ieri
+    diffdate = (datetime.strptime(yesterday, "%d/%m/%Y") - datetime.strptime(lastDate, "%d/%m/%Y")).days
+    if(lastDate < yesterday):
+      print('Procedo')
+      #loop da 0 a diffdate 
+      i=1
+      startRow = numRows+1
+      while i <= diffdate:
+        dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
+        histDf = Portfolio.histDf(self,dateSearch)
+        numRowsHistDf = len(histDf)
+        endRow = startRow+numRowsHistDf
+        #trasformo in lista
+        histList = histDf.values.tolist()
+        write_range('tab_calendar!A'+str(startRow)+':I'+str(endRow),histList,newPrj)
+        #aggiorno nuova startRow
+        startRow = startRow+numRowsHistDf
+        i += 1
+    else:
+      print('aggiornamento non necessario')
+    return 'Terminato aggiornamento calendar'
+
   def transactActive(self,df):
     #tolgo i valori vuoti e metto 0
     df["Quantità (real)"] = df["Quantità (real)"].replace('',0)
@@ -302,33 +314,6 @@ class Portfolio:
       return priceConv
     else:
       return importo
-
-  #def calcDataPort(self, isin):   # CANCELLAAAAAAA.......................
-    #calcolo i dati calcolabili da transaction come quantità, costi etc dei vari asset
-    #rawData = self.transact[self.transact['ISIN']==isin]
-    #inizializzo
-    #qtaAcqui=0
-    #spesAcqu=0
-    #qtaVendi=0
-    #divTotal=0
-    #costiTot=0
-    #Loop su dataframe
-    #for i in rawData.index:
-      #costiTot = costiTot + float(rawData['Costi'][i])
-      #if rawData['Tipo'][i] == 'ACQ':
-        #qtaAcqui = qtaAcqui + float(rawData['Quantità (real)'][i])
-        #spesAcqu = spesAcqu + float(rawData['Spesa/incasso effettivo'][i])
-      #elif rawData['Tipo'][i] == 'VEND':
-        #qtaVendi = qtaVendi + float(rawData['Quantità (real)'][i])
-      #else:
-        #divTotal = divTotal + float(rawData['Spesa/incasso effettivo'][i])
-    #Preparo i calcoli
-    #qtaTot = (qtaAcqui+qtaVendi)
-    #print(f" Quanittà toale {qtaTot}")
-    #prezPond = spesAcqu/qtaAcqui
-    #totInv = qtaTot*prezPond
-    #return [isin,qtaTot,prezPond,prezPond,divTotal,totInv,costiTot]
-
 
   def calcDataPortREV2(self, df):
     #prendo solo gli isin
@@ -405,7 +390,8 @@ class Portfolio:
     #cancello vecchie righe
     deleteOldRows = delete_range('tab_isin!A2:K250',newPrj)
     #scrivo le nuove
-    return write_range('tab_isin!A2:K'+lastRow,tabellaPrint,newPrj)
+    write_range('tab_isin!A2:K'+lastRow,tabellaPrint,newPrj)
+    return "Ho completato l'aggiornamento della tabella tab_isin"
 
   ################################
   #METODI AGGIUNTIVI           ###
