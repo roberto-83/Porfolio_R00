@@ -1,4 +1,6 @@
-import yfinance as yf
+import yfinance as yf #dettaglio https://aroussi.com/post/python-yahoo-finance
+
+
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
@@ -107,6 +109,21 @@ def verifKey(dict,val):
 #testinfo = teststock.info
 #print(testinfo)
 
+#test2 = yf.download('FOO.DE','2024-05-11','2024-05-23',progress=False)
+#print(test2)
+#test3 = test2.asfreq('D')
+#print(test3)
+#test4 = test3.fillna(method='ffill')
+#print(test4)
+#print(test4.head())
+#print(test4.keys())
+
+#print(fillDatesDFrame(test2))
+#print(test2['Close'].iloc[0])
+#stock = yf.Ticker('FOO.DE')
+#test3 = yf.download('FOO.DE','2024-05-18','2024-05-23',progress=False)
+#print(stock.history(period="1mo"))
+#print(test2['Close'].iloc[0])
 
 # Stampa le percentuali di settore
 #print(teststock.sectorPercentage)

@@ -5,16 +5,24 @@
 from yahooquery import Ticker
 from functions_stocks import verifKey
 import pandas as pd
+import datetime
+from datetime import datetime,timedelta
+import time
 
 def getPriceETF(ticker):
+  todayDate = datetime.today().strftime('%d/%m/%Y')
   fund = Ticker(ticker)
   livePriceDf = fund.history(period="1d")
-  #print(livePriceDf)
-  livePrice = livePriceDf.iloc[0][3] #uso prezzo cloe e non close adjusted
-  datePrice = livePriceDf.index[0][1]
-  curre = fund.quotes[ticker]['currency']
-  price1d = fund.quotes[ticker]['regularMarketPreviousClose']
-  return [ticker, livePrice,datePrice,curre,price1d]
+  #print(f"lunghezza {len(livePriceDf)}")
+  if(len(livePriceDf) > 0):
+    livePrice = livePriceDf.iloc[0][3] #uso prezzo cloe e non close adjusted
+    datePrice = livePriceDf.index[0][1]
+    curre = fund.quotes[ticker]['currency']
+    price1d = fund.quotes[ticker]['regularMarketPreviousClose']
+    output=[ticker, livePrice,datePrice,curre,price1d]
+  else:
+    output=[ticker, 0, todayDate, 'EUR', 0]
+  return output
 
 def getSummary(ticker):
   fund = Ticker(ticker)
@@ -42,7 +50,7 @@ def sectorsEtf(ticker):
 #print(f" MarketCap: {df3['summaryDetail']['marketCap']}")
 #df = sectorsEtf('EMBE.MI')
 #df1 = sectorsEtf('LCWD.MI')
-#df1 = getPriceETF('LCWD.MI')
+#df1 = getPriceETF('GLUX.MI')
 #print(df.keys())
 #print(df.index)
 #print(df)

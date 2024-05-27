@@ -19,18 +19,20 @@ from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 #documentazione https://investpy.readthedocs.io/_info/installation.html oppure https://pypi.org/project/investpy/#:~:text=investpy%20is%20a%20Python%20package,250%20certificates%2C%20and%204697%20cryptocurrencies.
 
 def fillDatesDFrame(df):
-  #ordino crescente le date
-  df.sort_values(by='Date',  ascending = True, inplace = True) 
   #converto la colonna in data col formato che uso io
   df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y')
+  #ordino crescente le date
+  df.sort_values(by='Date',  ascending = True, inplace = True) 
   #estraggo la prima data
   start = df['Date'].iloc[0]
   #estraggo l'ultima data
   end   = df['Date'].iloc[len(df)-1]
+  print(f'Data inizio {start} e data fine {end}')
   #trovo tutte le date nel periodo
   new_date = pd.date_range(start=start,end=end,freq='D')
   #converto in dataframe al posto di dataframe index
   new_dates = pd.DataFrame(new_date, columns=['Date'])
+  #print(new_dates)
   #cro nuovo df
   df_new = (
     pd.concat([df, new_dates], sort=False)
@@ -42,7 +44,8 @@ def fillDatesDFrame(df):
   return df_new
 
 def readEuronext(isin):
-  #URL="https://live.euronext.com/it/popout-page/getHistoricalPrice/IT0005580003-MOTX"
+  #OLDDDDURL="https://live.euronext.com/it/popout-page/getHistoricalPrice/IT0005580003-MOTX"
+  #https://live.euronext.com/en/product/bonds/IT0005580003-MOTX
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
   URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
 
@@ -59,6 +62,14 @@ def readEuronext(isin):
   driver.get(URL)
   #wait 5 secondi
   time.sleep(5)
+  #---
+  #id del campo data from datetimepickerFrom
+  #https://www.scaler.com/topics/selenium-tutorial/how-to-handle-date-picker-in-selenium/
+  #date_input = driver.find_element_by_id("date-input")
+  #date_input.click()
+  #calendar = driver.find_element_by_class_name("datepicker-calendar")
+  #date_element = driver.find_element_by_xpath("//div[@class='date'][text()='25']")
+
   #----------------Dati storici
   #Esporto tutte le tabelle della pagina web
   dfs = pd.read_html(driver.page_source)
@@ -81,6 +92,103 @@ def readEuronext(isin):
   return histprice
 #print(readEuronext('IT0005580003'))
 
+def readEuronextREV2(isin, data):
+  print(isin)
+   #URl singola mi da alcune info
+  #se vado in URL_ESTESO ho piu storico da leggere
+  URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
+  URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
+  URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
+
+  # Configura le opzioni del browser Chrome
+  chrome_options = Options()
+  chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
+  chrome_options.add_argument('--no-sandbox')
+  chrome_options.add_argument("--enable-javascript")
+  chrome_options.add_argument('--disable-dev-shm-usage')
+  
+  #leggo dati comuni
+  #driver = webdriver.Chrome( options=chrome_options)
+  #driver.get(URL)
+  #time.sleep(5)
+
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  diffdate = ( datetime.strptime(todayDate, "%d/%m/%Y") - datetime.strptime(data, "%d/%m/%Y")).days
+  print(f"Differenza date {diffdate}")
+  #Se la diff date è <=0 allor anon devo fare nulla
+  #se è minore di 5 uso primo metodo (+ veloce)
+  #altrimenti metodo esteso
+  if(diffdate <= 0):
+    print('Non necessario aggiornamento')
+    histprice = 0 
+  #elif diffdate <=5:
+    # Inizializza il driver di Chrome
+    #driver = webdriver.Chrome( options=chrome_options)
+    #Get URL
+    #driver.get(URL)
+    #wait 5 secondi
+    #time.sleep(5)
+    #----------------Dati storici
+    #Esporto tutte le tabelle della pagina web
+    #dfs = pd.read_html(driver.page_source)
+    #prendo la tabella che interessa (sono 5 giorni indietro rispetto ad oggi senza oggi)
+    #histBtp = dfs[20]
+    #aggiungo i dati mancanti
+    #histprice = fillDatesDFrame(histBtp)
+    #----------------Dati live
+    #nameBtp = driver.find_element(By.XPATH,'/html/body/div[2]/div[1]/div/div/div[1]/section/div[2]/div/div/div/div/div/div[1]/div[1]/h1/strong').text
+    #pricBtp = driver.find_element(By.XPATH,'//*[@id="header-instrument-price"]').text
+    #dateBtp = driver.find_element(By.XPATH,'/html/body/div[2]/div[1]/div/div/div[1]/section/div[2]/div/div/div/div/div/div[2]/div/div[1]/div[1]/div[2]/div/div[2]').text
+    #liveDate = datetime.strptime(dateBtp[0:10], '%d/%m/%Y') 
+    #aggiungo riga su df con i dati di oggi
+    #histprice.loc[len(histprice.index)] = [liveDate, pricBtp, 0]
+    #riformatto le date
+    #histprice['Date'] = pd.to_datetime(histprice['Date'], format='%d/%m/%Y')
+    #aggiungo nome btp
+    #histprice['Name'] = nameBtp
+    #histprice['Isin'] = isin
+    #driver.quit()
+  else:
+    driverExt = webdriver.Chrome( options=chrome_options)
+    #Get URL
+    driverExt.get(URL_ESTESO)
+    time.sleep(5)
+    #leggo i dati
+    dfsExt = pd.read_html(driverExt.page_source)
+    time.sleep(5)
+    #prendo la tabella
+    histBtpExt = dfsExt[22]
+    histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
+    #print(histBtpExt)
+    #riempio le date vuote
+    histpriceExt = fillDatesDFrame(histBtpExt)
+    #loop per cercare la data nel sito
+    i=0
+    while i <= 3:
+      #verifico se la data è presente
+      if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
+        print('Presente')
+        break
+      else:
+        print('manca')
+        #premo tasto per aumentare lo storico
+        time.sleep(5)
+        buttonLoad = driverExt.find_element(By.XPATH,'//*[@id="historical-price-load-more"]')
+        time.sleep(5)
+        driverExt.execute_script("arguments[0].click();", buttonLoad)
+        time.sleep(5)
+        #leggo i dati
+        dfsExt = pd.read_html(driverExt.page_source)
+        histBtpExt = dfsExt[22]
+        histpriceExt = fillDatesDFrame(histBtpExt)
+        histpriceExt.Date = pd.to_datetime(histpriceExt.Date)
+
+      i += 1
+    #print(histpriceExt)
+    driverExt.quit()
+
+  return histpriceExt
+#print(readEuronextREV2('IT0005580003','08/05/2024'))
 
 def getBtpData(isin_val):
   URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=italia&yieldtype=G&timescale=DUR" 

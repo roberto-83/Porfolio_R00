@@ -4,7 +4,7 @@ from functions_sheets import read_range
 from functions_sheets import write_range
 from functions_sheets import delete_range
 from functions_bonds import getBtpData
-from functions_bonds import getBotData,readEuronext
+from functions_bonds import getBotData,readEuronext,readEuronextREV2
 from functions_stocks import getStockInfo
 from functions_stocks import verifKey
 from functions_etf import sectorsEtf
@@ -58,6 +58,7 @@ class Portfolio:
     return transact
     
   def getLivePrice(row):
+    print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
@@ -66,6 +67,7 @@ class Portfolio:
       liveprice = float(price['pric'])
     elif row['Asset'] == 'ETF-AZIONI':
       price=getPriceETF(row['Ticker'])
+      print(price)
       liveprice=price[1]
     elif row['Asset'] == 'AZIONI':
       infoStock = getStockInfo(row['Ticker'])
@@ -208,22 +210,51 @@ class Portfolio:
     return 'Ho completato aggiornamento del portafoglio'
 
   def getHistPrice(row):
+
+    print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     dateRead = row['dataHist']
     if row['Asset'] == 'P2P':
       histPrice = float(row['TotInvest'])+float(row['Divid'])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
-      histTot = readEuronext(row['Isin'])
-      histPriceDf = histTot[histTot['Date'] == dateRead]     
-      histPrice = histPriceDf['Close'].values[0]
+      #histTot = readEuronext(row['Isin'])
+      #histPriceDf = histTot[histTot['Date'] == dateRead]     
+      #histPrice = histPriceDf['Close'].values[0]
+
+      ####INSERISCI readEuronextREV2(isin,data)#######
+      histTot = readEuronextREV2(row['Isin'],dateRead)
+      histPriceDf = histTot[histTot['Date'] == dateRead]
+      if len(histPriceDf) >0 :
+        hhistPrice = histPriceDf['Close'].values[0]
+      else:
+        #se ci sono festività e non posso filtrare il giorno giusto prendo l'ultimo valore disponibile
+        histPrice = histTot['Close'].iloc[-1] 
+        
+
     elif row['Asset'] == 'AZIONI' or row['Asset'] == 'ETF-AZIONI':
       #converto la data di lettura
       dateRead1 = datetime.strptime(dateRead, '%d/%m/%Y').strftime('%Y-%m-%d')
+      #per gestire i giorni mancanti devo avere un range di date prima della data reale
+      dataInizio = (datetime.strptime(dateRead, '%d/%m/%Y')+timedelta(days=-5)).strftime('%Y-%m-%d')
       #converto la data di oggi
       todayCon = datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y-%m-%d')
+      #prendo anche due giorni dopo perchè se è lunedi yahoo mi da i dati di venerdi..
+      dataFine = (datetime.strptime(todayCon, '%Y-%m-%d')+timedelta(days=3)).strftime('%Y-%m-%d')
       #trovo i prezzi
-      prices = yf.download(row['Ticker'],dateRead1,todayCon,progress=False)
-      histPrice = prices['Close'].iloc[0]
+      prices = yf.download(row['Ticker'],dataInizio,dataFine,progress=False)   
+      #aggiungo le date vuote
+      prices1 = prices.asfreq('D')
+      #copio i valori delle righe vuote dalla riga sopra
+      prices2 = prices1.fillna(method='ffill')
+      #print(f"leggo ticker {row['Ticker']} alla data reale {dateRead1} e data inizio {dataInizio} fino a {dataFine}")
+      #print(prices2)
+      prices3 = prices2.filter(items=[dateRead1], axis=0)
+      #print(f"lunghezza {len(prices3)}")
+      if len(prices3) >0 :
+        histPrice = prices3['Close'].values[0]
+      else:
+        #se ci sono festività e non posso filtrare il giorno giusto prendo l'ultimo valore disponibile
+        histPrice = prices2['Close'].iloc[-1] 
       #trovo valuta
       infoStock = getStockInfo(row['Ticker'])
       currency=infoStock['currency']
