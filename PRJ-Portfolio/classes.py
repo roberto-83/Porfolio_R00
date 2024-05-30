@@ -2,7 +2,7 @@ from pickle import PUT
 from ssl import PEM_FOOTER
 from functions_sheets import read_range
 from functions_sheets import write_range
-from functions_sheets import delete_range
+from functions_sheets import delete_range,appendRow
 from functions_bonds import getBtpData
 from functions_bonds import getBotData,readEuronext,readEuronextREV2
 from functions_stocks import getStockInfo
@@ -46,6 +46,7 @@ class Portfolio:
     transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
     transact = transact[transact['Data operazione'] <= date]  
     transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
+    #transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','prezzo acquisto','Spesa/incasso previsto'])
     #tolgo il punto su spesa e incasso
     transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace('\.','',regex=True)
     #tolgo il punto su qta
@@ -58,7 +59,7 @@ class Portfolio:
     return transact
     
   def getLivePrice(row):
-    print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
+    #print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
@@ -67,7 +68,7 @@ class Portfolio:
       liveprice = float(price['pric'])
     elif row['Asset'] == 'ETF-AZIONI':
       price=getPriceETF(row['Ticker'])
-      print(price)
+      #print(price)
       liveprice=price[1]
     elif row['Asset'] == 'AZIONI':
       infoStock = getStockInfo(row['Ticker'])
@@ -211,31 +212,27 @@ class Portfolio:
 
   def getHistPrice(row):
 
-    print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
+    #print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     dateRead = row['dataHist']
     if row['Asset'] == 'P2P':
       histPrice = float(row['TotInvest'])+float(row['Divid'])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
-      #histTot = readEuronext(row['Isin'])
-      #histPriceDf = histTot[histTot['Date'] == dateRead]     
-      #histPrice = histPriceDf['Close'].values[0]
-
-      ####INSERISCI readEuronextREV2(isin,data)#######
       histTot = readEuronextREV2(row['Isin'],dateRead)
       histPriceDf = histTot[histTot['Date'] == dateRead]
       if len(histPriceDf) >0 :
-        hhistPrice = histPriceDf['Close'].values[0]
+        histPrice = histPriceDf['Close'].values[0]
       else:
         #se ci sono festività e non posso filtrare il giorno giusto prendo l'ultimo valore disponibile
         histPrice = histTot['Close'].iloc[-1] 
-        
 
     elif row['Asset'] == 'AZIONI' or row['Asset'] == 'ETF-AZIONI':
       #converto la data di lettura
-      dateRead1 = datetime.strptime(dateRead, '%d/%m/%Y').strftime('%Y-%m-%d')
+      #dateRead1 = datetime.strptime(dateRead, '%d/%m/%Y').strftime('%Y-%m-%d')
+      dateRead1 = datetime.strptime(dateRead, '%Y-%m-%d').strftime('%Y-%m-%d')
       #per gestire i giorni mancanti devo avere un range di date prima della data reale
-      dataInizio = (datetime.strptime(dateRead, '%d/%m/%Y')+timedelta(days=-5)).strftime('%Y-%m-%d')
+      #dataInizio = (datetime.strptime(dateRead, '%d/%m/%Y')+timedelta(days=-5)).strftime('%Y-%m-%d')
+      dataInizio = (datetime.strptime(dateRead, '%Y-%m-%d')+timedelta(days=-5)).strftime('%Y-%m-%d')
       #converto la data di oggi
       todayCon = datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y-%m-%d')
       #prendo anche due giorni dopo perchè se è lunedi yahoo mi da i dati di venerdi..
@@ -301,25 +298,64 @@ class Portfolio:
     yesterday = (datetime.now()+timedelta(days=-1)).strftime('%d/%m/%Y')
     #differenza tra ultima data e ieri
     diffdate = (datetime.strptime(yesterday, "%d/%m/%Y") - datetime.strptime(lastDate, "%d/%m/%Y")).days
-    if(lastDate < yesterday):
+    print(f"differenza tra ultima data {lastDate} e ieri {yesterday} è {diffdate} condizione {lastDate < yesterday}")
+    ### Foglio tab_caltot , mi prendo ultima riga###
+    tabCalTot=read_range('tab_caltot!A:A',newPrj)
+    rowToWr = len(tabCalTot)
+    #if(lastDate < yesterday):
+    if(diffdate>0):
       print('Procedo')
       #loop da 0 a diffdate 
       i=1
       startRow = numRows+1
       while i <= diffdate:
-        dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
+        #dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
+        dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%Y-%m-%d')
         histDf = Portfolio.histDf(self,dateSearch)
         numRowsHistDf = len(histDf)
         endRow = startRow+numRowsHistDf
         #trasformo in lista
         histList = histDf.values.tolist()
         write_range('tab_calendar!A'+str(startRow)+':I'+str(endRow),histList,newPrj)
+        ########## TAB_TOTALI #########
+        totTab = Portfolio.totalhistory(self,histDf,int(i+rowToWr))
         #aggiorno nuova startRow
         startRow = startRow+numRowsHistDf
         i += 1
     else:
       print('aggiornamento non necessario')
     return 'Terminato aggiornamento calendar'
+
+  def totalhistory(self,histDf,i):
+    histDf.loc['total']= histDf.sum()
+    histDf.loc[histDf.index[-1], 'dataHist'] = ''
+    histDf.loc[histDf.index[-1], 'Ticker'] = ''
+    #mercato
+    dataDelta = (datetime.strptime(histDf['dataHist'].iloc[0], '%Y-%m-%d')+timedelta(days=5)).strftime('%Y-%m-%d')
+    prezzoMerc1 = yf.download('CSSPX.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
+    prezzoMerc2 = prezzoMerc1.asfreq('D')
+    prezzoMerc = prezzoMerc2.fillna(method='ffill')
+    rendim=histDf.loc['total']['ctvMerc'] - histDf.loc['total']['TotInvest']
+    rendimperc= (rendim * 100) / histDf.loc['total']['TotInvest']
+    mercato = prezzoMerc['Close'].iloc[0]
+    rendimMerc=100*(float(mercato)-287.56)/287.56
+    delta = rendimMerc - rendimperc
+    arrTot = [[histDf['dataHist'].iloc[0],
+      histDf.loc['total']['TotInvest'],
+      histDf.loc['total']['ctvMerc'],
+      rendim,
+      rendimperc,
+      histDf.loc['total']['Divid'],
+      rendimMerc,
+      mercato,
+      delta]]
+    print(f'Array totale del giorno {arrTot}')
+    appendRow('tab_caltot!A:I',arrTot,newPrj)
+    #write_range('tab_caltot!A'+str(i)+':I'+str(i),arrTot,newPrj)
+
+
+    
+    return 'ok'
 
   def transactActive(self,df):
     #tolgo i valori vuoti e metto 0
@@ -388,48 +424,59 @@ class Portfolio:
   ################################
   #METODI PRINCIPALI - tab_isin###
   ################################
-  
-  def writeAllIsins(self):
-    tabellaDF = Portfolio.readListIsin(self)
-    tabella = tabellaDF.values.tolist()
-    tabellaPrint=[]
-    lastRow=str(len(tabellaDF)+1)
-    for i in tabella:
-      if i[4] == 'P2P':
-        i.pop()
-        tabellaPrint.append(i + ['P2P',i[0],i[0],'Bond','Bond','Italy','EUR'])
-      elif i[4] == 'CRYPTO':
-        i.pop()
-        tabellaPrint.append(i + ['CRYPTO',i[0],i[0],'Crypto','Crypto','Italy','EUR'])
-      elif i[4] == 'CURRENCY': 
-        i.pop()
-        tabellaPrint.append(i + ['CURRENCY',i[0],i[0],'Currency','Currency','Italy','EUR'])
-      elif i[4] == 'BTP':
-        btpData = getBtpData(i[0])
-        i.pop()#tolgo asset
-        i.pop()#tolgo scadenza
-        tabellaPrint.append(i + [btpData['scad'],'BTP',btpData['desc'],btpData['desc'],'Bond','Bond','Italy',btpData['curr']])
-      elif i[4] == 'BOT':
-        botData = getBotData(i[0])
-        i.pop()#tolgo asset
-        i.pop()#tolgo scadenza
-        tabellaPrint.append(i + [botData['scad'],'BOT',botData['desc'],botData['desc'],'Bond','Bond','Italy',botData['curr']])
-      else:
-        i.pop()
-        genData = Portfolio.getNameStock(i[1])
-        tabellaPrint.append(i + genData)
-    #cancello vecchie righe
-    deleteOldRows = delete_range('tab_isin!A2:K250',newPrj)
-    #scrivo le nuove
-    write_range('tab_isin!A2:K'+lastRow,tabellaPrint,newPrj)
-    return "Ho completato l'aggiornamento della tabella tab_isin"
+  def readDateTabIsin(self):
+    tabIsinsNew= read_range('tab_isin!A:L',newPrj)
+    lastDate = tabIsinsNew['UPDATE'].iloc[0]
+    #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
+    if lastDate == Portfolio.todayDate:
+      return 'Aggiornamento non Necessario'
+    else:
+      return 'ok'
+
+  def writeAllIsins(self):   
+    if Portfolio.readDateTabIsin(self) == 'ok':
+      tabellaDF = Portfolio.readListIsin(self)
+      tabella = tabellaDF.values.tolist()
+      tabellaPrint=[]
+      lastRow=str(len(tabellaDF)+1)
+      for i in tabella:
+        if i[4] == 'P2P':
+          i.pop()
+          tabellaPrint.append(i + ['P2P',i[0],i[0],'Bond','Bond','Italy','EUR',Portfolio.todayDate])
+        elif i[4] == 'CRYPTO':
+          i.pop()
+          tabellaPrint.append(i + ['CRYPTO',i[0],i[0],'Crypto','Crypto','Italy','EUR',Portfolio.todayDate])
+        elif i[4] == 'CURRENCY': 
+          i.pop()
+          tabellaPrint.append(i + ['CURRENCY',i[0],i[0],'Currency','Currency','Italy','EUR',Portfolio.todayDate])
+        elif i[4] == 'BTP':
+          btpData = getBtpData(i[0])
+          i.pop()#tolgo asset
+          i.pop()#tolgo scadenza
+          tabellaPrint.append(i + [btpData['scad'],'BTP',btpData['desc'],btpData['desc'],'Bond','Bond','Italy',btpData['curr'],Portfolio.todayDate])
+        elif i[4] == 'BOT':
+          botData = getBotData(i[0])
+          i.pop()#tolgo asset
+          i.pop()#tolgo scadenza
+          tabellaPrint.append(i + [botData['scad'],'BOT',botData['desc'],botData['desc'],'Bond','Bond','Italy',botData['curr'],Portfolio.todayDate])
+        else:
+          i.pop()
+          genData = Portfolio.getNameStock(i[1])
+          tabellaPrint.append(i + genData)
+      #cancello vecchie righe
+      deleteOldRows = delete_range('tab_isin!A2:L250',newPrj)
+      #scrivo le nuove
+      write_range('tab_isin!A2:L'+lastRow,tabellaPrint,newPrj)
+      return "Ho completato l'aggiornamento della tabella tab_isin"
+    else:
+      return "aggiornamento non necessario"
 
   ################################
   #METODI AGGIUNTIVI           ###
   ################################
   
   def readListIsin(self):
-    tabIsins = read_range('tab_isin!A:K',oldPrj)
+    tabIsins = read_range('tab_isin!A:L',oldPrj)
     tabIsinsFilt = tabIsins[tabIsins['MORNINGSTAR'] != 'INATTIVO']
     return tabIsinsFilt.filter(items=['ISIN','TICKER_YAHOO','TICKER_DATI','SCADENZA','ASSET'])
     
@@ -472,7 +519,7 @@ class Portfolio:
           sectName,
           sectName,
           Portfolio.verifKey(info,'country'),
-          Portfolio.verifKey(info,'currency')]
+          Portfolio.verifKey(info,'currency'),Portfolio.todayDate]
     else:
         output = [
           Portfolio.verifKey(info,'quoteType'), 
@@ -481,7 +528,7 @@ class Portfolio:
           Portfolio.verifKey(info,'sector'),
           Portfolio.verifKey(info,'industry'),
           Portfolio.verifKey(info,'country'),
-          Portfolio.verifKey(info,'currency')]
+          Portfolio.verifKey(info,'currency'),Portfolio.todayDate]
     return output
 
   def verifKey(dict,val):

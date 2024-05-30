@@ -19,6 +19,7 @@ from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 #documentazione https://investpy.readthedocs.io/_info/installation.html oppure https://pypi.org/project/investpy/#:~:text=investpy%20is%20a%20Python%20package,250%20certificates%2C%20and%204697%20cryptocurrencies.
 
 def fillDatesDFrame(df):
+  #print(df.keys)
   #converto la colonna in data col formato che uso io
   df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y')
   #ordino crescente le date
@@ -27,7 +28,7 @@ def fillDatesDFrame(df):
   start = df['Date'].iloc[0]
   #estraggo l'ultima data
   end   = df['Date'].iloc[len(df)-1]
-  print(f'Data inizio {start} e data fine {end}')
+  #print(f'Data inizio {start} e data fine {end}')
   #trovo tutte le date nel periodo
   new_date = pd.date_range(start=start,end=end,freq='D')
   #converto in dataframe al posto di dataframe index
@@ -93,7 +94,6 @@ def readEuronext(isin):
 #print(readEuronext('IT0005580003'))
 
 def readEuronextREV2(isin, data):
-  print(isin)
    #URl singola mi da alcune info
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
@@ -112,14 +112,16 @@ def readEuronextREV2(isin, data):
   #driver.get(URL)
   #time.sleep(5)
 
-  todayDate = datetime.today().strftime('%d/%m/%Y')
-  diffdate = ( datetime.strptime(todayDate, "%d/%m/%Y") - datetime.strptime(data, "%d/%m/%Y")).days
-  print(f"Differenza date {diffdate}")
+  #todayDate = datetime.today().strftime('%d/%m/%Y')
+  todayDate = datetime.today().strftime('%Y-%m-%d')
+  #diffdate = ( datetime.strptime(todayDate, "%d/%m/%Y") - datetime.strptime(data, "%d/%m/%Y")).days
+  diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
+  #print(f"Differenza date {diffdate}")
   #Se la diff date è <=0 allor anon devo fare nulla
   #se è minore di 5 uso primo metodo (+ veloce)
   #altrimenti metodo esteso
   if(diffdate <= 0):
-    print('Non necessario aggiornamento')
+    print('Aggiornamento non necessario')
     histprice = 0 
   #elif diffdate <=5:
     # Inizializza il driver di Chrome
@@ -164,13 +166,14 @@ def readEuronextREV2(isin, data):
     histpriceExt = fillDatesDFrame(histBtpExt)
     #loop per cercare la data nel sito
     i=0
-    while i <= 3:
+    while i <= 12:
       #verifico se la data è presente
-      if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
-        print('Presente')
+      #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
+      if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
+        #print('Presente')
         break
       else:
-        print('manca')
+        #print('manca')
         #premo tasto per aumentare lo storico
         time.sleep(5)
         buttonLoad = driverExt.find_element(By.XPATH,'//*[@id="historical-price-load-more"]')

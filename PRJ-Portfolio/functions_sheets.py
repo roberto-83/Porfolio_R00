@@ -71,6 +71,19 @@ def write_range(range_name,values,spreadsheet_id):
         valueInputOption=value_input_option, body=body).execute()
     print('{0} cells updated.'.format(result.get('updatedCells')))
 
+def appendRow(range_name,values,spreadsheet_id):
+    #range_name = 'Sheet1!A1:B1'
+    #values = read_range()
+    #values=[["1","2"]]
+    value_input_option = 'USER_ENTERED'
+    body = {
+        'values': values
+    }
+    result = spreadsheet_service.spreadsheets().values().append(
+        spreadsheetId=spreadsheet_id, range=range_name,
+        valueInputOption=value_input_option, body=body).execute()
+    print('cells updated.'.format(result.get('updatedCells')))
+
 ######################################
 ############# DELETE DATA #############
 ######################################

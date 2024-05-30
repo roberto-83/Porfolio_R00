@@ -3,21 +3,33 @@ from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
 import yfinance as yf
+from functions_sheets import read_range,appendRow
+from settings import * #importa variabili globali
 
 ### INIZIO PROCEDURA
 port = Portfolio()
 #scrivo la tabella degli Isin
 print("FASE 1 - Inizio - Aggiornamento Tab Isin")
-print(port.writeAllIsins())
+#print(port.writeAllIsins())
 print("FASE 1 - Fine - Aggiornamento Tab Isin")
 #Crea la tabella del portafoglio
 print("FASE 2 - Inizio - Aggiornamento Portafoglio")
-print(port.writePortfolio())
+#print(port.writePortfolio())
 print("FASE 2 - Fine - Aggiornamento Portafoglio")
 #creo calendar
 print("FASE 3 - Inizio - Aggiornamento Calendar")
 print(port.updateCalendarTab())
 print("FASE 3 - Fine - Aggiornamento Calendar")
+#tabCalTot=read_range('tab_caltot!A:A',newPrj)
+#test1 = appendRow('tab_caltot!A:B',[['2','3']],newPrj)
+#rowToWr = len(tabCalTot)
+#print(tabCalTot)
+#print(len(tabCalTot))
+
+#test1=port.readActiveIsinByDate('2024-01-01')
+#test2=port.readActiveIsinByDate('2024-01-02')
+#print(test1[test1['ISIN'] == 'US7134481081'])
+#print(test2[test2['ISIN'] == 'US7134481081'])
 
 
 #tabella trabsazioni filtrata come dataframe
