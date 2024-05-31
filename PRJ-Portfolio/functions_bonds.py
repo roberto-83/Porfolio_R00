@@ -185,7 +185,8 @@ def readEuronextREV2(isin, data):
         driverExt.execute_script("arguments[0].click();", buttonLoad)
         time.sleep(5)
         #leggo i dati
-        dfsExt = pd.read_html(driverExt.page_source)
+        #dfsExt = pd.read_html(driverExt.page_source)
+        dfsExt = pd.read_html(StringIO(driverExt.page_source))
         histBtpExt = dfsExt[22]
         #print(histBtpExt)
         histpriceExt = fillDatesDFrame(histBtpExt)
