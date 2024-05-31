@@ -212,7 +212,7 @@ class Portfolio:
 
   def getHistPrice(row):
 
-    #print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
+    print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     dateRead = row['dataHist']
     if row['Asset'] == 'P2P':
@@ -242,7 +242,8 @@ class Portfolio:
       #aggiungo le date vuote
       prices1 = prices.asfreq('D')
       #copio i valori delle righe vuote dalla riga sopra
-      prices2 = prices1.fillna(method='ffill')
+      #prices2 = prices1.fillna(method='ffill')
+      prices2 = prices1.ffill()
       #print(f"leggo ticker {row['Ticker']} alla data reale {dateRead1} e data inizio {dataInizio} fino a {dataFine}")
       #print(prices2)
       prices3 = prices2.filter(items=[dateRead1], axis=0)
@@ -273,6 +274,8 @@ class Portfolio:
     isins = Portfolio.readActiveIsinByDate(self,histdate)
     #prendo i dati calcolati
     portHist = Portfolio.calcDataPortREV2(self, isins)
+    #print(histdate)
+    #print(portHist)
     #aggiungo la data
     portHist['dataHist'] = histdate
     #aggiungo prezzo storico
@@ -312,6 +315,7 @@ class Portfolio:
         #dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
         dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%Y-%m-%d')
         histDf = Portfolio.histDf(self,dateSearch)
+        #print(histDf)
         numRowsHistDf = len(histDf)
         endRow = startRow+numRowsHistDf
         #trasformo in lista
@@ -334,7 +338,8 @@ class Portfolio:
     dataDelta = (datetime.strptime(histDf['dataHist'].iloc[0], '%Y-%m-%d')+timedelta(days=5)).strftime('%Y-%m-%d')
     prezzoMerc1 = yf.download('CSSPX.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
     prezzoMerc2 = prezzoMerc1.asfreq('D')
-    prezzoMerc = prezzoMerc2.fillna(method='ffill')
+    #prezzoMerc = prezzoMerc2.fillna(method='ffill')
+    prezzoMerc = prezzoMerc2.ffill()
     rendim=histDf.loc['total']['ctvMerc'] - histDf.loc['total']['TotInvest']
     rendimperc= (rendim * 100) / histDf.loc['total']['TotInvest']
     mercato = prezzoMerc['Close'].iloc[0]

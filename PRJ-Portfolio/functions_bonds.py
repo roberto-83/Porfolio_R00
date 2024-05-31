@@ -41,7 +41,8 @@ def fillDatesDFrame(df):
     .sort_values("Date")
   )
   #riempio i valori con quelli della riga sopra
-  df_new = df_new.fillna(method='ffill')
+  #df_new = df_new.fillna(method='ffill')
+  df_new = df_new.ffill()
   return df_new
 
 def readEuronext(isin):
@@ -167,6 +168,7 @@ def readEuronextREV2(isin, data):
     #loop per cercare la data nel sito
     i=0
     while i <= 12:
+      print(f"Loop numero {i}")
       #verifico se la data è presente
       #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
       if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
@@ -183,6 +185,7 @@ def readEuronextREV2(isin, data):
         #leggo i dati
         dfsExt = pd.read_html(driverExt.page_source)
         histBtpExt = dfsExt[22]
+        #print(histBtpExt)
         histpriceExt = fillDatesDFrame(histBtpExt)
         histpriceExt.Date = pd.to_datetime(histpriceExt.Date)
 

@@ -11,6 +11,7 @@ SCOPES = [
 ]
 
 credentials = service_account.Credentials.from_service_account_file('/content/drive/MyDrive/Programmazione-COLAB/Progetto02/credentials.json', scopes=SCOPES)
+#credentials = service_account.Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
 
 spreadsheet_service = build('sheets', 'v4', credentials=credentials)
 drive_service = build('drive', 'v3', credentials=credentials)
