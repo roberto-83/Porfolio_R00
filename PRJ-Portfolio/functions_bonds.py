@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
+from io import StringIO
 #import investpy fuori uso
 
 
@@ -157,7 +158,8 @@ def readEuronextREV2(isin, data):
     driverExt.get(URL_ESTESO)
     time.sleep(5)
     #leggo i dati
-    dfsExt = pd.read_html(driverExt.page_source)
+    #dfsExt = pd.read_html(driverExt.page_source)
+    dfsExt = pd.read_html(StringIO(driverExt.page_source))
     time.sleep(5)
     #prendo la tabella
     histBtpExt = dfsExt[22]
