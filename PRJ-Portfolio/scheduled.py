@@ -11,20 +11,27 @@ from datetime import datetime
 import yfinance as yf
 from functions_sheets import read_range,appendRow
 from settings import * #importa variabili globali
+from manage_logs import log_insert
 
 ### INIZIO PROCEDURA
 port = Portfolio()
 #scrivo la tabella degli Isin
 print("FASE 1 - Inizio - Aggiornamento Tab Isin")
-#print(port.writeAllIsins())
+log_insert("Aggiornamento Tab Isin","Inizio")
+print(port.writeAllIsins())
+log_insert("Aggiornamento Tab Isin","Fine")
 print("FASE 1 - Fine - Aggiornamento Tab Isin")
 #Crea la tabella del portafoglio
 print("FASE 2 - Inizio - Aggiornamento Portafoglio")
-#print(port.writePortfolio())
+log_insert("Aggiornamento Tab Portafoglio","Inizio")
+print(port.writePortfolio())
+log_insert("Aggiornamento Tab Portafoglio","Fine")
 print("FASE 2 - Fine - Aggiornamento Portafoglio")
 #creo calendar
 print("FASE 3 - Inizio - Aggiornamento Calendar")
+log_insert("Aggiornamento Tab Calendar","Inizio")
 print(port.updateCalendarTab())
+log_insert("Aggiornamento Tab Calendar","Fine")
 print("FASE 3 - Fine - Aggiornamento Calendar")
 #tabCalTot=read_range('tab_caltot!A:A',newPrj)
 #test1 = appendRow('tab_caltot!A:B',[['2','3']],newPrj)
