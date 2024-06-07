@@ -90,7 +90,9 @@ def news(ticker):
   stock = yf.Ticker(ticker)
   return stock.news
 
-
+def dividends(ticker):
+  stock = yf.Ticker(ticker)
+  return stock.get_dividends()
 
 
 
@@ -102,7 +104,8 @@ def verifKey(dict,val):
   else:
     return '0'
 
-#print(getStockInfo('RACE.MI'))
+#print(getStockInfo('3V64.DE'))
+#print(dividends('3V64.DE'))
 
 #teststock = yf.Ticker('EPRA.MI')
   #get all stock info

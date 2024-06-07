@@ -153,6 +153,7 @@ class Portfolio:
         list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
       else:
         #VAI COI FINANCIALS
+        #print(tick)
         infoStock = getSummary(tick)
         #sector = verifKey(infoStock['assetProfile'],'sector')
         #industry = verifKey(infoStock['assetProfile'],'industry')
@@ -178,6 +179,11 @@ class Portfolio:
         dist52=0
         avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
         dist200=0
+        divexdate=divexdate[:10]
+        print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
+        if len(divexdate) > 2: #quindi se non è 0
+          divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
+        #divlastdate=
         #appendo Settore, industria
         list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
         peforward,pegratio,beta, earnings, ptb, book, shares, divrate, divyield,divlastval,

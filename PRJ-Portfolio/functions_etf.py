@@ -44,7 +44,7 @@ def sectorsEtf(ticker):
     #return  pd.DataFrame() #dataframe vuoto
     return  pd.DataFrame({ticker:'0'},index=['0']) #dataframe vuoto
  
-#df3 = getSummary('RACE.MI')
+#df3 = getSummary('5Q5.DE')
 #print(f" Settore: {df3['assetProfile']['sector']}")
 #print(f" Industria: {df3['assetProfile']['industry']}")
 #print(f" MarketCap: {df3['summaryDetail']['marketCap']}")
@@ -54,7 +54,7 @@ def sectorsEtf(ticker):
 #print(df.keys())
 #print(df.index)
 #print(df)
-#print(df1)
+#print(df3)
 #percentuale
 #print(df['XDWS.MI'].iloc[0])
 #print(df.index[0])
