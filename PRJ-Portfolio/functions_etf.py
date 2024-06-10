@@ -8,6 +8,10 @@ import pandas as pd
 import datetime
 from datetime import datetime,timedelta
 import time
+#test nuova funzione
+from functions_sheets import read_range,appendRow
+from settings import * #importa variabili globali
+import calendar
 
 def getPriceETF(ticker):
   todayDate = datetime.today().strftime('%d/%m/%Y')
@@ -78,3 +82,86 @@ def sectorsEtf(ticker):
 #print(fund.fund_sector_weightings.iloc[1])
 #chiavi
 #print(fund.fund_sector_weightings.keys())
+
+
+#PERFORMANCE
+#fase 1 leggere che giorno che mese e che anno siamo
+#leggere l'esistente sul nuovo foglio e capire a che mese siamo
+#estrarre i dati da calendar totali
+
+#prendo i dati da calendar totali filtrando mese e anno di interesse
+#di questo df prtendo solo prima e ultima riga
+
+def diff_month(d1, d2):  
+  #quindi (anno d1 - anno d2)*12+mesi d1-mesi d2
+  return (int(datetime.strptime(d1, '%d/%m/%Y').strftime('%Y')) - int(datetime.strptime(d2, '%d/%m/%Y').strftime('%Y'))) * 12 + int(datetime.strptime(d1, '%d/%m/%Y').strftime('%m')) - int(datetime.strptime(d2, '%d/%m/%Y').strftime('%m'))
+
+def first():
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  todayMonth = datetime.today().strftime('%m')
+  todayYear = datetime.today().strftime('%Y')
+  print(f"Mese corrente {todayMonth} e anno corrente {todayYear}")
+  #READ ACTUAL
+  actualPerf = read_range('tab_performance!A:L',newPrj)
+
+ #ultimo anno 
+  lastYear = actualPerf['Anno'].iloc[-1]
+  lastMonth = actualPerf['Mese'].iloc[-1]
+  lastDatelastday = actualPerf['Last day month'].iloc[-1]
+  #calcolo ultima data
+  lastDate = datetime(int(lastYear), int(lastMonth), 1).strftime('%d/%m/%Y')
+  deltaMonth = diff_month(todayDate,lastDate)
+  print(f"Ultima data del foglio è mese: {lastMonth} dell'anno: {lastYear} quindi siamo {lastDate}, mentre oggi {todayDate} quindi differenza mesi è {diff_month(todayDate,lastDate)}")
+  if(deltaMonth >= 1):
+    i=1
+    while i <= deltaMonth:
+      #leggo ultimo giorno del mese dal foglio
+      newYear = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=1)).strftime('%Y')
+      newMonth = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=1)).strftime('%m')
+      firstDayMon = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=1)).strftime('%d/%m/%Y')
+      numdaysNewMonth = calendar.monthrange(int(newYear), int(newMonth))[1]
+      lastDayMon = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=numdaysNewMonth)).strftime('%d/%m/%Y')
+      print(f"primo del mese {firstDayMon} ultimo del mese {lastDayMon}")
+
+
+      ####################INSERIRE I DATI#############################
+
+
+      #preparo array
+      arr = [[newYear,newMonth,firstDayMon,lastDayMon]]
+      #scrivo array
+      appendRow('tab_performance!A:D',arr,newPrj)
+      #aggiorno l'ultima data 
+      lastDatelastday = lastDayMon
+      #proseguo con il loop
+      i += 1
+  else:
+    print("Aggiornamento non necessario")
+  return 'Done'
+
+  #if lastYear <= todayYear:
+   #if lastMonth <=todayMonth:
+      #inizio i calcoli
+      #if lastMonth == 12:
+        #diffMonth = 12 - todayMonth
+      #else:
+        #diffMonth = todayMonth-lastMonth
+      #for loop
+      #i=0 
+      #while i < diffMonth:
+        #########################
+        #fulldata = read_range('tab_caltot!A:I',newPrj)
+        #monthtoWrite=lastMonth+1+i
+        #arr = [[test1, test2]]
+        #appendRow('tab_tabperformance!A:B',arr,newPrj)
+        #devo prendere tutti i dati dal primo del mese che manca fino ad oggi
+        
+        #datafiltr = fulldata[fulldata['Data'] <= date] 
+      #i += 1
+
+  #else:
+    #print("Aggiornamento non necessario")
+
+
+
+#print(first())

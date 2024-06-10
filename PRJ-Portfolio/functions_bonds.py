@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup 
 import pandas as pd
 import time
-from datetime import datetime
+from datetime import datetime,timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -29,9 +29,12 @@ def fillDatesDFrame(df):
   start = df['Date'].iloc[0]
   #estraggo l'ultima data
   end   = df['Date'].iloc[len(df)-1]
+  #sommo un padio di giorni per non avere errori nei weekend
+  end1 =end+timedelta(days=3)
+  #print(f"data inizio {end} data fine {end1}")
   #print(f'Data inizio {start} e data fine {end}')
   #trovo tutte le date nel periodo
-  new_date = pd.date_range(start=start,end=end,freq='D')
+  new_date = pd.date_range(start=start,end=end1,freq='D')
   #converto in dataframe al posto di dataframe index
   new_dates = pd.DataFrame(new_date, columns=['Date'])
   #print(new_dates)
@@ -164,15 +167,17 @@ def readEuronextREV2(isin, data):
     #prendo la tabella
     histBtpExt = dfsExt[22]
     histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
-    #print(histBtpExt)
+    #print("stampo quello che leggo")##########################################################
     #riempio le date vuote
     histpriceExt = fillDatesDFrame(histBtpExt)
+    #print(histpriceExt)
     #loop per cercare la data nel sito
     i=0
     while i <= 12:
       print(f"Loop numero {i}")
       #verifico se la data è presente
       #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
+      print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%Y-%m-%d')}")
       if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
         #print('Presente')
         break
