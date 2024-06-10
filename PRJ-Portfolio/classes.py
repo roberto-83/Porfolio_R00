@@ -19,6 +19,7 @@ import time
 import pytz
 import numpy as np
 import yfinance as yf
+import calendar
 
 from yfinance.utils import empty_earnings_dates_df
 pd.options.mode.chained_assignment = None #toglie errori quando sovrascrivo un dataframe
@@ -571,5 +572,135 @@ class Portfolio:
 
 
     
+########Fuori dalla classe#######
+#####PERFORMANCE
+#PERFORMANCE
+#fase 1 leggere che giorno che mese e che anno siamo
+#leggere l'esistente sul nuovo foglio e capire a che mese siamo
+#estrarre i dati da calendar totali
 
+#prendo i dati da calendar totali filtrando mese e anno di interesse
+#di questo df prtendo solo prima e ultima riga
+
+def diff_month(d1, d2):  
+  #quindi (anno d1 - anno d2)*12+mesi d1-mesi d2
+  return (int(datetime.strptime(d1, '%d/%m/%Y').strftime('%Y')) - int(datetime.strptime(d2, '%d/%m/%Y').strftime('%Y'))) * 12 + int(datetime.strptime(d1, '%d/%m/%Y').strftime('%m')) - int(datetime.strptime(d2, '%d/%m/%Y').strftime('%m'))
+
+def caldRendimento():
+  rome = pytz.timezone("Europe/Rome")
+  todDateTime0 = datetime.now(rome)
+  todayDateHour  = todDateTime0.strftime("%d/%m/%Y %H:%M:%S")
+
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  todayMonth = datetime.today().strftime('%m')
+  todayYear = datetime.today().strftime('%Y')
+  print(f"Mese corrente {todayMonth} e anno corrente {todayYear}")
+  #READ ACTUAL
+  actualPerf = read_range('tab_performance!A:L',newPrj)
+
+ #ultimo anno 
+  lastYear = actualPerf['Anno'].iloc[-1]
+  lastMonth = actualPerf['Mese'].iloc[-1]
+  lastDatelastday = actualPerf['Last day month'].iloc[-1]
+  #calcolo ultima data
+  lastDate = datetime(int(lastYear), int(lastMonth), 1).strftime('%d/%m/%Y')
+  deltaMonth = diff_month(todayDate,lastDate)
+  print(f"Ultima data del foglio è mese: {lastMonth} dell'anno: {lastYear} quindi siamo {lastDate}, mentre oggi {todayDate} quindi differenza mesi è {diff_month(todayDate,lastDate)}")
+  if(deltaMonth >= 1):
+    i=1
+    while i <= deltaMonth:
+      #leggo ultimo giorno del mese dal foglio
+      newYear = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=1)).strftime('%Y')
+      newMonth = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=1)).strftime('%m')
+      firstDayMon = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=1)).strftime('%d/%m/%Y')
+      numdaysNewMonth = calendar.monthrange(int(newYear), int(newMonth))[1]
+      lastDayMon = (datetime.strptime(lastDatelastday, '%d/%m/%Y')+timedelta(days=numdaysNewMonth)).strftime('%d/%m/%Y')
+      print(f"primo del mese {firstDayMon} ultimo del mese {lastDayMon}")
+      
+      ####### Leggo i dati da CALTOT
+      valEstremi = readCalTot(int(newYear) , int(newMonth))
+      valInvFirsyM = valEstremi[0]
+      valInvLastM = valEstremi[1]
+
+      ####### Leggo i dati da TRANSAZIONI
+
+      valTransact = readTransTot(int(newYear) , int(newMonth))
+      deposit=valTransact[0]
+      dividen=valTransact[1]
+      vendite=valTransact[2]
+      rendim = ((float(valInvLastM) - float(valInvFirsyM) - deposit + dividen + vendite)/float(valInvFirsyM))*100
+      rendimY=''
+
+      #se siamo a dicembre devo calcolare la performance dell'anno scorso
+      if int(newMonth) == 12:
+        valYear = readCalTot(int(newYear) , '0')
+        valIniYear = valYear[0]
+        valFinYear = valYear[1]
+
+        valTranYear = readTransTot(int(newYear) , '0')
+        depositY=valTranYear[0]
+        dividenY=valTranYear[1]
+        venditeY=valTranYear[2]
+        rendimY = ((float(valFinYear) - float(valIniYear) - depositY + dividenY + venditeY)/float(valIniYear))*100
+
+      #preparo array finale
+      arr = [[newYear,newMonth,firstDayMon,lastDayMon,valInvFirsyM.replace('.',','),valInvLastM.replace('.',','),deposit,dividen,vendite,rendim,rendimY,todayDateHour]]
+      print(arr)
+      #scrivo array
+      appendRow('tab_performance!A:L',arr,newPrj)
+      #aggiorno l'ultima data 
+      lastDatelastday = lastDayMon
+      #proseguo con il loop
+      i += 1
+  else:
+    print("Aggiornamento non necessario")
+  return 'Done'
+
+def readCalTot(anno, mese):
+  #Leggo il valore di mercatro del primo e dell'ultimo giorno del mese
+  fulldata = read_range('tab_caltot!A:I',newPrj)
+  #converto data in data
+  fulldata['Data'] = pd.to_datetime(fulldata['Data'])
+  #creo campi mese e anno
+  fulldata['Month'] = fulldata['Data'].dt.month
+  fulldata['Year'] = fulldata['Data'].dt.year
+  #filtro calendar totali per il mese e anno che interessa
+
+  if mese == '0':
+    partData = fulldata[(fulldata['Year'] == anno)]
+  else:
+    partData = fulldata[(fulldata['Year'] == anno) & (fulldata['Month'] == mese)]
+
+  valInvFirsyM = partData['Valore Mercato'].iloc[0].replace(',','.')
+  valInvLastM = partData['Valore Mercato'].iloc[-1].replace(',','.')
+  arr=[valInvFirsyM,valInvLastM]
+  return arr
+
+def readTransTot(anno,mese):
+  transact = read_range('tab_transazioni!A:P',oldPrj) 
+  transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
+  transact['Month'] = transact['Data operazione'].dt.month
+  transact['Year'] = transact['Data operazione'].dt.year
+  transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
+  transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace('\.','',regex=True)
+  transact = transact.replace(',','.', regex=True)
+  transact = transact.replace('€','', regex=True)
+
+  if mese == '0':
+    depositDF = transact[(transact['Year'] == anno) & (transact['Tipo'] == 'ACQ')]
+    dividenDF = transact[(transact['Year'] == anno) & (transact['Tipo'] == 'DIVID')]
+    venditeDF = transact[(transact['Year'] == anno) & (transact['Tipo'] == 'VEND')]
+  else:
+    depositDF = transact[(transact['Year'] == anno) & (transact['Month'] == mese) & (transact['Tipo'] == 'ACQ')]
+    dividenDF = transact[(transact['Year'] == anno) & (transact['Month'] == mese) & (transact['Tipo'] == 'DIVID')]
+    venditeDF = transact[(transact['Year'] == anno) & (transact['Month'] == mese) & (transact['Tipo'] == 'VEND')]
+
+  deposit = depositDF['Spesa/incasso effettivo'].astype(float)
+  dividen = dividenDF['Spesa/incasso effettivo'].astype(float)
+  vendite = venditeDF['Spesa/incasso effettivo'].astype(float)
+  arr = [deposit.sum(),dividen.sum(),vendite.sum()]
+  return arr
+
+
+#print(caldRendimento())
 

@@ -4,7 +4,7 @@ current_working_directory = os.getcwd()
 # print output to the console
 print(current_working_directory)
 
-from classes import Portfolio
+from classes import Portfolio,caldRendimento
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
@@ -33,6 +33,12 @@ log_insert("Aggiornamento Tab Calendar","Inizio")
 print(port.updateCalendarTab())
 log_insert("Aggiornamento Tab Calendar","Fine")
 print("FASE 3 - Fine - Aggiornamento Calendar")
+#aggiorno rendimento
+print("FASE 4 - Inizio - Aggiornamento Rendimento")
+log_insert("Aggiornamento Tab Rendimento","Inizio")
+print(caldRendimento())
+log_insert("Aggiornamento Tab Rendimento","Fine")
+print("FASE 4 - Fine - Aggiornamento Rendimento")
 #tabCalTot=read_range('tab_caltot!A:A',newPrj)
 #test1 = appendRow('tab_caltot!A:B',[['2','3']],newPrj)
 #rowToWr = len(tabCalTot)
