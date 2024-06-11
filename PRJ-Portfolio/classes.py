@@ -472,10 +472,12 @@ class Portfolio:
       firstY = '01/01/'+ datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y')
       twoWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,15)
       fourWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,30)
+      twoHundredAgo = Portfolio.subDayToDate(Portfolio.todayDate,200)
       #ottengo i dataframe con i prezzi
       firstYDF = Portfolio.readCalendar(self,firstY)
       twoWeeksAgoDF = Portfolio.readCalendar(self,twoWeeksAgo)
       fourWeeksAgoDF =Portfolio.readCalendar(self,fourWeeksAgo)
+      twoHundredAgoDF =Portfolio.readCalendar(self,twoHundredAgo)
       #costruisco dataframe come join dei precedenti
       finalDF = portShort.merge(firstYDF, on='Ticker', how='left')
       finalDF = finalDF.drop(columns=['Data_y'])
@@ -488,28 +490,35 @@ class Portfolio:
       finalDF2 = finalDF1.merge(fourWeeksAgoDF, on='Ticker', how='left')
       finalDF2 = finalDF2.drop(columns=['Data'])
       finalDF2 = finalDF2.rename(columns={"Prezzo mercato":"Prezzo 30gg","Data_x":"Data"})
-      
+      #quarta join
+      finalDF3 = finalDF2.merge(fourWeeksAgoDF, on='Ticker', how='left')
+      finalDF3 = finalDF3.drop(columns=['Data_y'])
+      finalDF3 = finalDF3.rename(columns={"Prezzo mercato":"Prezzo 200gg","Data_x":"Data"})
+
       #sostituisco i NaN
-      finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].fillna(0)
-      finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].fillna(0)
-      finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].fillna(0)
-      finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].fillna(0)
+      finalDF3['Prezzo Oggi'] = finalDF3['Prezzo Oggi'].fillna(0)
+      finalDF3['Prezzo YTD'] = finalDF3['Prezzo YTD'].fillna(0)
+      finalDF3['Prezzo 15gg'] = finalDF3['Prezzo 15gg'].fillna(0)
+      finalDF3['Prezzo 30gg'] = finalDF3['Prezzo 30gg'].fillna(0)
+      finalDF3['Prezzo 200gg'] = finalDF3['Prezzo 200gg'].fillna(0)
       #conversione colonne
-      finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].replace(',','.',regex=True).astype(float)
-      finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].replace(',','.',regex=True).astype(float)
-      finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].replace(',','.',regex=True).astype(float)
-      finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].replace(',','.',regex=True).astype(float)
+      finalDF3['Prezzo Oggi'] = finalDF3['Prezzo Oggi'].replace(',','.',regex=True).astype(float)
+      finalDF3['Prezzo YTD'] = finalDF3['Prezzo YTD'].replace(',','.',regex=True).astype(float)
+      finalDF3['Prezzo 15gg'] = finalDF3['Prezzo 15gg'].replace(',','.',regex=True).astype(float)
+      finalDF3['Prezzo 30gg'] = finalDF3['Prezzo 30gg'].replace(',','.',regex=True).astype(float)
+      finalDF3['Prezzo 200gg'] = finalDF3['Prezzo 200gg'].replace(',','.',regex=True).astype(float)
 
       #calcolo GAP in percentuale
-      finalDF2['Gap YTD']  = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo YTD'] )*100 / finalDF2['Prezzo Oggi']
-      finalDF2['Gap 15gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 15gg'])*100 / finalDF2['Prezzo Oggi']
-      finalDF2['Gap 30gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 30gg'])*100 / finalDF2['Prezzo Oggi']
+      finalDF3['Gap YTD']  = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo YTD'] )*100 / finalDF3['Prezzo Oggi']
+      finalDF3['Gap 15gg'] = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo 15gg'])*100 / finalDF3['Prezzo Oggi']
+      finalDF3['Gap 30gg'] = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo 30gg'])*100 / finalDF3['Prezzo Oggi']
+      finalDF3['Gap 200gg'] = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo 200gg'])*100 / finalDF3['Prezzo Oggi']
 
       #stampo dataframe su foglio
-      numRows = len(finalDF2)+1
-      arr = finalDF2.values.tolist()
-      delete_range('tab_and_port!A2:K100',newPrj)
-      write_range('tab_and_port!A2:K'+str(numRows),arr,newPrj) 
+      numRows = len(finalDF3)+1
+      arr = finalDF3.values.tolist()
+      delete_range('tab_and_port!A2:M100',newPrj)
+      write_range('tab_and_port!A2:M'+str(numRows),arr,newPrj) 
     else:
       print("Aggiornamento non necessario")
     return 'Done'
