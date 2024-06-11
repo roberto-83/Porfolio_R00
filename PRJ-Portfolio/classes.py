@@ -441,63 +441,77 @@ class Portfolio:
 ################################################################################
 ##### TABELLA ANDAMENTO
 ################################################################################
+  
+  def readlastDate(self):
+    fulldata = read_range('tab_and_port!A:A',newPrj)
+    dateSheet = fulldata['Data'].iloc[-1]
+    #print(f"ultima data del foglio {dateSheet} e oggi è {Portfolio.todayDate}")
+    if dateSheet == Portfolio.todayDate :
+      status = 0 #non faccio nulla
+    else:
+      status = 1 #proseguo
+    return status
+
   def readCalendar(self,dateRead):
-      #Leggo i dati dal calendar
-      fulldata = read_range('tab_calendar!A:I',newPrj)
-      #imposto filtro
-      partData = fulldata[(fulldata['Data'] == dateRead)]
-      partData = partData.drop(columns=['Q.ta Incrementata','Prezzo pagato','Prezzo mercato (EUR)','Dividendo','Valore Investito','Valore Mercato'])
-      return partData
+    #Leggo i dati dal calendar
+    fulldata = read_range('tab_calendar!A:I',newPrj)
+    #imposto filtro
+    partData = fulldata[(fulldata['Data'] == dateRead)]
+    partData = partData.drop(columns=['Q.ta Incrementata','Prezzo pagato','Prezzo mercato (EUR)','Dividendo','Valore Investito','Valore Mercato'])
+    return partData
 
   def calcAndamPort(self):
-    #prima mi prendo i dati del portafoglio ad oggi
-    port = Portfolio.dFPortf(self)
-    #prendo solo le colonne che mi interessano
-    portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','LivePrice']].copy()
-    #inserisco come prima colonna la data
-    portShort.insert(0,'Data',Portfolio.todayDate)
-    #calcolo date a cui leggere le variaizoni
-    firstY = '01/01/'+ datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y')
-    twoWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,15)
-    fourWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,30)
-    #ottengo i dataframe con i prezzi
-    firstYDF = Portfolio.readCalendar(self,firstY)
-    twoWeeksAgoDF = Portfolio.readCalendar(self,twoWeeksAgo)
-    fourWeeksAgoDF =Portfolio.readCalendar(self,fourWeeksAgo)
-    #costruisco dataframe come join dei precedenti
-    finalDF = portShort.merge(firstYDF, on='Ticker', how='left')
-    finalDF = finalDF.drop(columns=['Data_y'])
-    finalDF = finalDF.rename(columns={"DESCRIZIONE LUNGA":"Descrizione","LivePrice":"Prezzo Oggi","Prezzo mercato":"Prezzo YTD"})
-    #seconda join
-    finalDF1 = finalDF.merge(twoWeeksAgoDF, on='Ticker', how='left')
-    finalDF1 = finalDF1.drop(columns=['Data'])
-    finalDF1 = finalDF1.rename(columns={"Prezzo mercato":"Prezzo 15gg"})
-    #terza join
-    finalDF2 = finalDF1.merge(fourWeeksAgoDF, on='Ticker', how='left')
-    finalDF2 = finalDF2.drop(columns=['Data'])
-    finalDF2 = finalDF2.rename(columns={"Prezzo mercato":"Prezzo 30gg","Data_x":"Data"})
-     
-    #sostituisco i NaN
-    finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].fillna(0)
-    finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].fillna(0)
-    finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].fillna(0)
-    finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].fillna(0)
-    #conversione colonne
-    finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].replace(',','.',regex=True).astype(float)
-    finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].replace(',','.',regex=True).astype(float)
-    finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].replace(',','.',regex=True).astype(float)
-    finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].replace(',','.',regex=True).astype(float)
+    if Portfolio.readlastDate(self) == 1:
+      #prima mi prendo i dati del portafoglio ad oggi
+      port = Portfolio.dFPortf(self)
+      #prendo solo le colonne che mi interessano
+      portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','LivePrice']].copy()
+      #inserisco come prima colonna la data
+      portShort.insert(0,'Data',Portfolio.todayDate)
+      #calcolo date a cui leggere le variaizoni
+      firstY = '01/01/'+ datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y')
+      twoWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,15)
+      fourWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,30)
+      #ottengo i dataframe con i prezzi
+      firstYDF = Portfolio.readCalendar(self,firstY)
+      twoWeeksAgoDF = Portfolio.readCalendar(self,twoWeeksAgo)
+      fourWeeksAgoDF =Portfolio.readCalendar(self,fourWeeksAgo)
+      #costruisco dataframe come join dei precedenti
+      finalDF = portShort.merge(firstYDF, on='Ticker', how='left')
+      finalDF = finalDF.drop(columns=['Data_y'])
+      finalDF = finalDF.rename(columns={"DESCRIZIONE LUNGA":"Descrizione","LivePrice":"Prezzo Oggi","Prezzo mercato":"Prezzo YTD"})
+      #seconda join
+      finalDF1 = finalDF.merge(twoWeeksAgoDF, on='Ticker', how='left')
+      finalDF1 = finalDF1.drop(columns=['Data'])
+      finalDF1 = finalDF1.rename(columns={"Prezzo mercato":"Prezzo 15gg"})
+      #terza join
+      finalDF2 = finalDF1.merge(fourWeeksAgoDF, on='Ticker', how='left')
+      finalDF2 = finalDF2.drop(columns=['Data'])
+      finalDF2 = finalDF2.rename(columns={"Prezzo mercato":"Prezzo 30gg","Data_x":"Data"})
+      
+      #sostituisco i NaN
+      finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].fillna(0)
+      finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].fillna(0)
+      finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].fillna(0)
+      finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].fillna(0)
+      #conversione colonne
+      finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].replace(',','.',regex=True).astype(float)
+      finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].replace(',','.',regex=True).astype(float)
+      finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].replace(',','.',regex=True).astype(float)
+      finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].replace(',','.',regex=True).astype(float)
 
-    #calcolo GAP in percentuale
-    finalDF2['Gap YTD']  = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo YTD'] )*100 / finalDF2['Prezzo Oggi']
-    finalDF2['Gap 15gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 15gg'])*100 / finalDF2['Prezzo Oggi']
-    finalDF2['Gap 30gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 30gg'])*100 / finalDF2['Prezzo Oggi']
+      #calcolo GAP in percentuale
+      finalDF2['Gap YTD']  = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo YTD'] )*100 / finalDF2['Prezzo Oggi']
+      finalDF2['Gap 15gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 15gg'])*100 / finalDF2['Prezzo Oggi']
+      finalDF2['Gap 30gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 30gg'])*100 / finalDF2['Prezzo Oggi']
 
-    #stampo dataframe su foglio
-    numRows = len(finalDF2)+1
-    arr = finalDF2.values.tolist()
-    delete_range('tab_and_port!A2:K100',newPrj)
-    write_range('tab_and_port!A2:K'+numRows,arr,newPrj) 
+      #stampo dataframe su foglio
+      numRows = len(finalDF2)+1
+      arr = finalDF2.values.tolist()
+      delete_range('tab_and_port!A2:K100',newPrj)
+      write_range('tab_and_port!A2:K'+str(numRows),arr,newPrj) 
+    else:
+      print("Aggiornamento non necessario")
     return 'Done'
 
     
