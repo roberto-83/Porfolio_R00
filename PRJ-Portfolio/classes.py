@@ -20,6 +20,8 @@ import pytz
 import numpy as np
 import yfinance as yf
 import calendar
+#from IPython.display import display
+
 
 from yfinance.utils import empty_earnings_dates_df
 pd.options.mode.chained_assignment = None #toglie errori quando sovrascrivo un dataframe
@@ -58,7 +60,11 @@ class Portfolio:
     #metto 0 al posto dei valori vuoti nella colonna quantità
     transact['Quantità (real)'] = transact['Quantità (real)'].replace('',0)
     return transact
-    
+
+################################################################################
+##### TABELLA DATI LIVE PORTAFOGLIO
+################################################################################
+
   def getLivePrice(row):
     #print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
     #funzione che mi da il prezzo a mercato dei vari asset
@@ -217,6 +223,11 @@ class Portfolio:
     #print(portfin.head())
     return 'Ho completato aggiornamento del portafoglio'
 
+
+################################################################################
+##### TABELLA DATI STORICI
+################################################################################
+
   def getHistPrice(row):
 
     print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
@@ -364,8 +375,6 @@ class Portfolio:
     print(f'Array totale del giorno {arrTot}')
     appendRow('tab_caltot!A:I',arrTot,newPrj)
     #write_range('tab_caltot!A'+str(i)+':I'+str(i),arrTot,newPrj)
-
-
     
     return 'ok'
 
@@ -429,13 +438,73 @@ class Portfolio:
     dfFinal = pd.DataFrame(listAll,columns =['Isin', 'Ticker' ,'Asset','Qta','PrezzoPond','Divid','TotInvest', 'Costi'])
     return dfFinal
 
+################################################################################
+##### TABELLA ANDAMENTO
+################################################################################
+  def readCalendar(self,dateRead):
+      #Leggo i dati dal calendar
+      fulldata = read_range('tab_calendar!A:I',newPrj)
+      #imposto filtro
+      partData = fulldata[(fulldata['Data'] == dateRead)]
+      partData = partData.drop(columns=['Q.ta Incrementata','Prezzo pagato','Prezzo mercato (EUR)','Dividendo','Valore Investito','Valore Mercato'])
+      return partData
 
+  def calcAndamPort(self):
+    #prima mi prendo i dati del portafoglio ad oggi
+    port = Portfolio.dFPortf(self)
+    #prendo solo le colonne che mi interessano
+    portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','LivePrice']].copy()
+    #inserisco come prima colonna la data
+    portShort.insert(0,'Data',Portfolio.todayDate)
+    #calcolo date a cui leggere le variaizoni
+    firstY = '01/01/'+ datetime.strptime(Portfolio.todayDate, '%d/%m/%Y').strftime('%Y')
+    twoWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,15)
+    fourWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,30)
+    #ottengo i dataframe con i prezzi
+    firstYDF = Portfolio.readCalendar(self,firstY)
+    twoWeeksAgoDF = Portfolio.readCalendar(self,twoWeeksAgo)
+    fourWeeksAgoDF =Portfolio.readCalendar(self,fourWeeksAgo)
+    #costruisco dataframe come join dei precedenti
+    finalDF = portShort.merge(firstYDF, on='Ticker', how='left')
+    finalDF = finalDF.drop(columns=['Data_y'])
+    finalDF = finalDF.rename(columns={"DESCRIZIONE LUNGA":"Descrizione","LivePrice":"Prezzo Oggi","Prezzo mercato":"Prezzo YTD"})
+    #seconda join
+    finalDF1 = finalDF.merge(twoWeeksAgoDF, on='Ticker', how='left')
+    finalDF1 = finalDF1.drop(columns=['Data'])
+    finalDF1 = finalDF1.rename(columns={"Prezzo mercato":"Prezzo 15gg"})
+    #terza join
+    finalDF2 = finalDF1.merge(fourWeeksAgoDF, on='Ticker', how='left')
+    finalDF2 = finalDF2.drop(columns=['Data'])
+    finalDF2 = finalDF2.rename(columns={"Prezzo mercato":"Prezzo 30gg","Data_x":"Data"})
+     
+    #sostituisco i NaN
+    finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].fillna(0)
+    finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].fillna(0)
+    finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].fillna(0)
+    finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].fillna(0)
+    #conversione colonne
+    finalDF2['Prezzo Oggi'] = finalDF2['Prezzo Oggi'].replace(',','.',regex=True).astype(float)
+    finalDF2['Prezzo YTD'] = finalDF2['Prezzo YTD'].replace(',','.',regex=True).astype(float)
+    finalDF2['Prezzo 15gg'] = finalDF2['Prezzo 15gg'].replace(',','.',regex=True).astype(float)
+    finalDF2['Prezzo 30gg'] = finalDF2['Prezzo 30gg'].replace(',','.',regex=True).astype(float)
 
+    #calcolo GAP in percentuale
+    finalDF2['Gap YTD']  = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo YTD'] )*100 / finalDF2['Prezzo Oggi']
+    finalDF2['Gap 15gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 15gg'])*100 / finalDF2['Prezzo Oggi']
+    finalDF2['Gap 30gg'] = (finalDF2['Prezzo Oggi'] - finalDF2['Prezzo 30gg'])*100 / finalDF2['Prezzo Oggi']
 
+    #stampo dataframe su foglio
+    numRows = len(finalDF2)+1
+    arr = finalDF2.values.tolist()
+    delete_range('tab_and_port!A2:K100',newPrj)
+    write_range('tab_and_port!A2:K'+numRows,arr,newPrj) 
+    return 'Done'
 
-  ################################
-  #METODI PRINCIPALI - tab_isin###
-  ################################
+    
+################################################################################
+##### TABELLA ISIN
+################################################################################
+
   def readDateTabIsin(self):
     tabIsinsNew= read_range('tab_isin!A:L',newPrj)
     lastDate = tabIsinsNew['UPDATE'].iloc[0]
@@ -483,26 +552,17 @@ class Portfolio:
     else:
       return "aggiornamento non necessario"
 
-  ################################
-  #METODI AGGIUNTIVI           ###
-  ################################
-  
+   
+
+################################################################################
+##### FUNZIONI AGGIUNTIVE
+################################################################################
+
   def readListIsin(self):
     tabIsins = read_range('tab_isin!A:L',oldPrj)
     tabIsinsFilt = tabIsins[tabIsins['MORNINGSTAR'] != 'INATTIVO']
     return tabIsinsFilt.filter(items=['ISIN','TICKER_YAHOO','TICKER_DATI','SCADENZA','ASSET'])
     
-
-    ######################################QUESTA LAVORA CONSINGOLO ISIN, devo leggerre tutti gli isin che matchano il mio portafolgio.. come fare?
-    #ma cosi vado anche a leggere prima tutta la tabella..
-    #se lascio cosi leggo i dati uno alla volta e quindi ho meno call da fare
-    #fare una funzione che legga i dati una sola volta
-  #def gtDataFromTabIsin(isin):
-    #estraggo i dati da tab_isin dato un isin di partenza
-    #assetData = read_range('tab_isin!A:K',newPrj)
-    #assetDataVal = assetData.loc[assetData['ISIN'] == isin]
-    #return assetDataVal
-
   def gtDataFromTabIsinREV2(self):
     actPortf = self.actPort
     #estraggo i dati da tab_isin dato un isin di partenza
@@ -512,9 +572,7 @@ class Portfolio:
     #filtro DF letto da google per avere solo gli isin attivi
     assetData[assetData.ISIN.isin(isintab)]
     return assetData
-   
 
-  #FUNZIONI AGGIUNTIVE
   def getNameStock(ticker):
     #prendo i dati di azioni e etf per tab_isin
     #stock = yf.Ticker(tikcer)
@@ -562,25 +620,15 @@ class Portfolio:
     newDate = origDate + timedelta(days=1)
     return newDate.strftime("%d/%m/%Y")
 
+  def subDayToDate(dateInput,days):
+    origDate = datetime.strptime(dateInput, "%d/%m/%Y")
+    daysSub = int(days)*(-1)
+    newDate = origDate + timedelta(days=daysSub)
+    return newDate.strftime("%d/%m/%Y")
 
-#MIGLIORIE
-#1 - valutare se prendere il nome del titolo per il portafoglio (sulla funzione   def getTitle(row):) da  API e non da tab_isin, solo per gestire le variazioni
-#2 - la funzione che sto usando sugli etf può essere usata anche per le azioni? perchè ha piu campi!
-#3 - calcolo del delta price sulle obbligazioni.. ora l'ho messo fisso a 0
-#4 - readListIsin va usata solo nel costruttore e salvata per poi essre richiamata. così diminuosco le chiamate  
-
-
-
-    
-########Fuori dalla classe#######
-#####PERFORMANCE
-#PERFORMANCE
-#fase 1 leggere che giorno che mese e che anno siamo
-#leggere l'esistente sul nuovo foglio e capire a che mese siamo
-#estrarre i dati da calendar totali
-
-#prendo i dati da calendar totali filtrando mese e anno di interesse
-#di questo df prtendo solo prima e ultima riga
+################################################################################
+##### CALCOLO RENDIMENTO (fuori da classe)
+################################################################################
 
 def diff_month(d1, d2):  
   #quindi (anno d1 - anno d2)*12+mesi d1-mesi d2
