@@ -439,11 +439,21 @@ class Portfolio:
     return dfFinal
 
 ################################################################################
+##### TABELLA COMPOSIZIONE - AZIENDE
+################################################################################
+
+  def portCompanies(self):
+    if Portfolio.readlastDate(self,'tab_aziende') == 1:
+      print('Continuo')
+    else:
+      print("Aggiornamento non necessario")
+    return 'Done'
+################################################################################
 ##### TABELLA ANDAMENTO
 ################################################################################
   
-  def readlastDate(self):
-    fulldata = read_range('tab_and_port!A:A',newPrj)
+  def readlastDate(self,tab):
+    fulldata = read_range(tab+'!A:A',newPrj)
     dateSheet = fulldata['Data'].iloc[-1]
     #print(f"ultima data del foglio {dateSheet} e oggi è {Portfolio.todayDate}")
     if dateSheet == Portfolio.todayDate :
@@ -461,7 +471,7 @@ class Portfolio:
     return partData
 
   def calcAndamPort(self):
-    if Portfolio.readlastDate(self) == 1:
+    if Portfolio.readlastDate(self,'tab_and_port') == 1:
       #prima mi prendo i dati del portafoglio ad oggi
       port = Portfolio.dFPortf(self)
       #prendo solo le colonne che mi interessano

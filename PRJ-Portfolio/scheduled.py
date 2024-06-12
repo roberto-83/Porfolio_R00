@@ -12,39 +12,46 @@ import yfinance as yf
 from functions_sheets import read_range,appendRow
 from settings import * #importa variabili globali
 from manage_logs import log_insert
+import pytz
 
 ### INIZIO PROCEDURA
 port = Portfolio()
-#scrivo la tabella degli Isin
-print("FASE 1 - Inizio - Aggiornamento Tab Isin")
-log_insert("Aggiornamento Tab Isin","Inizio")
-print(port.writeAllIsins())
-log_insert("Aggiornamento Tab Isin","Fine")
-print("FASE 1 - Fine - Aggiornamento Tab Isin")
-#Crea la tabella del portafoglio
-print("FASE 2 - Inizio - Aggiornamento Portafoglio")
-log_insert("Aggiornamento Tab Portafoglio","Inizio")
-print(port.writePortfolio())
-log_insert("Aggiornamento Tab Portafoglio","Fine")
-print("FASE 2 - Fine - Aggiornamento Portafoglio")
-#creo calendar
-print("FASE 3 - Inizio - Aggiornamento Calendar")
-log_insert("Aggiornamento Tab Calendar","Inizio")
-print(port.updateCalendarTab())
-log_insert("Aggiornamento Tab Calendar","Fine")
-print("FASE 3 - Fine - Aggiornamento Calendar")
-#aggiorno rendimento
-print("FASE 4 - Inizio - Aggiornamento Rendimento")
-log_insert("Aggiornamento Tab Rendimento","Inizio")
-print(caldRendimento())
-log_insert("Aggiornamento Tab Rendimento","Fine")
-print("FASE 4 - Fine - Aggiornamento Rendimento")
-#aggiorno andamento
-print("FASE 5 - Inizio - Aggiornamento Andamento")
-log_insert("Aggiornamento Tab Andamento","Inizio")
-print(port.calcAndamPort())
-log_insert("Aggiornamento Tab Andamento","Fine")
-print("FASE 5 - Fine - Aggiornamento Andamento")
+#variabile per non eseguire tutto il codice..
+developerMode=0
+if developerMode == 0:
+  #scrivo la tabella degli Isin
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
+  log_insert("Aggiornamento Tab Isin","Inizio")
+  print(port.writeAllIsins())
+  log_insert("Aggiornamento Tab Isin","Fine")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Fine - Aggiornamento Tab Isin")
+  #Crea la tabella del portafoglio
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio")
+  log_insert("Aggiornamento Tab Portafoglio","Inizio")
+  print(port.writePortfolio())
+  log_insert("Aggiornamento Tab Portafoglio","Fine")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio")
+  #creo calendar
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
+  log_insert("Aggiornamento Tab Calendar","Inizio")
+  print(port.updateCalendarTab())
+  log_insert("Aggiornamento Tab Calendar","Fine")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Fine - Aggiornamento Calendar")
+  #aggiorno rendimento
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Inizio - Aggiornamento Rendimento")
+  log_insert("Aggiornamento Tab Rendimento","Inizio")
+  print(caldRendimento())
+  log_insert("Aggiornamento Tab Rendimento","Fine")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Fine - Aggiornamento Rendimento")
+  #aggiorno andamento
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Inizio - Aggiornamento Andamento")
+  log_insert("Aggiornamento Tab Andamento","Inizio")
+  print(port.calcAndamPort())
+  log_insert("Aggiornamento Tab Andamento","Fine")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Fine - Aggiornamento Andamento")
+else:
+  print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
+  print(port.portCompanies())
 #tabCalTot=read_range('tab_caltot!A:A',newPrj)
 #test1 = appendRow('tab_caltot!A:B',[['2','3']],newPrj)
 #rowToWr = len(tabCalTot)
