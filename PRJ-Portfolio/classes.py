@@ -121,7 +121,7 @@ class Portfolio:
     #unisco i due dataframe sopra
     portIsinCalc = orig_portIsinCalc.merge(isins, left_on='Isin',right_on='ISIN',how='left')
     #cancello colonne che non mi servono 
-    portIsinCalc = portIsinCalc.drop(columns=['COUNTRY','DESCRIZIONE BREVE','TICKER DATI','TICKER YAHOO','ISIN','ASSET'])
+    portIsinCalc = portIsinCalc.drop(columns=['COUNTRY','DESCRIZIONE BREVE','TICKER DATI','TICKER YAHOO','ISIN','ASSET','SITO UFFICIALE'])
     #aggiungo prezzo live
     portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #aggiungo controvalore mercato
@@ -446,7 +446,7 @@ class Portfolio:
 ##### TABELLA COMPOSIZIONE - AZIENDE
 ################################################################################
   
-  def getCompany(row):
+  def getCompany(self,row):
     #print(i)
     #"i" arriva come tupla, converto in df
     #row = pd.DataFrame(i, columns=['Asset','Ticker','DESCRIZIONE LUNGA'])
@@ -455,6 +455,9 @@ class Portfolio:
       outpList = fund.fund_holding_info[row['Ticker']]['holdings']
       stocks = pd.DataFrame(outpList)
       print(f"lunghezza array {len(stocks)}")
+      dataIsin = Portfolio.tabIsin()
+      dataIsin = dataIsin[dataIsin['TICKER YAHOO'] == row['Ticker']]  
+      print(dataIsin['SITO UFFICIALE'])
       #fund_ticker = "IVV" # IShares Core S&P 500 ETF
       #holdings_date =  "2024-06-17" # or None to query the latest holdings
       #etf_scraper = ETFScraper()
@@ -653,7 +656,7 @@ class Portfolio:
   def gtDataFromTabIsinREV2(self):
     actPortf = self.actPort
     #estraggo i dati da tab_isin dato un isin di partenza
-    assetData = read_range('tab_isin!A:K',newPrj)
+    assetData = read_range('tab_isin!A:L',newPrj)
     #prendo lista sin
     isintab = actPortf['Isin'].values.tolist()
     #filtro DF letto da google per avere solo gli isin attivi
