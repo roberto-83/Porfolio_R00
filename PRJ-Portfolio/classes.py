@@ -68,7 +68,7 @@ class Portfolio:
 ################################################################################
 
   def getLivePrice(row):
-    print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
+    #print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
@@ -445,19 +445,37 @@ class Portfolio:
 ################################################################################
 ##### TABELLA COMPOSIZIONE - AZIENDE
 ################################################################################
-  
-  def getCompany(self,row):
+  def getLinkTabIsin(ticker):
+    fulldata = read_range('tab_isin!A:M',newPrj)
+    partData = fulldata[(fulldata['TICKER YAHOO'] == ticker)]
+    link = partData['SITO UFFICIALE'].iloc[0]
+    return link
+
+  def getCompany(row):
     #print(i)
     #"i" arriva come tupla, converto in df
     #row = pd.DataFrame(i, columns=['Asset','Ticker','DESCRIZIONE LUNGA'])
     if row['Asset'] == 'ETF-AZIONI':
+      print(f"cerco dati del ticker {row['Ticker']}")
       fund = Ticker(row['Ticker'])
       outpList = fund.fund_holding_info[row['Ticker']]['holdings']
       stocks = pd.DataFrame(outpList)
-      print(f"lunghezza array {len(stocks)}")
-      dataIsin = Portfolio.tabIsin()
-      dataIsin = dataIsin[dataIsin['TICKER YAHOO'] == row['Ticker']]  
-      print(dataIsin['SITO UFFICIALE'])
+      stocks['Ticker']=row['Ticker']
+      if len(outpList) < 2:
+        stocks['symbol']=row['Ticker']
+        stocks['holdingName']=row['DESCRIZIONE LUNGA']
+        stocks['holdingPercent']=1
+      #metto ticker all'inizio
+      stocks=stocks[['Ticker','symbol','holdingName','holdingPercent']]
+      #print(stocks)
+      #print(stocks.head())
+      #print(f"lunghezza array {len(stocks)}")
+      link = Portfolio.getLinkTabIsin(row['Ticker'])
+      print(f"il link del ticker {row['Ticker']} è {link}")
+
+      #dataIsin = self.tabIsin()
+      #dataIsin = dataIsin[dataIsin['TICKER YAHOO'] == row['Ticker']]  
+      #print(dataIsin)
       #fund_ticker = "IVV" # IShares Core S&P 500 ETF
       #holdings_date =  "2024-06-17" # or None to query the latest holdings
       #etf_scraper = ETFScraper()
@@ -465,11 +483,9 @@ class Portfolio:
       #print(holdings_df)
 
     else:
-      stocks1 = row
-      stocks1['Azienda'] = row['DESCRIZIONE LUNGA']
-      stocks1['Perc'] = 100
+      dict1 = {'Ticker':row['Ticker'],'symbol':row['Ticker'], 'holdingName':row['DESCRIZIONE LUNGA'],'holdingPercent':1}
       #trasformo in dataframe
-      stocks = pd.DataFrame(stocks1)
+      stocks = pd.DataFrame(dict1, index=[0])
     return stocks
 
   def portCompanies(self):
@@ -482,11 +498,12 @@ class Portfolio:
       #for i in portShort.iterrows():
       stocksGlobal = pd.DataFrame()
       for i in range(len(portShort)):
-        print(f'vai {i}')
+        #print(f'vai {i}')
         stocksDF = Portfolio.getCompany(portShort.loc[i])
-        print(type(stocksDF))
+        #print(type(stocksDF))
         #stocksGlobal = pd.concat(stocksDF,ignore_index=True)
-        print(stocksDF)
+        stocksGlobal = pd.concat([stocksGlobal,stocksDF],axis=0)
+        #print(stocksDF)
       print(stocksGlobal)
       #finalDF = portShort.merge(stocksDF, on='Ticker', how='left')
 
