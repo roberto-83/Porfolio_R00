@@ -1,4 +1,5 @@
 import os
+
 # get the current working directory
 current_working_directory = os.getcwd()
 # print output to the console
@@ -13,6 +14,8 @@ from functions_sheets import read_range,appendRow
 from settings import * #importa variabili globali
 from manage_logs import log_insert
 import pytz
+from yahooquery import Ticker
+#from get_all_tickers import get_tickers as gt
 
 ### INIZIO PROCEDURA
 port = Portfolio()
@@ -52,6 +55,8 @@ if developerMode == 0:
 else:
   print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   print(port.portCompanies())
+
+
 #tabCalTot=read_range('tab_caltot!A:A',newPrj)
 #test1 = appendRow('tab_caltot!A:B',[['2','3']],newPrj)
 #rowToWr = len(tabCalTot)

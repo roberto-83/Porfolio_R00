@@ -20,6 +20,8 @@ import pytz
 import numpy as np
 import yfinance as yf
 import calendar
+from yahooquery import Ticker
+
 #from IPython.display import display
 
 
@@ -66,7 +68,7 @@ class Portfolio:
 ################################################################################
 
   def getLivePrice(row):
-    #print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
+    print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
@@ -212,6 +214,8 @@ class Portfolio:
     portfin = Portfolio.financialsPartPort(self)
     #ggiungo data
     portfin['DataUpdate'] = Portfolio.todayDateHour
+    #stampo tutto il dataframe
+    #print(portfin.to_string())
     #trasformo in lista
     listPrint = portfin.values.tolist()
     #lunghezza lista
@@ -441,10 +445,48 @@ class Portfolio:
 ################################################################################
 ##### TABELLA COMPOSIZIONE - AZIENDE
 ################################################################################
+  
+  def getCompany(row):
+    #print(i)
+    #"i" arriva come tupla, converto in df
+    #row = pd.DataFrame(i, columns=['Asset','Ticker','DESCRIZIONE LUNGA'])
+    if row['Asset'] == 'ETF-AZIONI':
+      fund = Ticker(row['Ticker'])
+      outpList = fund.fund_holding_info[row['Ticker']]['holdings']
+      stocks = pd.DataFrame(outpList)
+      print(f"lunghezza array {len(stocks)}")
+      #fund_ticker = "IVV" # IShares Core S&P 500 ETF
+      #holdings_date =  "2024-06-17" # or None to query the latest holdings
+      #etf_scraper = ETFScraper()
+      #holdings_df = etf_scraper.query_holdings(row['Ticker'], holdings_date)
+      #print(holdings_df)
+
+    else:
+      stocks1 = row
+      stocks1['Azienda'] = row['DESCRIZIONE LUNGA']
+      stocks1['Perc'] = 100
+      #trasformo in dataframe
+      stocks = pd.DataFrame(stocks1)
+    return stocks
 
   def portCompanies(self):
     if Portfolio.readlastDate(self,'tab_aziende') == 1:
       print('Continuo')
+      #prima mi prendo i dati del portafoglio ad oggi
+      port = Portfolio.dFPortf(self)
+      portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA']].copy()
+      #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
+      #for i in portShort.iterrows():
+      stocksGlobal = pd.DataFrame()
+      for i in range(len(portShort)):
+        print(f'vai {i}')
+        stocksDF = Portfolio.getCompany(portShort.loc[i])
+        print(type(stocksDF))
+        #stocksGlobal = pd.concat(stocksDF,ignore_index=True)
+        print(stocksDF)
+      print(stocksGlobal)
+      #finalDF = portShort.merge(stocksDF, on='Ticker', how='left')
+
     else:
       print("Aggiornamento non necessario")
     return 'Done'
@@ -539,7 +581,7 @@ class Portfolio:
 ################################################################################
 
   def readDateTabIsin(self):
-    tabIsinsNew= read_range('tab_isin!A:L',newPrj)
+    tabIsinsNew= read_range('tab_isin!A:M',newPrj)
     lastDate = tabIsinsNew['UPDATE'].iloc[0]
     #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
     if lastDate == Portfolio.todayDate:
@@ -554,33 +596,45 @@ class Portfolio:
       tabellaPrint=[]
       lastRow=str(len(tabellaDF)+1)
       for i in tabella:
-        if i[4] == 'P2P':
+        if i[5] == 'P2P':
+          link = i[4]
           i.pop()
-          tabellaPrint.append(i + ['P2P',i[0],i[0],'Bond','Bond','Italy','EUR',Portfolio.todayDate])
-        elif i[4] == 'CRYPTO':
           i.pop()
-          tabellaPrint.append(i + ['CRYPTO',i[0],i[0],'Crypto','Crypto','Italy','EUR',Portfolio.todayDate])
-        elif i[4] == 'CURRENCY': 
+          tabellaPrint.append(i + ['P2P',i[0],i[0],'Bond','Bond','Italy',link,'EUR',Portfolio.todayDate])
+        elif i[5] == 'CRYPTO':
+          link = i[4]
           i.pop()
-          tabellaPrint.append(i + ['CURRENCY',i[0],i[0],'Currency','Currency','Italy','EUR',Portfolio.todayDate])
-        elif i[4] == 'BTP':
+          i.pop()
+          tabellaPrint.append(i + ['CRYPTO',i[0],i[0],'Crypto','Crypto','Italy',link,'EUR',Portfolio.todayDate])
+        elif i[5] == 'CURRENCY': 
+          link = i[4]
+          i.pop()
+          i.pop()
+          tabellaPrint.append(i + ['CURRENCY',i[0],i[0],'Currency','Currency','Italy',link,'EUR',Portfolio.todayDate])
+        elif i[5] == 'BTP':
+          link = i[4]
           btpData = getBtpData(i[0])
           i.pop()#tolgo asset
+          i.pop()#tolgo link
           i.pop()#tolgo scadenza
-          tabellaPrint.append(i + [btpData['scad'],'BTP',btpData['desc'],btpData['desc'],'Bond','Bond','Italy',btpData['curr'],Portfolio.todayDate])
-        elif i[4] == 'BOT':
+          tabellaPrint.append(i + [btpData['scad'],'BTP',btpData['desc'],btpData['desc'],'Bond','Bond','Italy',link,btpData['curr'],Portfolio.todayDate])
+        elif i[5] == 'BOT':
+          link = i[4]
           botData = getBotData(i[0])
           i.pop()#tolgo asset
+          i.pop()#tolgo link
           i.pop()#tolgo scadenza
-          tabellaPrint.append(i + [botData['scad'],'BOT',botData['desc'],botData['desc'],'Bond','Bond','Italy',botData['curr'],Portfolio.todayDate])
+          tabellaPrint.append(i + [botData['scad'],'BOT',botData['desc'],botData['desc'],'Bond','Bond','Italy',link,botData['curr'],Portfolio.todayDate])
         else:
+          link = i[4]
           i.pop()
-          genData = Portfolio.getNameStock(i[1])
+          i.pop()
+          genData = Portfolio.getNameStock(i[1],link)
           tabellaPrint.append(i + genData)
       #cancello vecchie righe
-      deleteOldRows = delete_range('tab_isin!A2:L250',newPrj)
+      deleteOldRows = delete_range('tab_isin!A2:M250',newPrj)
       #scrivo le nuove
-      write_range('tab_isin!A2:L'+lastRow,tabellaPrint,newPrj)
+      write_range('tab_isin!A2:M'+lastRow,tabellaPrint,newPrj)
       return "Ho completato l'aggiornamento della tabella tab_isin"
     else:
       return "aggiornamento non necessario"
@@ -594,7 +648,7 @@ class Portfolio:
   def readListIsin(self):
     tabIsins = read_range('tab_isin!A:L',oldPrj)
     tabIsinsFilt = tabIsins[tabIsins['MORNINGSTAR'] != 'INATTIVO']
-    return tabIsinsFilt.filter(items=['ISIN','TICKER_YAHOO','TICKER_DATI','SCADENZA','ASSET'])
+    return tabIsinsFilt.filter(items=['ISIN','TICKER_YAHOO','TICKER_DATI','SCADENZA','SITO UFFICIALE','ASSET'])
     
   def gtDataFromTabIsinREV2(self):
     actPortf = self.actPort
@@ -606,7 +660,7 @@ class Portfolio:
     assetData[assetData.ISIN.isin(isintab)]
     return assetData
 
-  def getNameStock(ticker):
+  def getNameStock(ticker,link):
     #prendo i dati di azioni e etf per tab_isin
     #stock = yf.Ticker(tikcer)
     info = getStockInfo(ticker)
@@ -622,6 +676,7 @@ class Portfolio:
           sectName,
           sectName,
           Portfolio.verifKey(info,'country'),
+          link,
           Portfolio.verifKey(info,'currency'),Portfolio.todayDate]
     else:
         output = [
@@ -631,6 +686,7 @@ class Portfolio:
           Portfolio.verifKey(info,'sector'),
           Portfolio.verifKey(info,'industry'),
           Portfolio.verifKey(info,'country'),
+          link,
           Portfolio.verifKey(info,'currency'),Portfolio.todayDate]
     return output
 
@@ -784,4 +840,3 @@ def readTransTot(anno,mese):
 
 
 #print(caldRendimento())
-
