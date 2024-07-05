@@ -1,16 +1,16 @@
 import os
 
 # get the current working directory
-current_working_directory = os.getcwd()
+#current_working_directory = os.getcwd()
 # print output to the console
-print(current_working_directory)
+#print(current_working_directory)
 
 from classes import Portfolio,caldRendimento
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
 import yfinance as yf
-from functions_sheets import read_range,appendRow,add_rows
+from functions_sheets import read_range,appendRow
 from functions_etf import readHoldings,testapiFinnhub
 from settings import * #importa variabili globali
 from manage_logs import log_insert

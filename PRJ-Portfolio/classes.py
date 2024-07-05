@@ -335,7 +335,7 @@ class Portfolio:
       startRow = numRows+1
       while i <= diffdate:
         #dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
-        dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%Y-%m-%d')
+        dateSearch = (datetime.strptime(lastDate, "%Y-%m-%d")+timedelta(days=i)).strftime('%Y-%m-%d')
         histDf = Portfolio.histDf(self,dateSearch)
         #print(histDf)
         numRowsHistDf = len(histDf)
