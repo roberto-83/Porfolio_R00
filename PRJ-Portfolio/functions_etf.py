@@ -5,7 +5,6 @@
 from yahooquery import Ticker
 from functions_stocks import verifKey
 import pandas as pd
-from pandas_datareader import data, wb
 import datetime
 from datetime import datetime,timedelta
 import time
@@ -15,9 +14,9 @@ from selenium.webdriver.common.by import By
 from pathlib import Path
 import os
 import shutil
-import openpyxl
-from openpyxl.styles.colors import WHITE, RGB 
-from xlrd import open_workbook
+#import openpyxl
+#from openpyxl.styles.colors import WHITE, RGB 
+#from xlrd import open_workbook
 #test nuova funzione
 #from functions_sheets import read_range,appendRow
 #from settings import * #importa variabili globali
@@ -27,6 +26,7 @@ from xlrd import open_workbook
 def getPriceETF(ticker):
   todayDate = datetime.today().strftime('%d/%m/%Y')
   fund = Ticker(ticker)
+  #errore qui:
   livePriceDf = fund.history(period="1d")
   #print(f"lunghezza {len(livePriceDf)}")
   if(len(livePriceDf) > 0):

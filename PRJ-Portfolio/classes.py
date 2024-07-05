@@ -674,7 +674,52 @@ class Portfolio:
     else:
       return "aggiornamento non necessario"
 
-   
+################################################################################
+##### WHATCHLIST
+################################################################################
+  def getDescr(asset,isin,tick):
+    isin='IT0005273013'
+    asset='BTP'
+    infoTick=[]
+    if(asset == 'BTP' or asset == 'BOT'):
+      price=getBtpData(isin)
+      print(price)
+      #liveprice = float(price['pric'])
+    #elif(asset == 'ETF'):
+      #price=getPriceETF(row['Ticker'])
+      #print(price)
+      #liveprice=price[1]
+    #elif(asset == 'AZIONI'):
+      #infoStock = getStockInfo(row['Ticker'])
+      #liveprice=infoStock['currentPrice']
+    else:
+      infoTick=[]
+      #liveprice='0'
+    #currency
+    #liveprice = Portfolio.calcCurren(liveprice,row['CURRENCY'])
+    return 'ok'
+
+  def whatchlist(self):
+    #loop sulla pagina tab_whatchlist
+    tab_watch = read_range('tab_watchlist!A:R',newPrj)
+    print(tab_watch.keys())
+    #modifico il dataframe mettendo i dati aggiornati
+    #tab_watch['data']=Portfolio.todayDateHour
+    #tab_watch['Titolo']=''
+    #tab_watch['Live']=tab_watch.apply(Portfolio.getLivePrice,axis=1 )
+    #print(tab_watch)
+    listPrin =[]
+    #loop sui ticker
+    for i in tab_watch.index:
+      asset = tab_watch['Asset'][i]
+      isin = tab_watch['ISIN'][i]
+      tick = tab_watch['Ticker'][i]
+      tickInfo = Portfolio.getDescr(asset,isin,tick)
+      print(f" Ticker {tick} con tipologia {asset}")
+      listPrin.append([Portfolio.todayDateHour,asset,isin,tick])
+      #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
+    print(listPrin)
+    return 'ok'
 
 ################################################################################
 ##### FUNZIONI AGGIUNTIVE
