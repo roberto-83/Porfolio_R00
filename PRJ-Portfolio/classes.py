@@ -320,9 +320,9 @@ class Portfolio:
     numRows = len(lastDateDf) + 1 
     #oggi e ieri
     today = Portfolio.todayDate
-    yesterday = (datetime.now()+timedelta(days=-1)).strftime('%d/%m/%Y')
+    yesterday = (datetime.now()+timedelta(days=-1)).strftime('%Y-%m-%d')
     #differenza tra ultima data e ieri
-    diffdate = (datetime.strptime(yesterday, "%d/%m/%Y") - datetime.strptime(lastDate, "%d/%m/%Y")).days
+    diffdate = (datetime.strptime(yesterday, "%Y-%m-%d") - datetime.strptime(lastDate, "%Y-%m-%d")).days
     print(f"differenza tra ultima data {lastDate} e ieri {yesterday} è {diffdate} condizione {lastDate < yesterday}")
     ### Foglio tab_caltot , mi prendo ultima riga###
     tabCalTot=read_range('tab_caltot!A:A',newPrj)

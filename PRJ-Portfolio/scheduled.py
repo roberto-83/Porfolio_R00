@@ -57,9 +57,9 @@ else:
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   #print(port.portCompanies())
   #print(readHoldings())
-  #print(testapiFinnhub())
+  print(testapiFinnhub())
   #print(add_rows(newPrj,2,'566804442'))
-  appendRow('tab_1!A:A',[['1']],newPrj)
+  #appendRow('tab_1!A:A',[['1']],newPrj)
   #write_range('tab_1!A2:A10',tabellaPrint,newPrj)
 #transact = read_range('tab_transazioni!A:P',newPrj,'566804442')
 
