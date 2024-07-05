@@ -10,7 +10,8 @@ from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
 import yfinance as yf
-from functions_sheets import read_range,appendRow
+from functions_sheets import read_range,appendRow,add_rows
+from functions_etf import readHoldings,testapiFinnhub
 from settings import * #importa variabili globali
 from manage_logs import log_insert
 import pytz
@@ -53,9 +54,14 @@ if developerMode == 0:
   log_insert("Aggiornamento Tab Andamento","Fine")
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Fine - Aggiornamento Andamento")
 else:
-  print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
-  print(port.portCompanies())
-
+  #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
+  #print(port.portCompanies())
+  #print(readHoldings())
+  #print(testapiFinnhub())
+  #print(add_rows(newPrj,2,'566804442'))
+  appendRow('tab_1!A:A',[['1']],newPrj)
+  #write_range('tab_1!A2:A10',tabellaPrint,newPrj)
+#transact = read_range('tab_transazioni!A:P',newPrj,'566804442')
 
 #tabCalTot=read_range('tab_caltot!A:A',newPrj)
 #test1 = appendRow('tab_caltot!A:B',[['2','3']],newPrj)

@@ -342,7 +342,9 @@ class Portfolio:
         endRow = startRow+numRowsHistDf
         #trasformo in lista
         histList = histDf.values.tolist()
-        write_range('tab_calendar!A'+str(startRow)+':I'+str(endRow),histList,newPrj)
+        ######Cambio funzione perchè la prima si blocca alla fine del file se non ci sono piu righe..
+        #write_range('tab_calendar!A'+str(startRow)+':I'+str(endRow),histList,newPrj)
+        appendRow('tab_calendar!A:I',histList,newPrj)
         ########## TAB_TOTALI #########
         totTab = Portfolio.totalhistory(self,histDf,int(i+rowToWr))
         #aggiorno nuova startRow
@@ -455,18 +457,26 @@ class Portfolio:
     #print(i)
     #"i" arriva come tupla, converto in df
     #row = pd.DataFrame(i, columns=['Asset','Ticker','DESCRIZIONE LUNGA'])
+    oggiData = datetime.today().strftime('%d/%m/%Y')
     if row['Asset'] == 'ETF-AZIONI':
       print(f"cerco dati del ticker {row['Ticker']}")
       fund = Ticker(row['Ticker'])
       outpList = fund.fund_holding_info[row['Ticker']]['holdings']
       stocks = pd.DataFrame(outpList)
       stocks['Ticker']=row['Ticker']
+      stocks['Asset']=row['Asset']
+      stocks['Data']=oggiData
       if len(outpList) < 2:
         stocks['symbol']=row['Ticker']
         stocks['holdingName']=row['DESCRIZIONE LUNGA']
         stocks['holdingPercent']=1
+        stocks['PercPort']=1
+        stocks['PercPort']=row['peso']
+      else:
+        stocks['PercPort']=row['peso']*stocks['holdingPercent']
+      #print(stocks)
       #metto ticker all'inizio
-      stocks=stocks[['Ticker','symbol','holdingName','holdingPercent']]
+      stocks=stocks[['Data','Asset','Ticker','symbol','holdingName','holdingPercent','PercPort']]
       #print(stocks)
       #print(stocks.head())
       #print(f"lunghezza array {len(stocks)}")
@@ -483,7 +493,8 @@ class Portfolio:
       #print(holdings_df)
 
     else:
-      dict1 = {'Ticker':row['Ticker'],'symbol':row['Ticker'], 'holdingName':row['DESCRIZIONE LUNGA'],'holdingPercent':1}
+      percPort = row['peso']
+      dict1 = {'Data':oggiData,'Asset':row['Asset'], 'Ticker':row['Ticker'],'symbol':row['Ticker'], 'holdingName':row['DESCRIZIONE LUNGA'],'holdingPercent':1,'PercPort':percPort}
       #trasformo in dataframe
       stocks = pd.DataFrame(dict1, index=[0])
     return stocks
@@ -493,7 +504,8 @@ class Portfolio:
       print('Continuo')
       #prima mi prendo i dati del portafoglio ad oggi
       port = Portfolio.dFPortf(self)
-      portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA']].copy()
+      #print(port.keys())
+      portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso']].copy()
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
       #for i in portShort.iterrows():
       stocksGlobal = pd.DataFrame()
@@ -505,8 +517,11 @@ class Portfolio:
         stocksGlobal = pd.concat([stocksGlobal,stocksDF],axis=0)
         #print(stocksDF)
       print(stocksGlobal)
-      #finalDF = portShort.merge(stocksDF, on='Ticker', how='left')
-
+      #scrivo i dati
+      listPrint = stocksGlobal.values.tolist()
+      lastRowSt=str(len(listPrint)+1)
+      deleteOldRows = delete_range('tab_aziende!A2:G200',newPrj)
+      write_range('tab_aziende!A2:G'+lastRowSt,listPrint,newPrj)
     else:
       print("Aggiornamento non necessario")
     return 'Done'
@@ -517,7 +532,7 @@ class Portfolio:
   def readlastDate(self,tab):
     fulldata = read_range(tab+'!A:A',newPrj)
     dateSheet = fulldata['Data'].iloc[-1]
-    #print(f"ultima data del foglio {dateSheet} e oggi è {Portfolio.todayDate}")
+    print(f"ultima data del foglio {dateSheet} e oggi è {Portfolio.todayDate}")
     if dateSheet == Portfolio.todayDate :
       status = 0 #non faccio nulla
     else:

@@ -93,5 +93,14 @@ def delete_range(range_name,spreadsheet_id):
   spreadsheetId=spreadsheet_id, range=range_name).execute()
   print("Deleted")
 
+
+#########INFO
+#https://developers.google.com/sheets/api/reference/rest?hl=it
+#su questo link ci sono le funzioni che si possono usare con i google sheet
+#nel caso mio devo guardare le funzioni che si applicano al foglio e non al contenuto
+#uso quindi batchUpdate
+
+
+
 #write_range()
 #read_range()
