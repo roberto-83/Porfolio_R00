@@ -678,47 +678,58 @@ class Portfolio:
 ##### WHATCHLIST
 ################################################################################
   def getDescr(asset,isin,tick):
-    isin='IT0005273013'
-    asset='BTP'
+    #isin='IT0005273013'
+    #asset='BTP'
     infoTick=[]
+    #isin, ticker, descrizione, currency, prezzo, rendimen, scadenza , settore, industria, beta, pe,eps, price1D
     if(asset == 'BTP' or asset == 'BOT'):
       price=getBtpData(isin)
-      print(price)
-      #liveprice = float(price['pric'])
-    #elif(asset == 'ETF'):
-      #price=getPriceETF(row['Ticker'])
-      #print(price)
-      #liveprice=price[1]
-    #elif(asset == 'AZIONI'):
-      #infoStock = getStockInfo(row['Ticker'])
-      #liveprice=infoStock['currentPrice']
+      infoTick = [price['isin'],tick,price['desc'],price['curr'],price['price'],price['yeld'],price['scad'],
+      'Bond','Bond','','','',price['price'],'']
+    elif(asset == 'AZIONI' or asset == 'ETF'):
+      infoStock = getStockInfo(tick)
+      infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
+      infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
+      infoStock['fiftyTwoWeekLow']]
     else:
-      infoTick=[]
-      #liveprice='0'
-    #currency
-    #liveprice = Portfolio.calcCurren(liveprice,row['CURRENCY'])
-    return 'ok'
+      infoTick=[isin,tick,'','','','','','','','','','','','']
+    return infoTick
 
   def whatchlist(self):
     #loop sulla pagina tab_whatchlist
     tab_watch = read_range('tab_watchlist!A:R',newPrj)
     print(tab_watch.keys())
     #modifico il dataframe mettendo i dati aggiornati
-    #tab_watch['data']=Portfolio.todayDateHour
-    #tab_watch['Titolo']=''
-    #tab_watch['Live']=tab_watch.apply(Portfolio.getLivePrice,axis=1 )
-    #print(tab_watch)
     listPrin =[]
     #loop sui ticker
     for i in tab_watch.index:
       asset = tab_watch['Asset'][i]
       isin = tab_watch['ISIN'][i]
       tick = tab_watch['Ticker'][i]
+      ordin = tab_watch['Ordine'][i]
+      av = tab_watch['A/V'][i]
+      qta = tab_watch['QTA'][i]
+      tot = tab_watch['TOT'][i]
+      dOrdine = tab_watch['Data Ordine'][i]
+      if ordin is not None:
+        ordin = ordin.replace(',','.')
+      else:
+        ordin = 0
       tickInfo = Portfolio.getDescr(asset,isin,tick)
-      print(f" Ticker {tick} con tipologia {asset}")
-      listPrin.append([Portfolio.todayDateHour,asset,isin,tick])
+      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}")
+      if float(tickInfo[4]) != 0:
+        percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
+      else:
+        percPrezz = 0
+      listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
+      ordin,percPrezz,av,qta,tot,dOrdine])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
-    print(listPrin)
+    #print(len(listPrin))
+    numRow = len(listPrin)+1
+    #cancello vecchie righe
+    deleteOldRows = delete_range('tab_isin!A2:M250',newPrj)
+    #scrivo le nuove
+    write_range('tab_watchlist!A2:M'+str(numRow),listPrin,newPrj)
     return 'ok'
 
 ################################################################################

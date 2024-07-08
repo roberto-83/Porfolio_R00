@@ -53,6 +53,12 @@ if developerMode == 0:
   print(port.calcAndamPort())
   log_insert("Aggiornamento Tab Andamento","Fine")
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Fine - Aggiornamento Andamento")
+  #aggiorno watchlist
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Inizio - Aggiornamento Watchlist")
+  log_insert("Aggiornamento Tab Watchlist","Inizio")
+  print(port.whatchlist())
+  log_insert("Aggiornamento Tab Watchlist","Fine")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
 else:
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   #print(port.portCompanies())
