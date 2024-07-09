@@ -155,7 +155,7 @@ class Portfolio:
       tabIsinData = self.tabIsin
       #print(tabIsinData.keys())
       tabIsinData = tabIsinData[tabIsinData['ISIN'] == i]
-      print(tabIsinData)
+      #print(tabIsinData)
       tick = tabIsinData['TICKER YAHOO'].iloc[0]
       if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF'):
         list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
@@ -689,8 +689,10 @@ class Portfolio:
     #isin, ticker, descrizione, currency, prezzo, rendimen, scadenza , settore, industria, beta, pe,eps, price1D
     if(asset == 'BTP' or asset == 'BOT'):
       price=getBtpData(isin)
-      infoTick = [price['isin'],tick,price['desc'],price['curr'],price['price'],price['yeld'],price['scad'],
-      'Bond','Bond','','','',price['price'],'','']
+      #print(tick)
+      #print(price)
+      infoTick = [price['isin'],tick,price['desc'],price['curr'],price['pric'],price['yeld'],price['scad'],
+      'Bond','Bond','','','',price['pric'],'','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       stock = Ticker(tick)
@@ -699,10 +701,10 @@ class Portfolio:
       infoStockYQ = stock.quotes[tick]
       ##################################Prendi alcuni campi da qui!!!
       infoStock = getStockInfo(tick)
-      print(infoStock)
+      print(infoStockYQ)
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
-      infoStock['fiftyTwoWeekLow'],infoStock['fullExchangeName']]
+      infoStock['fiftyTwoWeekLow'],infoStockYQ['fullExchangeName']]
     else:
       infoTick=[isin,tick,'','','','','','','','','','','','','']
     return infoTick
