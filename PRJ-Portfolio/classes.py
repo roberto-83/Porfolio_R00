@@ -155,6 +155,7 @@ class Portfolio:
       tabIsinData = self.tabIsin
       #print(tabIsinData.keys())
       tabIsinData = tabIsinData[tabIsinData['ISIN'] == i]
+      print(tabIsinData)
       tick = tabIsinData['TICKER YAHOO'].iloc[0]
       if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF'):
         list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
@@ -617,10 +618,14 @@ class Portfolio:
 
   def readDateTabIsin(self):
     tabIsinsNew= read_range('tab_isin!A:M',newPrj)
-    lastDate = tabIsinsNew['UPDATE'].iloc[0]
-    #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
-    if lastDate == Portfolio.todayDate:
-      return 'Aggiornamento non Necessario'
+    #print(tabIsinsNew.head())
+    if len(tabIsinsNew) != 0: #xaso in cui tabella sia vuota
+      lastDate = tabIsinsNew['UPDATE'].iloc[0]
+      #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
+      if lastDate == Portfolio.todayDate:
+        return 'Aggiornamento non Necessario'
+      else:
+        return 'ok'
     else:
       return 'ok'
 
@@ -685,14 +690,21 @@ class Portfolio:
     if(asset == 'BTP' or asset == 'BOT'):
       price=getBtpData(isin)
       infoTick = [price['isin'],tick,price['desc'],price['curr'],price['price'],price['yeld'],price['scad'],
-      'Bond','Bond','','','',price['price'],'']
+      'Bond','Bond','','','',price['price'],'','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
+      
+      stock = Ticker(tick)
+      #print(stock)
+      #get all stock info
+      infoStockYQ = stock.quotes[tick]
+      ##################################Prendi alcuni campi da qui!!!
       infoStock = getStockInfo(tick)
+      print(infoStock)
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
-      infoStock['fiftyTwoWeekLow']]
+      infoStock['fiftyTwoWeekLow'],infoStock['fullExchangeName']]
     else:
-      infoTick=[isin,tick,'','','','','','','','','','','','']
+      infoTick=[isin,tick,'','','','','','','','','','','','','']
     return infoTick
 
   def whatchlist(self):
