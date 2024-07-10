@@ -13,8 +13,9 @@ import yfinance as yf
 from functions_sheets import read_range,appendRow
 from functions_etf import readHoldings,testapiFinnhub
 from settings import * #importa variabili globali
-from manage_logs import log_insert
+from manage_logs import log_insert,log_insert1
 import pytz
+import time
 from yahooquery import Ticker
 #from get_all_tickers import get_tickers as gt
 
@@ -25,39 +26,51 @@ developerMode=0
 if developerMode == 0:
   #scrivo la tabella degli Isin
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
-  log_insert("Aggiornamento Tab Isin","Inizio")
+  log_insert1("Aggiornamento Tab Isin","Inizio")
+  time1s = time.time()
   print(port.writeAllIsins())
-  log_insert("Aggiornamento Tab Isin","Fine")
+  delta1 = time.time() - time1s
+  log_insert1("Aggiornamento Tab Isin","Fine",delta1)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Fine - Aggiornamento Tab Isin")
   #Crea la tabella del portafoglio
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio")
-  log_insert("Aggiornamento Tab Portafoglio","Inizio")
+  log_insert1("Aggiornamento Tab Portafoglio","Inizio","")
+  time2s = time.time()
   print(port.writePortfolio())
-  log_insert("Aggiornamento Tab Portafoglio","Fine")
+  delta2 = time.time() - time2s
+  log_insert1("Aggiornamento Tab Portafoglio","Fine",delta2)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio")
   #creo calendar
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
-  log_insert("Aggiornamento Tab Calendar","Inizio")
+  log_insert1("Aggiornamento Tab Calendar","Inizio")
+  time3s = time.time()
   print(port.updateCalendarTab())
-  log_insert("Aggiornamento Tab Calendar","Fine")
+  delta3 = time.time() - time3s
+  log_insert1("Aggiornamento Tab Calendar","Fine",delta3)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Fine - Aggiornamento Calendar")
   #aggiorno rendimento
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Inizio - Aggiornamento Rendimento")
-  log_insert("Aggiornamento Tab Rendimento","Inizio")
+  log_insert1("Aggiornamento Tab Rendimento","Inizio")
+  time4s = time.time()
   print(caldRendimento())
-  log_insert("Aggiornamento Tab Rendimento","Fine")
+  delta4 = time.time() - time4s
+  log_insert1("Aggiornamento Tab Rendimento","Fine",delta4)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Fine - Aggiornamento Rendimento")
   #aggiorno andamento
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Inizio - Aggiornamento Andamento")
-  log_insert("Aggiornamento Tab Andamento","Inizio")
+  log_insert1("Aggiornamento Tab Andamento","Inizio")
+  time5s = time.time()
   print(port.calcAndamPort())
-  log_insert("Aggiornamento Tab Andamento","Fine")
+  delta5 = time.time() - time5s
+  log_insert1("Aggiornamento Tab Andamento","Fine",delta5)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Fine - Aggiornamento Andamento")
   #aggiorno watchlist
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Inizio - Aggiornamento Watchlist")
-  log_insert("Aggiornamento Tab Watchlist","Inizio")
+  log_insert1("Aggiornamento Tab Watchlist","Inizio")
+  time6s = time.time()
   print(port.whatchlist())
-  log_insert("Aggiornamento Tab Watchlist","Fine")
+  delta6 = time.time() - time6s
+  log_insert1("Aggiornamento Tab Watchlist","Fine",delta6)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
 else:
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
