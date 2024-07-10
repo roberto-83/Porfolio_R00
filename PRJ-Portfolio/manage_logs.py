@@ -13,9 +13,13 @@ def log_insert(message,stato):
   appendRow('tab_log!A:C',arrLog,newPrj)
   return 'ok'
 def log_insert1(message,stato,delta):
+  if delta >0:
+    deltaMin = delta/60
+  else:
+    deltaMin=0
   rome = pytz.timezone("Europe/Rome")
   todDateTime0 = datetime.now(rome)
   todayDateHour  = todDateTime0.strftime("%d/%m/%Y %H:%M:%S")
-  arrLog=[[todayDateHour,message,stato,delta/60]]
+  arrLog=[[todayDateHour,message,stato,deltaMin]]
   appendRow('tab_log!A:D',arrLog,newPrj)
   return 'ok'
