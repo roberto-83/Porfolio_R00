@@ -700,7 +700,10 @@ class Portfolio:
       #get all stock info
       #######questa va in errrore ogn tanto.. metti try catch?
       print(f"leggo dati per {tick}")
-      infoStockYQ = stock.quotes[tick]
+      try:
+        infoStockYQ = stock.quotes[tick]
+      except:
+        infoStockYQ = {'fullExchangeName':''}
       ##################################Prendi alcuni campi da qui!!!
       infoStock = getStockInfo(tick)
       print(infoStockYQ)
