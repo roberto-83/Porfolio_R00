@@ -155,6 +155,9 @@ class Portfolio:
       tabIsinData = self.tabIsin
       #print(tabIsinData.keys())
       tabIsinData = tabIsinData[tabIsinData['ISIN'] == i]
+      print(f"lunghezza del DF {len(tabIsinData)} per isin {i}")
+      #if len(tabIsinData) == 0:
+        #tabIsinData
       #print(tabIsinData)
       tick = tabIsinData['TICKER YAHOO'].iloc[0]
       if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF'):
