@@ -715,7 +715,7 @@ class Portfolio:
       print(infoStockYQ)
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
-      infoStockYQ['fiftyTwoWeekLow'],infoStockYQ['fiftyTwoWeekHigh'],infoStockYQ['fullExchangeName']]
+      infoStockYQ['fiftyTwoWeekLow'],infoStockYQ['fiftyTwoWeekHigh'],'']
     else:
       infoTick=[isin,tick,'','','','','','','','','','','','','','']
     return infoTick
@@ -752,16 +752,16 @@ class Portfolio:
       else:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
-      deltaIeri = round( (float(tickInfo[12]) - float(tickInfo[4])) / float(tickInfo[12]),2)
+      deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[12])) / float(tickInfo[12]),2)
       listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
-      ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i] ])
+      ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[15] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #print(len(listPrin))
     numRow = len(listPrin)+1
     #cancello vecchie righe
-    deleteOldRows = delete_range('tab_isin!A2:Q250',newPrj)
+    deleteOldRows = delete_range('tab_isin!A2:R250',newPrj)
     #scrivo le nuove
-    write_range('tab_watchlist!A2:Q'+str(numRow),listPrin,newPrj)
+    write_range('tab_watchlist!A2:R'+str(numRow),listPrin,newPrj)
     return 'ok'
 
 ################################################################################
