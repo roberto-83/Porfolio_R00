@@ -227,6 +227,8 @@ class Portfolio:
     listPrint = portfin.values.tolist()
     #lunghezza lista
     lastRowSt=str(len(listPrint)+1)
+    print("stampo il portafoglio prima di scriverlo")
+    print(listPrint)
     #cancello esistente
     deleteOldRows = delete_range('tab_portfolio!A2:AR100',newPrj)
     #scrivo portafolgio
@@ -709,13 +711,16 @@ class Portfolio:
       try:
         infoStockYQ = stock.quotes[tick]
       except:
-        infoStockYQ = {'fullExchangeName':''}
+        infoStockYQ = {'fullExchangeName':'','trailingPE':''}
       ##################################Prendi alcuni campi da qui!!!
       infoStock = getStockInfo(tick)
-      print(infoStockYQ)
+      #print(infoStockYQ)
+      print(f"trovo trailing PE {Portfolio.verifKey(infoStockYQ,'trailingPE')}")
+      print(f"trovo 52low {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow')}")
+      print(f"trovo 52high {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh')}")
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
-      infoStockYQ['fiftyTwoWeekLow'],infoStockYQ['fiftyTwoWeekHigh'],'']
+      Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
     else:
       infoTick=[isin,tick,'','','','','','','','','','','','','','']
     return infoTick
@@ -754,14 +759,15 @@ class Portfolio:
         fiftyTwoWeekPerc=''
       deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[12])) / float(tickInfo[12]),2)
       listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
-      ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[15] ])
+      ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[3],
+      tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #print(len(listPrin))
     numRow = len(listPrin)+1
     #cancello vecchie righe
-    deleteOldRows = delete_range('tab_isin!A2:R250',newPrj)
+    deleteOldRows = delete_range('tab_isin!A2:Y250',newPrj)
     #scrivo le nuove
-    write_range('tab_watchlist!A2:R'+str(numRow),listPrin,newPrj)
+    write_range('tab_watchlist!A2:Y'+str(numRow),listPrin,newPrj)
     return 'ok'
 
 ################################################################################
