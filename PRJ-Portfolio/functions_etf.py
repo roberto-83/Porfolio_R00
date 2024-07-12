@@ -28,14 +28,16 @@ def getPriceETF(ticker):
   fund = Ticker(ticker)
   #errore qui:
   livePriceDf = fund.history(period="1d")
-  #print(f"lunghezza {len(livePriceDf)}")
+  print(f"lunghezza history {len(livePriceDf)}")
+  print(livePriceDf)
   if(len(livePriceDf) > 0):
     #print(livePriceDf.head())
     #livePrice = livePriceDf.iloc[0][3] #uso prezzo cloe e non close adjusted
     livePrice = livePriceDf.iloc[0]['close'] #uso prezzo cloe e non close adjusted
     datePrice = livePriceDf.index[0][1]
-    print(f"Analizzo ticker {ticker}")
+    print(f"Analizzo ticker {ticker} ")
     tickInfo = fund.quotes[ticker]
+    print(f"Analizzo ticker {ticker} il risultato è lungo {len(tickInfo)}")
     curre = tickInfo['currency']
     price1d = fund.quotes[ticker]['regularMarketPreviousClose']
     output=[ticker, livePrice,datePrice,curre,price1d]

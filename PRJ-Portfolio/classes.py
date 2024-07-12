@@ -97,6 +97,7 @@ class Portfolio:
     return ctvMer
 
   def getDelta(row):
+    print(f"Leggo il prezzo di {row['Ticker']}")
     if row['Asset'] == 'AZIONI':
       infoStock = getStockInfo(row['Ticker'])
       price1d = infoStock['prevClose']
@@ -156,46 +157,48 @@ class Portfolio:
       #print(tabIsinData.keys())
       tabIsinData = tabIsinData[tabIsinData['ISIN'] == i]
       print(f"lunghezza del DF {len(tabIsinData)} per isin {i}")
-      #if len(tabIsinData) == 0:
-        #tabIsinData
-      #print(tabIsinData)
-      tick = tabIsinData['TICKER YAHOO'].iloc[0]
-      if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF'):
-        list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-      elif tabIsinData['ASSET'].iloc[0] == 'BTP' or tabIsinData['ASSET'].iloc[0] == 'BOT':
-        list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+      if len(tabIsinData) == 0:
+        list2d.append([i,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
       else:
-        #VAI COI FINANCIALS
-        #print(tick)
-        infoStock = getSummary(tick)
-        #sector = verifKey(infoStock['assetProfile'],'sector')
-        #industry = verifKey(infoStock['assetProfile'],'industry')
-        marketCap = verifKey(infoStock['summaryDetail'],'marketCap')
-        volume = verifKey(infoStock['summaryDetail'],'volume')
-        epstrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingEps')
-        epsforward = verifKey(infoStock['defaultKeyStatistics'], 'forwardEps')
-        petrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingPE')
-        peforward = verifKey(infoStock['defaultKeyStatistics'],'forwardPE')
-        pegratio = verifKey(infoStock['defaultKeyStatistics'],'pegRatio')
-        beta = verifKey(infoStock['defaultKeyStatistics'],'beta')
-        earnings = verifKey(infoStock['financialData'],'earningsGrowth')
-        ptb = verifKey(infoStock['defaultKeyStatistics'],'priceToBook')
-        book = verifKey(infoStock['defaultKeyStatistics'],'bookValue')
-        shares = verifKey(infoStock['defaultKeyStatistics'],'sharesOutstanding')
-        divrate = verifKey(infoStock['summaryDetail'],'dividendRate')
-        divyield = verifKey(infoStock['summaryDetail'],'dividendYield')
-        divlastval = verifKey(infoStock['defaultKeyStatistics'],'lastDividendValue')
-        divlastdate = verifKey(infoStock['defaultKeyStatistics'],'lastDividendDate')
-        divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
-        payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
-        avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
-        dist52=0
-        avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
-        dist200=0
-        divexdate=divexdate[:10]
-        print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
-        if len(divexdate) > 2: #quindi se non è 0
-          divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
+        #print(tabIsinData)
+        tick = tabIsinData['TICKER YAHOO'].iloc[0]
+        #---------
+        if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF'):
+          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+        elif tabIsinData['ASSET'].iloc[0] == 'BTP' or tabIsinData['ASSET'].iloc[0] == 'BOT':
+          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+        else:
+          #VAI COI FINANCIALS
+          #print(tick)
+          infoStock = getSummary(tick)
+          #sector = verifKey(infoStock['assetProfile'],'sector')
+          #industry = verifKey(infoStock['assetProfile'],'industry')
+          marketCap = verifKey(infoStock['summaryDetail'],'marketCap')
+          volume = verifKey(infoStock['summaryDetail'],'volume')
+          epstrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingEps')
+          epsforward = verifKey(infoStock['defaultKeyStatistics'], 'forwardEps')
+          petrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingPE')
+          peforward = verifKey(infoStock['defaultKeyStatistics'],'forwardPE')
+          pegratio = verifKey(infoStock['defaultKeyStatistics'],'pegRatio')
+          beta = verifKey(infoStock['defaultKeyStatistics'],'beta')
+          earnings = verifKey(infoStock['financialData'],'earningsGrowth')
+          ptb = verifKey(infoStock['defaultKeyStatistics'],'priceToBook')
+          book = verifKey(infoStock['defaultKeyStatistics'],'bookValue')
+          shares = verifKey(infoStock['defaultKeyStatistics'],'sharesOutstanding')
+          divrate = verifKey(infoStock['summaryDetail'],'dividendRate')
+          divyield = verifKey(infoStock['summaryDetail'],'dividendYield')
+          divlastval = verifKey(infoStock['defaultKeyStatistics'],'lastDividendValue')
+          divlastdate = verifKey(infoStock['defaultKeyStatistics'],'lastDividendDate')
+          divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
+          payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
+          avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
+          dist52=0
+          avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
+          dist200=0
+          divexdate=divexdate[:10]
+          print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
+          if len(divexdate) > 2: #quindi se non è 0
+            divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
         #divlastdate=
         #appendo Settore, industria
         list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
@@ -695,7 +698,7 @@ class Portfolio:
       #print(tick)
       #print(price)
       infoTick = [price['isin'],tick,price['desc'],price['curr'],price['pric'],price['yeld'],price['scad'],
-      'Bond','Bond','','','',price['pric'],'','']
+      'Bond','Bond','','','',price['pric'],'','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       stock = Ticker(tick)
@@ -712,9 +715,9 @@ class Portfolio:
       print(infoStockYQ)
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
-      infoStock['fiftyTwoWeekLow'],infoStockYQ['fullExchangeName']]
+      infoStockYQ['fiftyTwoWeekLow'],infoStockYQ['fiftyTwoWeekHigh'],infoStockYQ['fullExchangeName']]
     else:
-      infoTick=[isin,tick,'','','','','','','','','','','','','']
+      infoTick=[isin,tick,'','','','','','','','','','','','','','']
     return infoTick
 
   def whatchlist(self):
@@ -743,15 +746,22 @@ class Portfolio:
         percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
       else:
         percPrezz = 0
+      if asset != 'BTP':
+        fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
+        fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
+      else:
+        fiftyTwoWeek=''
+        fiftyTwoWeekPerc=''
+      deltaIeri = round( (float(tickInfo[12]) - float(tickInfo[4])) / float(tickInfo[12]),2)
       listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
-      ordin,percPrezz,av,qta,tot,dOrdine])
+      ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #print(len(listPrin))
     numRow = len(listPrin)+1
     #cancello vecchie righe
-    deleteOldRows = delete_range('tab_isin!A2:M250',newPrj)
+    deleteOldRows = delete_range('tab_isin!A2:Q250',newPrj)
     #scrivo le nuove
-    write_range('tab_watchlist!A2:M'+str(numRow),listPrin,newPrj)
+    write_range('tab_watchlist!A2:Q'+str(numRow),listPrin,newPrj)
     return 'ok'
 
 ################################################################################
