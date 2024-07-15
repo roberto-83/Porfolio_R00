@@ -150,6 +150,8 @@ class Portfolio:
   def financialsPartPort(self):
     #prendo la prima parte già creata
     portaf = Portfolio.dFPortf(self)
+    print("stampo pre portafoglio")
+    print(portaf.head())
     #creo una lista con i dati finanziari
     list2d=[]
     for i in portaf['Isin']:
@@ -640,6 +642,7 @@ class Portfolio:
   def writeAllIsins(self):   
     if Portfolio.readDateTabIsin(self) == 'ok':
       tabellaDF = Portfolio.readListIsin(self)
+      print(f"ho letto {len(tabellaDF)} righe dal vecchio tab_isin")
       tabella = tabellaDF.values.tolist()
       tabellaPrint=[]
       lastRow=str(len(tabellaDF)+1)
@@ -679,7 +682,7 @@ class Portfolio:
           i.pop()
           genData = Portfolio.getNameStock(i[1],link)
           tabellaPrint.append(i + genData)
-      #cancello vecchie righe
+      print("cancello vecchie righe")
       deleteOldRows = delete_range('tab_isin!A2:M250',newPrj)
       #scrivo le nuove
       write_range('tab_isin!A2:M'+lastRow,tabellaPrint,newPrj)
