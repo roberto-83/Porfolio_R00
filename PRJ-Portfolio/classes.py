@@ -754,7 +754,7 @@ class Portfolio:
         percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
       else:
         percPrezz = 0
-      if asset != 'BTP':
+      if asset != 'BTP' or (tickInfo[13] != 0 and tickInfo[14] != 0):
         fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
         fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
       else:
