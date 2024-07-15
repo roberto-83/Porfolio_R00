@@ -3,6 +3,7 @@
 #https://yahooquery.dpguthrie.com/guide/ticker/modules/#fund_sector_weightings
 
 from yahooquery import Ticker
+import yfinance as yf
 from functions_stocks import verifKey
 import pandas as pd
 import datetime
@@ -29,18 +30,26 @@ def getPriceETF(ticker):
   #errore qui:
   livePriceDf = fund.history(period="1d")
   print(f"lunghezza history {len(livePriceDf)}")
-  print(livePriceDf)
+  #print(livePriceDf)
   if(len(livePriceDf) > 0):
     #print(livePriceDf.head())
     #livePrice = livePriceDf.iloc[0][3] #uso prezzo cloe e non close adjusted
     livePrice = livePriceDf.iloc[0]['close'] #uso prezzo cloe e non close adjusted
     datePrice = livePriceDf.index[0][1]
     print(f"Analizzo ticker {ticker} ")
-    tickInfo = fund.quotes[ticker]
-    print(f"Analizzo ticker {ticker} il risultato è lungo {len(tickInfo)}")
-    curre = tickInfo['currency']
-    price1d = fund.quotes[ticker]['regularMarketPreviousClose']
-    output=[ticker, livePrice,datePrice,curre,price1d]
+    try:
+      tickInfo = fund.quotes[ticker]
+      print(f"Analizzo ticker {ticker} il risultato è lungo {len(tickInfo)}")
+      curre = tickInfo['currency']
+      price1d = fund.quotes[ticker]['regularMarketPreviousClose']
+      output=[ticker, livePrice,datePrice,curre,price1d]
+    except: #MEGLIO lasciare solo yFINANCE?? anzichè Yahooquery che da sempre errori??
+      stock = yf.Ticker(ticker)
+      tickInfo = stock.info
+      curre = verifKey(tickInfo,'currency')
+      price1d=verifKey(tickInfo,'previousClose')
+      output=[ticker, livePrice,datePrice,curre,price1d]
+
   else:
     output=[ticker, 0, todayDate, 'EUR', 0]
   return output

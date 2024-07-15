@@ -97,7 +97,7 @@ class Portfolio:
     return ctvMer
 
   def getDelta(row):
-    print(f"Leggo il prezzo di {row['Ticker']}")
+    print(f"Leggo il prezzo di {row['Ticker']}, asset {row['Asset']}")
     if row['Asset'] == 'AZIONI':
       infoStock = getStockInfo(row['Ticker'])
       price1d = infoStock['prevClose']
@@ -714,6 +714,7 @@ class Portfolio:
       try:
         infoStockYQ = stock.quotes[tick]
       except:
+        print("ci sono problemi su chiamata API")
         infoStockYQ = {'fullExchangeName':'','trailingPE':''}
       ##################################Prendi alcuni campi da qui!!!
       infoStock = getStockInfo(tick)
@@ -749,14 +750,18 @@ class Portfolio:
       else:
         ordin = 0
       tickInfo = Portfolio.getDescr(asset,isin,tick)
-      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}")
+      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}, valori 52 week {tickInfo[13]} e {tickInfo[14]}")
       if float(tickInfo[4]) != 0:
         percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
       else:
         percPrezz = 0
-      if asset != 'BTP' or (tickInfo[13] != 0 and tickInfo[14] != 0):
-        fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
-        fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
+      #Calcolo 52 WEEK
+      if asset == 'BTP':
+        fiftyTwoWeek=''
+        fiftyTwoWeekPerc=''
+      elif float(tickInfo[13]) >= 0 and float(tickInfo[14]) >= 0 and float(tickInfo[4]) >= 0:
+          fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
+          fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
       else:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
