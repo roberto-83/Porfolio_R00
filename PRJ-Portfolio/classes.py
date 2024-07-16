@@ -777,7 +777,7 @@ class Portfolio:
     #print(len(listPrin))
     numRow = len(listPrin)+1
     #cancello vecchie righe
-    deleteOldRows = delete_range('tab_isin!A2:Y250',newPrj)
+    deleteOldRows = delete_range('tab_watchlist!A2:Y250',newPrj)
     #scrivo le nuove
     write_range('tab_watchlist!A2:Y'+str(numRow),listPrin,newPrj)
     return 'ok'
