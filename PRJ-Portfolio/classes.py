@@ -172,35 +172,39 @@ class Portfolio:
         else:
           #VAI COI FINANCIALS
           #print(tick)
-          infoStock = getSummary(tick)
-          #sector = verifKey(infoStock['assetProfile'],'sector')
-          #industry = verifKey(infoStock['assetProfile'],'industry')
-          marketCap = verifKey(infoStock['summaryDetail'],'marketCap')
-          volume = verifKey(infoStock['summaryDetail'],'volume')
-          epstrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingEps')
-          epsforward = verifKey(infoStock['defaultKeyStatistics'], 'forwardEps')
-          petrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingPE')
-          peforward = verifKey(infoStock['defaultKeyStatistics'],'forwardPE')
-          pegratio = verifKey(infoStock['defaultKeyStatistics'],'pegRatio')
-          beta = verifKey(infoStock['defaultKeyStatistics'],'beta')
-          earnings = verifKey(infoStock['financialData'],'earningsGrowth')
-          ptb = verifKey(infoStock['defaultKeyStatistics'],'priceToBook')
-          book = verifKey(infoStock['defaultKeyStatistics'],'bookValue')
-          shares = verifKey(infoStock['defaultKeyStatistics'],'sharesOutstanding')
-          divrate = verifKey(infoStock['summaryDetail'],'dividendRate')
-          divyield = verifKey(infoStock['summaryDetail'],'dividendYield')
-          divlastval = verifKey(infoStock['defaultKeyStatistics'],'lastDividendValue')
-          divlastdate = verifKey(infoStock['defaultKeyStatistics'],'lastDividendDate')
-          divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
-          payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
-          avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
-          dist52=0
-          avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
-          dist200=0
-          divexdate=divexdate[:10]
-          print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
-          if len(divexdate) > 2: #quindi se non è 0
-            divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
+          try:
+            infoStock = getSummary(tick)
+            #sector = verifKey(infoStock['assetProfile'],'sector')
+            #industry = verifKey(infoStock['assetProfile'],'industry')
+            print(f"Controllo se ci sono i dati {len(infoStock['summaryDetail'])}")
+            marketCap = verifKey(infoStock['summaryDetail'],'marketCap')
+            volume = verifKey(infoStock['summaryDetail'],'volume')
+            epstrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingEps')
+            epsforward = verifKey(infoStock['defaultKeyStatistics'], 'forwardEps')
+            petrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingPE')
+            peforward = verifKey(infoStock['defaultKeyStatistics'],'forwardPE')
+            pegratio = verifKey(infoStock['defaultKeyStatistics'],'pegRatio')
+            beta = verifKey(infoStock['defaultKeyStatistics'],'beta')
+            earnings = verifKey(infoStock['financialData'],'earningsGrowth')
+            ptb = verifKey(infoStock['defaultKeyStatistics'],'priceToBook')
+            book = verifKey(infoStock['defaultKeyStatistics'],'bookValue')
+            shares = verifKey(infoStock['defaultKeyStatistics'],'sharesOutstanding')
+            divrate = verifKey(infoStock['summaryDetail'],'dividendRate')
+            divyield = verifKey(infoStock['summaryDetail'],'dividendYield')
+            divlastval = verifKey(infoStock['defaultKeyStatistics'],'lastDividendValue')
+            divlastdate = verifKey(infoStock['defaultKeyStatistics'],'lastDividendDate')
+            divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
+            payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
+            avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
+            dist52=0
+            avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
+            dist200=0
+            divexdate=divexdate[:10]
+            print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
+            if len(divexdate) > 2: #quindi se non è 0
+              divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
+          except:
+            list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
         #divlastdate=
         #appendo Settore, industria
         list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
