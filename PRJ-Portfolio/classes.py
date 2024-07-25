@@ -21,6 +21,7 @@ import numpy as np
 import yfinance as yf
 import calendar
 from yahooquery import Ticker
+from yahooread import readYahooSite
 
 #from IPython.display import display
 
@@ -697,6 +698,31 @@ class Portfolio:
 ################################################################################
 ##### WHATCHLIST
 ################################################################################
+  
+  def getPriceYah(tick):
+    #trovo i prezzi con Yahooquery
+    print(f"trovo prezzo per {tick}")
+    arr =[]
+    fund = Ticker(tick)
+    info = fund.history(period="5d")
+    print(info)
+    #e fallisce prendo i dati letti dal sito
+    if info.empty:
+      print('Leggo dati da sito yahoo')
+      info = readYahooSite(tick)
+      #['GB00BLD4ZL17.SG', 'CoinShares Physical Bitcoin ', '58,73', '58,22']
+      arr = info
+    else:
+      #print(info.to_string())
+      arr = [tick,'',info['close'].iloc[0],info['close'].iloc[1]]
+    print(arr)
+
+    #prezzo = info['close'].iloc[0]
+    #if prezzo == 0:
+      #prezzoNew = readYahooSite(tick)
+      #prezzo = prezzoNew[2]
+    return arr
+
   def getDescr(asset,isin,tick):
     #isin='IT0005273013'
     #asset='BTP'
@@ -711,6 +737,11 @@ class Portfolio:
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       stock = Ticker(tick)
+      #prezzo live
+      #fund = Ticker(tick)
+      #info = fund.history(period="1d")
+      #priceItem=info['close'].iloc[0]
+      livePrice = Portfolio.getPriceYah(tick)
       #print(stock)
       #get all stock info
       #######questa va in errrore ogn tanto.. metti try catch?
@@ -726,9 +757,12 @@ class Portfolio:
       print(f"trovo trailing PE {Portfolio.verifKey(infoStockYQ,'trailingPE')}")
       print(f"trovo 52low {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow')}")
       print(f"trovo 52high {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh')}")
-      infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
-      infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
+      infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
+      infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
       Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
+      #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
+      #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
+      #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
     else:
       infoTick=[isin,tick,'','','','','','','','','','','','','','']
     return infoTick
@@ -753,6 +787,7 @@ class Portfolio:
         ordin = ordin.replace(',','.')
       else:
         ordin = 0
+      print(f"Read info of {tick}")
       tickInfo = Portfolio.getDescr(asset,isin,tick)
       print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}, valori 52 week {tickInfo[13]} e {tickInfo[14]}")
       if float(tickInfo[4]) != 0:
@@ -763,7 +798,7 @@ class Portfolio:
       if asset == 'BTP':
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
-      elif float(tickInfo[13]) >= 0 and float(tickInfo[14]) >= 0 and float(tickInfo[4]) >= 0:
+      elif float(tickInfo[13]) > 0 and float(tickInfo[14]) > 0 and float(tickInfo[4]) > 0:
           fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
           fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
       else:
@@ -781,6 +816,79 @@ class Portfolio:
     #scrivo le nuove
     write_range('tab_watchlist!A2:Y'+str(numRow),listPrin,newPrj)
     return 'ok'
+
+################################################################################
+##### NEWS VARIE
+################################################################################
+
+
+    
+  def loop_row(row):
+    print(f"Loop per ticker {row['Ticker']}")
+    #ticSto = 'FOO.DE'
+    stock = Ticker(row['Ticker'])
+    df1 = stock.corporate_events #ritorna df con eventi dell'azienda
+    #df2 = stock.news
+    #df3 = stock.recommendations
+    #df4 = stock.technical_insights
+    #print("Corporate events")
+    df_filter = df1.tail(5)
+    df_filter['Date'] = df_filter.index.get_level_values('date').strftime("%Y-%m-%d %H:%M:%S") 
+    df_filter['Ticker'] = row['Ticker']
+    df_filter['API'] = 'Corporate Events'
+    df_filter = df_filter[['Ticker','API','Date','id','significance','parentTopics','headline','description']]
+    df_fil_list=df_filter.values.tolist()
+    appendRow('tab_news!A:I',df_fil_list,newPrj)
+    #print(df_filter)
+    #print("News")
+    #print(df2)
+    #print("Reccomendations")
+    #print(df3)
+    #print("Technical insight")
+    #print(df4)
+    
+    
+    
+    #print(df.head())
+    #portNew = orig_port.filter(not in ('BOT','BTP'), axis=0)
+    #print(portNew)
+
+  def newsStocks(self):
+    #Prendo dalla classe il primo DF
+    orig_port = self.actPort
+    #filtro portafoglio
+    portNew = orig_port[(orig_port.Asset == 'AZIONI')]['Ticker']
+    #converto in DF
+    portNewDf = portNew.to_frame()
+    #loopDf = portNew.to_frame().apply(Portfolio.loop_row,axis=1)
+    df_final = pd.DataFrame()
+    #inizio loop
+    for ind in portNewDf.index:
+      print(f"Loop su {portNewDf['Ticker'][ind]}")
+      stock = Ticker(portNewDf['Ticker'][ind])
+      #CORPORATE EVENTS
+      df1 = stock.corporate_events #ritorna df con eventi dell'azienda
+      df_filter = df1.tail(5)
+      df_filter['Date'] = df_filter.index.get_level_values('date').strftime("%Y-%m-%d %H:%M:%S") 
+      df_filter['Ticker'] = portNewDf['Ticker'][ind]
+      df_filter['API'] = 'Corporate Events'
+      df_filter = df_filter[['Date','Ticker','API','id','significance','parentTopics','headline','description']]
+      #df_fil_list=df_filter.values.tolist()
+      #listToAppend.append(df_fil_list)
+      df_final = df_final._append(df_filter, ignore_index = True)
+      #NEWS
+      df2 = stock.news
+      print(df2)
+      #listToAppend.append()
+    #ordino dataframe
+    df_final=df_final.sort_values(by=['Date'])
+    #prendo le ultime 20 righe
+    df_final = df_final.tail(20)
+    #trasformo lista
+    df_final_list=df_final.values.tolist()
+    #scrivo
+    appendRow('tab_news!A:I',df_final_list,newPrj)
+    print(df_final.head())
 
 ################################################################################
 ##### FUNZIONI AGGIUNTIVE

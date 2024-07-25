@@ -17,12 +17,13 @@ from manage_logs import log_insert,log_insert1
 import pytz
 import time
 from yahooquery import Ticker
+from yahooread import readYahooSite
 #from get_all_tickers import get_tickers as gt
 
 ### INIZIO PROCEDURA
 port = Portfolio()
 #variabile per non eseguire tutto il codice..
-developerMode=0
+developerMode=1
 if developerMode == 0:
   #scrivo la tabella degli Isin
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
@@ -78,6 +79,14 @@ else:
   #print(port.portCompanies())
   #print(readHoldings())
   print(port.whatchlist())
+
+  #print(port.getPriceYah('GB00BLD4ZL17.SG'))
+  #print(port.getPriceYah('RACE.MI'))
+
+
+
+  #print(port.newsStocks())
+
   #print(testapiFinnhub())
   #print(add_rows(newPrj,2,'566804442'))
   #appendRow('tab_1!A:A',[['1']],newPrj)
@@ -182,3 +191,19 @@ else:
 #su qeusto sito però non ho i prezzi storici, solo grafici
 #provo ad usare pip install investpy che legge da investing
 #documentazione https://investpy.readthedocs.io/_info/installation.html
+
+  ##############TEST delle due API
+  #ticker='XDEW.DE'
+  #print("Prova Yahoo Finance")
+  #stock = yf.Ticker(ticker)
+  #info = stock.info
+  #print(info)
+  #print(f"Prezzo Yahoo Finance {info['currentPrice']}")
+  #print("Prova Yahooquery")
+  #fund = Ticker(ticker)
+  #info2 = fund.history(period="1d")
+  #print(info2)
+  #print(f"Prezzo Yahooquery {info2['close'].iloc[0]}")
+
+
+
