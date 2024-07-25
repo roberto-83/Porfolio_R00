@@ -23,7 +23,7 @@ from yahooread import readYahooSite
 ### INIZIO PROCEDURA
 port = Portfolio()
 #variabile per non eseguire tutto il codice..
-developerMode=1
+developerMode=0
 if developerMode == 0:
   #scrivo la tabella degli Isin
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")

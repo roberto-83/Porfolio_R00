@@ -30,4 +30,4 @@ def readYahooSite(tick):
   price1d = driverExt.find_element(By.XPATH,'/html/body/div[1]/div/div/div[1]/div/div[3]/div[1]/div/div[1]/div/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]').text
   print(f"Leggo ticker {tick}, titolo {title}, prezzo {price}, chiusura ieri {price1d}")
   return [tick,title,price,price1d]
-print(readYahooSite('GB00BLD4ZL17.SG'))
+#print(readYahooSite('GB00BLD4ZL17.SG'))
