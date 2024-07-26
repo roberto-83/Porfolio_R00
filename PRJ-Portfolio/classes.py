@@ -801,10 +801,11 @@ class Portfolio:
       elif float(tickInfo[13]) > 0 and float(tickInfo[14]) > 0 and float(tickInfo[4]) > 0:
           fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
           fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
+          deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[12])) / float(tickInfo[12]),2)
       else:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
-      deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[12])) / float(tickInfo[12]),2)
+        deltaIeri=0
       listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
       ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[3],
       tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11] ])
