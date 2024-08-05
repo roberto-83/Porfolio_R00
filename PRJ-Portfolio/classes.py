@@ -33,6 +33,7 @@ pd.options.mode.chained_assignment = None #toglie errori quando sovrascrivo un d
 
 class Portfolio:
   todayDate = datetime.today().strftime('%d/%m/%Y')
+  todayDate_f = datetime.today().strftime('%Y-%m-%d')
   rome = pytz.timezone("Europe/Rome")
   todDateTime0 = datetime.now(rome)
   todayDateHour  = todDateTime0.strftime("%d/%m/%Y %H:%M:%S")
@@ -40,7 +41,7 @@ class Portfolio:
   #metodo costruttore
   def __init__(self):
     #tutte le transazioni fino ad oggi
-    self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate)
+    self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f)
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
@@ -50,7 +51,11 @@ class Portfolio:
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
     transact = read_range('tab_transazioni!A:P',oldPrj)
     transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
+    print(transact[transact['Ticker'] == 'CSNDX.MI'])
+    print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact[transact['Data operazione'] <= date]  
+    print(transact[transact['Ticker'] == 'CSNDX.MI'])
+    print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
     #transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','prezzo acquisto','Spesa/incasso previsto'])
     #tolgo il punto su spesa e incasso
@@ -62,6 +67,7 @@ class Portfolio:
     transact = transact.sort_values(by=['Asset'])
     #metto 0 al posto dei valori vuoti nella colonna quantità
     transact['Quantità (real)'] = transact['Quantità (real)'].replace('',0)
+
     return transact
 
 ################################################################################
@@ -436,6 +442,11 @@ class Portfolio:
     for i in dfUnique:
       #ho il dataframe filtrato
       tab = df[df["ISIN"] == i]
+      print(tab)
+      if i== 'IE00B53SZB19':
+        print(tab)
+        print(sum(pd.to_numeric(tab["Quantità (real)"])))
+      
       #calcolo qta e costi
       qta = sum(pd.to_numeric(tab["Quantità (real)"]))
       #print(f"Isin {i} e quantità {qta}")
@@ -447,6 +458,7 @@ class Portfolio:
       dfAcq = tab[tab['Tipo'] == 'ACQ'] 
       spesAcq = sum(pd.to_numeric(dfAcq['Spesa/incasso effettivo']))
       qtaAcq = sum(pd.to_numeric(dfAcq['Quantità (real)']))
+      print(f"calcolo valori per {i} che ha qta: {qta} acquisti: {spesAcq} e qta acq:{qtaAcq}")
       #calcolo prezzo ponderatp e totale investito
       prezPond = spesAcq/qtaAcq
       totInv = qta*prezPond 
@@ -454,6 +466,7 @@ class Portfolio:
       #aggiungo nella lista solo se la quantità è diversa da zero
       if qta > 0.01:
         listAll.append([i,tab['Ticker'].iloc[0],tab['Asset'].iloc[0],round(qta,4),round(prezPond,4),round(divid,4),round(totInv,4),costi])
+        #print(listAll)
     #tolgo prima riga vuota
     listAll.pop(0)
     #trasformo in dataframe la lista

@@ -79,7 +79,7 @@ else:
   #print(port.portCompanies())
   #print(readHoldings())
   print(port.whatchlist())
-
+ 
   #print(port.getPriceYah('GB00BLD4ZL17.SG'))
   #print(port.getPriceYah('RACE.MI'))
 
@@ -200,10 +200,12 @@ else:
   #print(info)
   #print(f"Prezzo Yahoo Finance {info['currentPrice']}")
   #print("Prova Yahooquery")
-  #fund = Ticker(ticker)
-  #info2 = fund.history(period="1d")
-  #print(info2)
-  #print(f"Prezzo Yahooquery {info2['close'].iloc[0]}")
+
+
+#SITI UTILI
+#sito che ha una lista di librerie per python legate all afinanza https://wilsonfreitas.github.io/awesome-quant/
+#calcolo valore intrinseco https://github.com/akashaero/Intrinsic-Value-Calculator
+#video per dashboard
 
 
 
