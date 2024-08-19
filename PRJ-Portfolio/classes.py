@@ -51,11 +51,11 @@ class Portfolio:
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
     transact = read_range('tab_transazioni!A:P',oldPrj)
     transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
-    print(transact[transact['Ticker'] == 'CSNDX.MI'])
-    print(transact[transact['Ticker'] == 'NKE.DE'])
+    #print(transact[transact['Ticker'] == 'CSNDX.MI'])
+    #print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact[transact['Data operazione'] <= date]  
-    print(transact[transact['Ticker'] == 'CSNDX.MI'])
-    print(transact[transact['Ticker'] == 'NKE.DE'])
+    #print(transact[transact['Ticker'] == 'CSNDX.MI'])
+    #print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
     #transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','prezzo acquisto','Spesa/incasso previsto'])
     #tolgo il punto su spesa e incasso
@@ -157,8 +157,8 @@ class Portfolio:
   def financialsPartPort(self):
     #prendo la prima parte già creata
     portaf = Portfolio.dFPortf(self)
-    print("stampo pre portafoglio")
-    print(portaf.head())
+    #print("stampo pre portafoglio")
+    #print(portaf.head())
     #creo una lista con i dati finanziari
     list2d=[]
     for i in portaf['Isin']:
