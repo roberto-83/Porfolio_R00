@@ -99,6 +99,7 @@ def readEuronext(isin):
 #print(readEuronext('IT0005580003'))
 
 def readEuronextREV2(isin, data):
+  print(f"url che sto leggendo {URL_ESTESO}")
    #URl singola mi da alcune info
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
@@ -159,7 +160,7 @@ def readEuronextREV2(isin, data):
     driverExt = webdriver.Chrome( options=chrome_options)
     #Get URL
     driverExt.get(URL_ESTESO)
-    time.sleep(5)
+    time.sleep(10)
     #leggo i dati
     #dfsExt = pd.read_html(driverExt.page_source)
     dfsExt = pd.read_html(StringIO(driverExt.page_source))

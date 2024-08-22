@@ -25,7 +25,6 @@ from yahooread import readYahooSite
 
 #from IPython.display import display
 
-
 from yfinance.utils import empty_earnings_dates_df
 pd.options.mode.chained_assignment = None #toglie errori quando sovrascrivo un dataframe
 #import yfinance as yf
