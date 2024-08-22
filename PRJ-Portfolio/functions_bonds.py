@@ -99,13 +99,13 @@ def readEuronext(isin):
 #print(readEuronext('IT0005580003'))
 
 def readEuronextREV2(isin, data):
-  print(f"url che sto leggendo {URL_ESTESO}")
-   #URl singola mi da alcune info
+  
+  #URl singola mi da alcune info
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
   URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
   URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
-
+  print(f"url che sto leggendo {URL_ESTESO}")
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
   chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
