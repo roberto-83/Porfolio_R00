@@ -112,6 +112,10 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
+  chrome_options.add_argument("enable-automation")
+  chrome_options.add_argument("--disable-extensions")
+  chrome_options.add_argument("--dns-prefetch-disable")
+  chrome_options.add_argument("--disable-gpu")
   
   #leggo dati comuni
   #driver = webdriver.Chrome( options=chrome_options)
@@ -143,7 +147,7 @@ def readEuronextREV2(isin, data):
     #histBtp = dfs[20]
     #aggiungo i dati mancanti
     #histprice = fillDatesDFrame(histBtp)
-    #----------------Dati live
+    #----------------Dati liveg
     #nameBtp = driver.find_element(By.XPATH,'/html/body/div[2]/div[1]/div/div/div[1]/section/div[2]/div/div/div/div/div/div[1]/div[1]/h1/strong').text
     #pricBtp = driver.find_element(By.XPATH,'//*[@id="header-instrument-price"]').text
     #dateBtp = driver.find_element(By.XPATH,'/html/body/div[2]/div[1]/div/div/div[1]/section/div[2]/div/div/div/div/div/div[2]/div/div[1]/div[1]/div[2]/div/div[2]').text
@@ -157,10 +161,13 @@ def readEuronextREV2(isin, data):
     #histprice['Isin'] = isin
     #driver.quit()
   else:
+    print("inizia driver")
     driverExt = webdriver.Chrome( options=chrome_options)
     #Get URL
     driverExt.get(URL_ESTESO)
+    print("10 sec wait")
     time.sleep(10)
+    
     #leggo i dati
     #dfsExt = pd.read_html(driverExt.page_source)
     dfsExt = pd.read_html(StringIO(driverExt.page_source))
