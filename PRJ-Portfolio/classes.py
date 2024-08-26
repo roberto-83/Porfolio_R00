@@ -553,6 +553,83 @@ class Portfolio:
     else:
       print("Aggiornamento non necessario")
     return 'Done'
+
+################################################################################
+##### TABELLA COMPOSIZIONE - SETTORI
+################################################################################
+  def portafSettori(self):
+    port = Portfolio.dFPortf(self)
+    portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso','SETTORE']].copy()
+    #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
+    #for i in portShort.iterrows():
+    allSectors = pd.DataFrame()
+    for i in range(len(portShort)):
+      if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
+        #leggo i settori dell'etf
+        settori = sectorsEtf(portShort['Ticker'].loc[i])
+        #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
+        settori['Settore_ETF'] = settori.index
+        #cambio l'index che conteneva il settore
+        settori=settori.reset_index()
+
+        #costruisco il DF
+        settori['Data'] = Portfolio.todayDate_f
+        settori['Asset'] = portShort['Asset'].loc[i]
+        settori['Ticker'] = portShort['Ticker'].loc[i]
+        settori['Descrizione'] = portShort['DESCRIZIONE LUNGA'].loc[i]
+        settori['Settore'] = settori['Settore_ETF'].str.upper()
+        settori['Peso_Tick'] = portShort['peso'].loc[i]
+        settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]
+        settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
+        
+        #tolgo la colonna che si chiama come il ticker
+        settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF',0], axis =1)
+        #tolgo trattino
+        settori['Settore']=settori['Settore'].str.replace('_',' ')
+        #print(settori.to_string())
+      else: #azione o bond
+        d = {'Data' :Portfolio.todayDate_f,
+            'Asset':portShort['Asset'].loc[i],
+            'Ticker':portShort['Ticker'].loc[i],
+            'Descrizione':portShort['DESCRIZIONE LUNGA'].loc[i],
+            'Settore':portShort['SETTORE'].loc[i].upper(),
+            'Peso_Tick':portShort['peso'].loc[i],
+            'Peso_singolo':portShort['peso'].loc[i],
+            'Peso':portShort['peso'].loc[i]}
+        settori = pd.DataFrame(d, index =[0])
+        
+      
+      #concateno su un unico DF i vari dati
+      allSectors = pd.concat([allSectors,settori], ignore_index=True)
+    #calcolo il peso totale che dovrà essere 1
+    totalWeight= allSectors['Peso'].sum()
+    #print(allSectors.to_string())
+
+    #Ora mi serve un nuovo dataframe con solo i settori singoli e la somma dei pesi
+    #copio il df
+    sectorsUnique=allSectors[['Settore','Peso']].copy()
+    #scrivo i totali dei pesi
+    sectorsUnique['Total'] = allSectors.groupby(['Settore'])['Peso'].transform('sum')
+    #tolgo la colonna peso originale
+    sectorsUnique = sectorsUnique.drop('Peso', axis =1)
+    #tolgo i duplicati
+    sectorsUnique1 = sectorsUnique.drop_duplicates(inplace=False)
+    #ordino DF
+    sectorsUnique1=sectorsUnique1.sort_values(by=['Total'], ascending=[False])
+    #print(sectorsUnique1)
+
+    #scrivo i dati su spreadsheet
+    listPrint = allSectors.values.tolist()
+    lastRowSt=str(len(listPrint)+1)
+    listPrintWeights = sectorsUnique1.values.tolist()
+    lastRowWeights=str(len(listPrintWeights)+1)
+    deleteOldRows = delete_range('tab_sectors!A2:M600',newPrj)
+    write_range('tab_sectors!A2:H'+lastRowSt,listPrint,newPrj)
+    write_range('tab_sectors!J2:J2',[[totalWeight]],newPrj)
+    write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
+    return 'Done writing sectors'
+
+
 ################################################################################
 ##### TABELLA ANDAMENTO
 ################################################################################

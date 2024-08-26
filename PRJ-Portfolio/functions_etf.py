@@ -78,6 +78,9 @@ def sectorsEtf(ticker):
 #__old_rgb_set__ = RGB.__set__
 
 
+#print(sectorsEtf('CSSPX.MI'))
+#print(sectorsEtf('RACE.MI'))#risulta 0
+
 
 def readHoldings():
   #EMAE.MI

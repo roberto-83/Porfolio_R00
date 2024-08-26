@@ -21,10 +21,12 @@ from yahooread import readYahooSite
 #from get_all_tickers import get_tickers as gt
 
 ### INIZIO PROCEDURA
-port = Portfolio()
+
 #variabile per non eseguire tutto il codice..
 developerMode=0
 if developerMode == 0:
+  print('Sono in modalità Normale')
+  port = Portfolio()
   #scrivo la tabella degli Isin
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
   log_insert1("Aggiornamento Tab Isin","Inizio","")
@@ -74,11 +76,24 @@ if developerMode == 0:
   delta6 = time.time() - time6s
   log_insert1("Aggiornamento Tab Watchlist","Fine",delta6)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
+  #aggiorno settori
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Aggiornamento Settori")
+  log_insert1("Aggiornamento Tab Settori","Inizio","")
+  time7s = time.time()
+  print(port.portafSettori())
+  delta7 = time.time() - time7s
+  log_insert1("Aggiornamento Tab Settori","Fine",delta7)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Settori")
+
+
 else:
+  print('Sono in modalità Developer')
+  port = Portfolio()
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   #print(port.portCompanies())
   #print(readHoldings())
-  print(port.whatchlist())
+  #print(port.portafSettori())
+  #print(port.whatchlist())
  
   #print(port.getPriceYah('GB00BLD4ZL17.SG'))
   #print(port.getPriceYah('RACE.MI'))
@@ -183,7 +198,7 @@ else:
 #print(test2[test2['Close']>=datetime.strptime('06/05/2024','%d/%m/%Y')])
 #print(test2[test2['Date'] >=datetime.strptime('06/05/2024','%d/%m/%Y')])
 
-
+ 
 
 #BTP
 #uso getBtpData che legge da 
