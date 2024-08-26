@@ -9,7 +9,7 @@ from functions_stocks import getStockInfo
 from functions_stocks import verifKey
 from functions_etf import sectorsEtf
 from functions_etf import getPriceETF
-from functions_etf import getSummary
+from functions_etf import getSummary,listEtfCountries,listStocksCountries
 from settings import * #importa variabili globali
 from currency_converter import CurrencyConverter, currency_converter
 import pandas as pd
@@ -441,9 +441,9 @@ class Portfolio:
     for i in dfUnique:
       #ho il dataframe filtrato
       tab = df[df["ISIN"] == i]
-      print(tab)
+      #print(tab)
       if i== 'IE00B53SZB19':
-        print(tab)
+        #print(tab)
         print(sum(pd.to_numeric(tab["Quantità (real)"])))
       
       #calcolo qta e costi
@@ -544,7 +544,7 @@ class Portfolio:
         #stocksGlobal = pd.concat(stocksDF,ignore_index=True)
         stocksGlobal = pd.concat([stocksGlobal,stocksDF],axis=0)
         #print(stocksDF)
-      print(stocksGlobal)
+      #print(stocksGlobal)
       #scrivo i dati
       listPrint = stocksGlobal.values.tolist()
       lastRowSt=str(len(listPrint)+1)
@@ -629,7 +629,89 @@ class Portfolio:
     write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
     return 'Done writing sectors'
 
+################################################################################
+##### TABELLA COMPOSIZIONE - PAESI
+################################################################################
+  def portafPaesi(self):
+    port = Portfolio.dFPortf(self)
+    #print(port.keys())
+    portShort = port[['Asset','Isin','Ticker','DESCRIZIONE LUNGA','peso']].copy()
+    print(portShort.to_string)
+    #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
+    #for i in portShort.iterrows():
+    allCountries = pd.DataFrame()
+    for i in range(len(portShort)):
+      print(f"Lavoro con {portShort['Isin'].loc[i]}" )
+      if(portShort['Asset'].loc[i] == "ETF-AZIONI"):  #se è etf
+        #leggo i settori dell'etf
+        paesidF = listEtfCountries(portShort['Isin'].loc[i])
+        paesidF.dropna(inplace=True)
+        #print(paesidF)
+        print(paesidF['Country'].str.upper())
+        paesidF['Data'] = Portfolio.todayDate_f
+        paesidF['Asset'] = portShort['Asset'].loc[i]
+        paesidF['Ticker'] = portShort['Ticker'].loc[i]
+        paesidF['Descrizione'] = portShort['DESCRIZIONE LUNGA'].loc[i]
+        paesidF['Paese'] = paesidF['Country'].str.upper()
+        paesidF['Peso_Tick'] = portShort['peso'].loc[i]
+        paesidF['Peso_singolo'] = paesidF['Peso_country']
+        paesidF['Peso'] = portShort['peso'].loc[i].astype(float)*paesidF['Peso_country'].astype(float)
+        paesidF = paesidF.drop(['isin','Country','Peso_country'], axis =1)
+        print(paesidF)
 
+      elif(portShort['Asset'].loc[i] == "AZIONI"): #e è azione
+        paese = listStocksCountries(portShort['Isin'].loc[i])
+        d = {'Data' :Portfolio.todayDate_f,
+            'Asset':portShort['Asset'].loc[i],
+            'Ticker':portShort['Ticker'].loc[i],
+            'Descrizione':portShort['DESCRIZIONE LUNGA'].loc[i],
+            'Paese':paese[1].upper(),
+            'Peso_Tick':portShort['peso'].loc[i],
+            'Peso_singolo':100,
+            'Peso':portShort['peso'].loc[i].astype(float)*100}
+        paesidF = pd.DataFrame(d, index =[0])
+
+      else:   #se è btp o bpt o p2p
+        d = {'Data' :Portfolio.todayDate_f,
+            'Asset':portShort['Asset'].loc[i],
+            'Ticker':portShort['Ticker'].loc[i],
+            'Descrizione':portShort['DESCRIZIONE LUNGA'].loc[i],
+            'Paese':'ITALIA',
+            'Peso_Tick':portShort['peso'].loc[i],
+            'Peso_singolo':100,
+            'Peso':portShort['peso'].loc[i].astype(float)*100}
+        paesidF = pd.DataFrame(d, index =[0])
+
+      #concateno su un unico DF i vari dati
+      allCountries = pd.concat([allCountries,paesidF], ignore_index=True)
+      print(allCountries)
+    #calcolo il peso totale che dovrà essere 1
+    totalWeight= allCountries['Peso'].sum()
+    #allCountries['Peso_singolo']=allCountries['Peso_singolo'].str.repalce('.',',')
+    print(allCountries)
+    
+    #trovo singoli
+    countryUnique=allCountries[['Paese','Peso']].copy()
+    #scrivo i totali dei pesi
+    countryUnique['Total'] = allCountries.groupby(['Paese'])['Peso'].transform('sum')
+    #tolgo la colonna peso originale
+    countryUnique = countryUnique.drop('Peso', axis =1)
+    #tolgo i duplicati
+    countryUnique1 = countryUnique.drop_duplicates(inplace=False)
+    #ordino DF
+    countryUnique1=countryUnique1.sort_values(by=['Total'], ascending=[False])
+
+    #scrivo i dati su spreadsheet
+    listPrint = allCountries.values.tolist()
+    lastRowSt=str(len(listPrint)+1)
+    listPrintWeights = countryUnique1.values.tolist()
+    lastRowWeights=str(len(listPrintWeights)+1)
+    deleteOldRows = delete_range('tab_country!A2:M600',newPrj)
+    write_range('tab_country!A2:H'+lastRowSt,listPrint,newPrj)
+    write_range('tab_country!J2:J2',[[totalWeight]],newPrj)
+    write_range('tab_country!L2:M'+lastRowWeights,listPrintWeights,newPrj)
+
+    return 'Done writing countries'
 ################################################################################
 ##### TABELLA ANDAMENTO
 ################################################################################

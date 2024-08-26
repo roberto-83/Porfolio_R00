@@ -23,7 +23,7 @@ from yahooread import readYahooSite
 ### INIZIO PROCEDURA
 
 #variabile per non eseguire tutto il codice..
-developerMode=0
+developerMode=10
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio()
@@ -83,16 +83,22 @@ if developerMode == 0:
   print(port.portafSettori())
   delta7 = time.time() - time7s
   log_insert1("Aggiornamento Tab Settori","Fine",delta7)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Settori")
-
-
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Aggiornamento Settori")
+  #aggiorno paesi
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Inizio - Aggiornamento Paesi")
+  log_insert1("Aggiornamento Tab Paesi","Inizio","")
+  time8s = time.time()
+  print(port.portafPaesi())
+  delta8 = time.time() - time8s
+  log_insert1("Aggiornamento Tab Paesi","Fine",delta8)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Fine - Aggiornamento Paesi")
 else:
   print('Sono in modalità Developer')
   port = Portfolio()
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   #print(port.portCompanies())
   #print(readHoldings())
-  #print(port.portafSettori())
+  print(port.portafPaesi())
   #print(port.whatchlist())
  
   #print(port.getPriceYah('GB00BLD4ZL17.SG'))

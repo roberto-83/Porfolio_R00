@@ -15,6 +15,8 @@ from selenium.webdriver.common.by import By
 from pathlib import Path
 import os
 import shutil
+from io import StringIO
+
 #import openpyxl
 #from openpyxl.styles.colors import WHITE, RGB 
 #from xlrd import open_workbook
@@ -74,11 +76,155 @@ def sectorsEtf(ticker):
     #return  pd.DataFrame() #dataframe vuoto
     return  pd.DataFrame({ticker:'0'},index=['0']) #dataframe vuoto
 
-#from openpyxl.styles.colors import WHITE, RGB
-#__old_rgb_set__ = RGB.__set__
+#########################################
+####API di ETFDB
+####https://pypi.org/project/etfpy/
+###ha solo alcuni ETF e ritona sempre forbidden.. forse problema temporaneo
+########################################
+#from etfpy import ETF, load_etf, get_available_etfs_list
+def testEtfPy():
+  etfs = get_available_etfs_list()
+  print(etfs)
+  #read data
+  EtfData = load_etf('SPY')
+  print(EtfData.info)
+  return 'ok'
+#print(testEtfPy('CSSPX'))
+
+#########################################
+####API di FINANCE DATABASE
+####https://pypi.org/project/financedatabase/#technical-analysis-of-biotech-etfs
+### serve API da https://site.financialmodelingprep.com/pricing-plans?couponCode=jeroen
+## serve per fare analisio cross diversi strumenti , quindi sono tutte chiamate di ricerca dati
+#########################################
+#import financedatabase as fd
+def testFInance(ticker):
+  etfs = fd.ETFs()
+  print(etfs)  
+  return 'Done'
+
+#########################################
+####API di FINANCE TOOLKIT (fratello di quello sopra)
+####https://github.com/JerBouma/FinanceToolkit
+###non vedo country etf.. 
+## 
+#########################################
+import mstarpy
+import pandas as pd
+
+def testapi():
+  response = mstarpy.search_funds(term="technology", field=["Name", "fundShareClassId", "GBRReturnM12"], country="us", pageSize=40, currency ="USD")
+
+  df = pd.DataFrame(response)
+  print(df.head())
+
+#print(testapi())
+
+#########################################
+####LEGGO da ExtraETF
+####https://extraetf.com/it/stock-profile/US79466L3024
+#########################################
+
+def listEtfCountries(isin):
+  URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
+  #print(URL)
+  chrome_options = Options()
+  chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
+  chrome_options.add_argument('--no-sandbox')
+  chrome_options.add_argument("--enable-javascript")
+  chrome_options.add_argument('--disable-dev-shm-usage')
+  chrome_options.add_argument("enable-automation")
+  chrome_options.add_argument("--disable-extensions")
+  chrome_options.add_argument("--dns-prefetch-disable")
+  chrome_options.add_argument("--disable-gpu")
+
+  driverExt = webdriver.Chrome( options=chrome_options)
+  driverExt.get(URL)
+  #print("5 sec wait")
+  time.sleep(2)
+  listCountry=[]
+  i = 1
+  while i < 30:
+    try:
+      country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
+      weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")
+      weight = weight.replace('%','').strip()
+      weight = weight.replace(',','.')
+      #print(f"Stato: '{country1}' con il peso di {weight1}")
+      if(len(country) > 0):
+        listCountry.append([isin,country,weight])
+      else:
+        break
+    except:
+      #end loop
+      break
+    i+=1
+  #converto in dataframe
+  #print(len(listCountry))
+  countries = pd.DataFrame(listCountry, columns=['isin','Country','Peso_country'])
+  #print(len(countries))
+  #print(countries.to_string())
+  return countries
 
 
-#print(sectorsEtf('CSSPX.MI'))
+
+#print(listEtfCountries('LU1681048630'))
+
+#############################################
+#Sempre da extraEtf prendo il paese delle azioni
+#############################################
+
+def listStocksCountries(isin):
+  if(isin =='US29355A1079_1'):
+    isin = 'US29355A1079'
+
+  URL="https://extraetf.com/it/stock-profile/"+isin
+  #print(URL)
+  chrome_options = Options()
+  chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
+  chrome_options.add_argument('--no-sandbox')
+  chrome_options.add_argument("--enable-javascript")
+  chrome_options.add_argument('--disable-dev-shm-usage')
+  chrome_options.add_argument("enable-automation")
+  chrome_options.add_argument("--disable-extensions")
+  chrome_options.add_argument("--dns-prefetch-disable")
+  chrome_options.add_argument("--disable-gpu")
+
+  if(isin == 'GB0007366395'):
+    return [isin, 'REGNO UNITO', 100]
+  else:
+    driverExt = webdriver.Chrome( options=chrome_options)
+    driverExt.get(URL)
+    time.sleep(2)
+    country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-stock-profile/div[1]/div[1]/div[2]/span[1]/img').get_attribute("title")
+    #print(country)
+    return [isin, country, 100]
+
+
+#print(listStocksCountries('GB0007366395'))
+      ##########################################
+  #lista di settori di un etf
+  #etf = yf.Ticker(ticker)
+
+  # Ottieni la composizione dell'ETF
+  #holdings = etf.fund_holdings
+  #print(holdings)
+  # Filtra i paesi
+  #countries = holdings['Country'].value_counts()
+  #print(countries)
+
+  ##fund = Ticker(ticker)
+  ##try:
+    #fund_df = fund.fund_sector_weightings
+    #fund_df_desc = fund_df.sort_values(by=ticker, ascending=False)
+    ##fund_df = fund.fund_holding_info
+    ##print(fund_df[ticker]['holdings'])
+    ##return fund_df
+  ##except:
+    #return  pd.DataFrame() #dataframe vuoto
+    ##return  pd.DataFrame({ticker:'0'},index=['0']) #dataframe vuoto
+
+
 #print(sectorsEtf('RACE.MI'))#risulta 0
 
 
