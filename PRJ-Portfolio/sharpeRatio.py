@@ -5,7 +5,7 @@
 #Ad esempio, se il rendimento medio del tuo portafoglio è del 10%, il tasso privo di rischio è del 2%, e la deviazione standard del portafoglio è del 5%, il calcolo sarà:
 #Sharpe ratio = 0,1-0,02 / 0,05 = 1,6
 
-#######RENDIMENTO MIO PORTAFOGLIO
+####### RENDIMENTO MIO PORTAFOGLIO
 import os
 import pandas as pd
 import numpy as np
@@ -162,14 +162,14 @@ returns.replace([np.inf, -np.inf], 0, inplace=True)
 #----------------------------------------------------
 #252 sono i trading days
 cov_matrix_annual = returns.cov()*252
-#print(cov_matrix_annual)
+print(cov_matrix_annual)
 
 #----------------------------------------------------
 # Varianza del portafoglio
 #----------------------------------------------------
 #.T serve per transporre
 port_variance = np.dot(weights_1.T, np.dot(cov_matrix_annual,weights_1))
-#print(f"La variaza del portafolgio è {port_variance}")
+print(f"La variaza del portafolgio è {port_variance}")
 
 #----------------------------------------------------
 # Volatilità del portafoglio = deviazione standard - rischio
