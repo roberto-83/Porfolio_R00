@@ -6,7 +6,10 @@ import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime,timedelta
 
+print("---------- PRIMO --------")
+print("Creo un immagine con la performance relativa dei vari settori a confronto con qualle dell'SP500")
 # Lista di ETF settoriali (esempio per il mercato USA)
 sector_etfs = {
     'Technology': 'XLK',
@@ -18,15 +21,16 @@ sector_etfs = {
     'Industrials': 'XLI',
     'Materials': 'XLB',
     'Utilities': 'XLU',
-    'Real Estate': 'XLRE'
+    'Real Estate': 'XLRE',
+    'Bond 10 Y':'US10.MI'
 }
 
 # Scarica i dati storici
-data = {sector: yf.download(ticker, start='2020-01-01')['Adj Close'] for sector, ticker in sector_etfs.items()}
+data = {sector: yf.download(ticker, start='2020-01-01',progress=False)['Adj Close'] for sector, ticker in sector_etfs.items()}
 data = pd.DataFrame(data)
 
 # Scarica i dati dell'indice di riferimento (S&P 500)
-sp500 = yf.download('^GSPC', start='2020-01-01')['Adj Close']
+sp500 = yf.download('^GSPC', start='2020-01-01',progress=False)['Adj Close']
 
 # Calcola la performance relativa
 relative_performance = data.divide(sp500, axis=0)
@@ -40,3 +44,40 @@ plt.legend(loc='upper left')
 script_dir = os.path.dirname(__file__)+'/tmpFiles'
 plt.savefig(script_dir+'/portfolio_rotazionale.png',  bbox_inches=0, orientation='landscape', pad_inches=0.1, dpi=100)
 plt.show()
+
+print("---------- SECONDO --------")
+
+# Lista di ticker rappresentativi di vari settori economici
+tickers = ['XLF', 'XLK', 'XLE', 'XLY', 'XLI', 'XLV', 'XLP', 'XLU', 'XLB', 'XLRE','US10.MI','US37.MI','US13.MI']
+today = datetime.today().strftime('%Y-%m-%d')
+
+# Scarica i dati storici
+data = yf.download(tickers, start='2024-01-01', end=today, group_by='ticker',progress=False)
+#print(data.to_string())
+# Funzione per calcolare il volume medio
+def calculate_average_volume(ticker_data):
+    return ticker_data['Volume'].mean()
+
+# Funzione per calcolare il rate of change (ROC) dei volumi
+def calculate_volume_roc(ticker_data):
+    return ticker_data['Volume'].pct_change().mean() * 100
+
+def getShortNameTicker(ticker):
+  tic = yf.Ticker(ticker)
+  info1 = tic.info
+  return info1.get('longName')
+
+# Calcola il volume medio e il ROC per ogni settore
+results = {}
+for ticker in tickers:
+    descr = getShortNameTicker(ticker)
+    avg_volume = calculate_average_volume(data[ticker])
+    volume_roc = calculate_volume_roc(data[ticker])
+    results[ticker] = {'average_volume': avg_volume, 'volume_roc': volume_roc, 'descr':descr}
+
+# Ordina i settori per volume medio
+sorted_results = sorted(results.items(), key=lambda x: x[1]['volume_roc'], reverse=True)
+
+# Stampa i risultati
+for sector, metrics in sorted_results:
+    print(f"Settore: {sector} - {metrics['descr']}, Volume medio: {metrics['average_volume']}, ROC dei volumi: {metrics['volume_roc']:.2f}%")

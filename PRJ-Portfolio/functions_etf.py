@@ -109,7 +109,7 @@ def testFInance(ticker):
 ###non vedo country etf.. 
 ## 
 #########################################
-import mstarpy
+#import mstarpy
 import pandas as pd
 
 def testapi():
