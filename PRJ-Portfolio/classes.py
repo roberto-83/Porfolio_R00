@@ -950,7 +950,7 @@ class Portfolio:
       qta = tab_watch['QTA'][i]
       tot = tab_watch['TOT'][i]
       dOrdine = tab_watch['Data Ordine'][i]
-      if ordin is not None:
+      if ordin is not None or ordin !='' or len(ordin)<1:
         ordin = ordin.replace(',','.')
       else:
         ordin = 0

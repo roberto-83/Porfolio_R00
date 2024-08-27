@@ -23,7 +23,7 @@ from yahooread import readYahooSite
 ### INIZIO PROCEDURA
 
 #variabile per non eseguire tutto il codice..
-developerMode=10
+developerMode=0
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio()
