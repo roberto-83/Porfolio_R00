@@ -22,7 +22,9 @@ sector_etfs = {
     'Materials': 'XLB',
     'Utilities': 'XLU',
     'Real Estate': 'XLRE',
-    'Bond 10 Y':'US10.MI'
+    'Bond 10 Y':'US10.MI',
+    'Bond 1-3Y':'US13.MI',
+    'Bond 3-7' :'US37.MI'
 }
 
 # Scarica i dati storici
@@ -53,10 +55,16 @@ today = datetime.today().strftime('%Y-%m-%d')
 
 # Scarica i dati storici
 data = yf.download(tickers, start='2024-01-01', end=today, group_by='ticker',progress=False)
-#print(data.to_string())
+print(data.to_string())
 # Funzione per calcolare il volume medio
 def calculate_average_volume(ticker_data):
     return ticker_data['Volume'].mean()
+
+def delta_volume(ticker_data):
+  print(f"Ultimo valore: {ticker_data['Volume'].iloc[-1]}")
+  print(f"Primo valore: {ticker_data['Volume'].iloc[0]}")
+  print(ticker_data['Volume'].iloc[-1] - ticker_data['Volume'].iloc[0])
+  return ticker_data['Volume'].iloc[-1] - ticker_data['Volume'].iloc[0]
 
 # Funzione per calcolare il rate of change (ROC) dei volumi
 def calculate_volume_roc(ticker_data):
@@ -71,13 +79,14 @@ def getShortNameTicker(ticker):
 results = {}
 for ticker in tickers:
     descr = getShortNameTicker(ticker)
+    delta_volume = delta_volume(data[ticker])
     avg_volume = calculate_average_volume(data[ticker])
     volume_roc = calculate_volume_roc(data[ticker])
-    results[ticker] = {'average_volume': avg_volume, 'volume_roc': volume_roc, 'descr':descr}
+    results[ticker] = {'average_volume': avg_volume, 'volume_roc': volume_roc, 'descr':descr, 'delta_volume':delta_volume}
 
 # Ordina i settori per volume medio
 sorted_results = sorted(results.items(), key=lambda x: x[1]['volume_roc'], reverse=True)
 
 # Stampa i risultati
 for sector, metrics in sorted_results:
-    print(f"Settore: {sector} - {metrics['descr']}, Volume medio: {metrics['average_volume']}, ROC dei volumi: {metrics['volume_roc']:.2f}%")
+    print(f"Settore: {sector} - {metrics['descr']}, Volume medio: {metrics['average_volume']}, Delta Volume: {metrics['delta_volume']}, ROC dei volumi: {metrics['volume_roc']:.2f}%")
