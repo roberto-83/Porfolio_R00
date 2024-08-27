@@ -196,7 +196,7 @@ def listStocksCountries(isin):
   else:
     driverExt = webdriver.Chrome( options=chrome_options)
     driverExt.get(URL)
-    time.sleep(2)
+    time.sleep(5)
     country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-stock-profile/div[1]/div[1]/div[2]/span[1]/img').get_attribute("title")
     #print(country)
     return [isin, country, 100]
