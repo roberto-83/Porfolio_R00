@@ -168,7 +168,7 @@ def listEtfCountries(isin):
 
 
 
-#print(listEtfCountries('LU1681048630'))
+print(listEtfCountries('IE00B466KX20'))
 
 #############################################
 #Sempre da extraEtf prendo il paese delle azioni
