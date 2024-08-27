@@ -5,6 +5,7 @@
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 # Lista di ETF settoriali (esempio per il mercato USA)
 sector_etfs = {
@@ -36,4 +37,6 @@ plt.title('Performance Relativa dei Settori rispetto all\'S&P 500')
 plt.xlabel('Data')
 plt.ylabel('Performance Relativa')
 plt.legend(loc='upper left')
+script_dir = os.path.dirname(__file__)+'/tmpFiles'
+plt.savefig(script_dir+'/portfolio_rotazionale.png',  bbox_inches=0, orientation='landscape', pad_inches=0.1, dpi=100)
 plt.show()

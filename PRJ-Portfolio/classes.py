@@ -634,11 +634,8 @@ class Portfolio:
 ################################################################################
   def portafPaesi(self):
     port = Portfolio.dFPortf(self)
-    #print(port.keys())
     portShort = port[['Asset','Isin','Ticker','DESCRIZIONE LUNGA','peso']].copy()
-    print(portShort.to_string)
-    #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
-    #for i in portShort.iterrows():
+    #print(portShort.to_string)
     allCountries = pd.DataFrame()
     for i in range(len(portShort)):
       print(f"Lavoro con {portShort['Isin'].loc[i]}" )
@@ -647,7 +644,6 @@ class Portfolio:
         paesidF = listEtfCountries(portShort['Isin'].loc[i])
         paesidF.dropna(inplace=True)
         #print(paesidF)
-        print(paesidF['Country'].str.upper())
         paesidF['Data'] = Portfolio.todayDate_f
         paesidF['Asset'] = portShort['Asset'].loc[i]
         paesidF['Ticker'] = portShort['Ticker'].loc[i]
@@ -657,7 +653,6 @@ class Portfolio:
         paesidF['Peso_singolo'] = paesidF['Peso_country']
         paesidF['Peso'] = portShort['peso'].loc[i].astype(float)*paesidF['Peso_country'].astype(float)
         paesidF = paesidF.drop(['isin','Country','Peso_country'], axis =1)
-        print(paesidF)
 
       elif(portShort['Asset'].loc[i] == "AZIONI"): #e è azione
         paese = listStocksCountries(portShort['Isin'].loc[i])
@@ -684,11 +679,11 @@ class Portfolio:
 
       #concateno su un unico DF i vari dati
       allCountries = pd.concat([allCountries,paesidF], ignore_index=True)
-      print(allCountries)
+      #print(allCountries)
     #calcolo il peso totale che dovrà essere 1
     totalWeight= allCountries['Peso'].sum()
-    #allCountries['Peso_singolo']=allCountries['Peso_singolo'].str.repalce('.',',')
-    print(allCountries)
+    allCountries['Peso_singolo']=allCountries['Peso_singolo'].apply(replace_dot_with_comma)
+    #print(allCountries.to_string())
     
     #trovo singoli
     countryUnique=allCountries[['Paese','Peso']].copy()
@@ -700,6 +695,7 @@ class Portfolio:
     countryUnique1 = countryUnique.drop_duplicates(inplace=False)
     #ordino DF
     countryUnique1=countryUnique1.sort_values(by=['Total'], ascending=[False])
+    #print(countryUnique1.to_string)
 
     #scrivo i dati su spreadsheet
     listPrint = allCountries.values.tolist()
@@ -1259,5 +1255,10 @@ def readTransTot(anno,mese):
   arr = [deposit.sum(),dividen.sum(),vendite.sum()]
   return arr
 
+
+def replace_dot_with_comma(x):
+  if '.' in str(x):
+      return str(x).replace('.', ',')
+  return x
 
 #print(caldRendimento())
