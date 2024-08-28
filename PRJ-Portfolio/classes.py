@@ -113,7 +113,7 @@ class Portfolio:
       price=getPriceETF(row['Ticker'])
       price1d = price[4]
       price1d = Portfolio.calcCurren(price1d,row['CURRENCY'])
-      delta = row['LivePrice'] - price1d
+      delta = float(row['LivePrice'])- price1d
     else:
       delta = '0'
     return delta
@@ -866,23 +866,34 @@ class Portfolio:
 ##### WHATCHLIST
 ################################################################################
   
-  def getPriceYah(tick):
+  def getPriceYah(ticker):
+
+    stock = yf.Ticker(ticker)
+    tickInfo = stock.info
+    curre = verifKey(tickInfo,'currency')
+    price1d = verifKey(tickInfo,'previousClose')
+    livePrice = verifKey(tickInfo, 'currentPrice')
+    datePrice = datetime.today().strftime('%Y-%m-%d')
+    arr = [ticker, '',livePrice,price1d]
+    
+    
+
     #trovo i prezzi con Yahooquery
-    print(f"trovo prezzo per {tick}")
-    arr =[]
-    fund = Ticker(tick)
-    info = fund.history(period="5d")
-    print(info)
+    #print(f"trovo prezzo per {tick}")
+    #arr =[]
+    #fund = Ticker(tick)
+    #info = fund.history(period="5d")
+    #print(info)
     #e fallisce prendo i dati letti dal sito
-    if info.empty:
-      print('Leggo dati da sito yahoo')
-      info = readYahooSite(tick)
+    #if info.empty:
+      #print('Leggo dati da sito yahoo')
+      #info = readYahooSite(tick)
       #['GB00BLD4ZL17.SG', 'CoinShares Physical Bitcoin ', '58,73', '58,22']
-      arr = info
-    else:
+      #arr = info
+    #else:
       #print(info.to_string())
-      arr = [tick,'',info['close'].iloc[0],info['close'].iloc[1]]
-    print(arr)
+      #arr = [tick,'',info['close'].iloc[0],info['close'].iloc[1]]
+    #print(arr)
 
     #prezzo = info['close'].iloc[0]
     #if prezzo == 0:
@@ -903,7 +914,7 @@ class Portfolio:
       'Bond','Bond','','','',price['pric'],'','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
-      stock = Ticker(tick)
+      ##stock = Ticker(tick)
       #prezzo live
       #fund = Ticker(tick)
       #info = fund.history(period="1d")

@@ -26,7 +26,7 @@ from io import StringIO
 #import calendar
 #import pytz
 
-def getPriceETF(ticker):
+def getPriceETF_OLD(ticker):#provo a riscriverla..
   todayDate = datetime.today().strftime('%d/%m/%Y')
   fund = Ticker(ticker)
   #errore qui:
@@ -55,6 +55,35 @@ def getPriceETF(ticker):
   else:
     output=[ticker, 0, todayDate, 'EUR', 0]
   return output
+
+def getPriceETF(ticker):
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  #fund = Ticker(ticker)
+  #try:
+  #livePriceDf = fund.history(period="1d")
+  #print(livePriceDf)
+  #    print(f"Yahooquery, lunghezza history {len(livePriceDf)}")
+  #    if(len(livePriceDf) > 0): #se ho uno storico
+  #livePrice = livePriceDf.iloc[0]['close'] #uso prezzo close e non close adjusted
+  #datePrice = livePriceDf.index[0][1]
+  #      tickInfo = fund.quotes[ticker]
+  #      print(f"Analizzo ticker {ticker} il risultato è lungo {len(tickInfo)}")
+  #      curre = tickInfo['currency']
+  #      price1d = fund.quotes[ticker]['regularMarketPreviousClose']
+  #      output=[ticker, livePrice,datePrice,curre,price1d]
+  #    else: #se non ho uno storico
+  #      output=[ticker, 0, todayDate, 'EUR', 0]
+  #except: #MEGLIO lasciare solo yFINANCE?? anzichè Yahooquery che da sempre errori??
+  stock = yf.Ticker(ticker)
+  tickInfo = stock.info
+  curre = verifKey(tickInfo,'currency')
+  price1d = verifKey(tickInfo,'previousClose')
+  livePrice = verifKey(tickInfo, 'currentPrice')
+  datePrice = datetime.today().strftime('%Y-%m-%d')
+  output = [ticker, livePrice,datePrice,curre,price1d]
+    
+  return output
+#print(getPriceETF('EMAE.MI'))
 
 def getSummary(ticker):
   fund = Ticker(ticker)

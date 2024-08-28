@@ -9,6 +9,7 @@ from classes import Portfolio,caldRendimento
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
+from analisiPort import analisiPort
 import yfinance as yf
 from functions_sheets import read_range,appendRow
 from functions_etf import readHoldings,testapiFinnhub

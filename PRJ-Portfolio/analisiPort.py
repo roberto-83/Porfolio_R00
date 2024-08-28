@@ -22,7 +22,7 @@ from settings import * #importa variabili globali
 
 #stockStartDate='2020-01-01'
 
-def analisiPort(stockStartDate)
+def analisiPort(stockStartDate):
     #-----------------------
     #voglio calcolare rendimento e sharp ratio
     #per farlo mi serve il portafolgio di oggi ma con tutti i dati storici possibili
