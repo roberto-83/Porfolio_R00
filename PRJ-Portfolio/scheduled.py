@@ -92,6 +92,16 @@ if developerMode == 0:
   delta8 = time.time() - time8s
   log_insert1("Aggiornamento Tab Paesi","Fine",delta8)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Fine - Aggiornamento Paesi")
+  #analisi portafoglio
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Inizio - Analisi Portafoglio")
+  log_insert1("Analisi Portafoglio","Inizio","")
+  time9s = time.time()
+  print(analisiPort('2010-01-01'))
+  delta9 = time.time() - time9s
+  log_insert1("Analisi Portafoglio","Fine",delta9)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Fine -  Analisi Portafoglio")
+
+
 else:
   print('Sono in modalità Developer')
   port = Portfolio()

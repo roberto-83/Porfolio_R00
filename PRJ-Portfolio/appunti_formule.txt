@@ -1,0 +1,4 @@
+
+RENDIMENTO
+R = ((P1 - P0 ) + D) / P0
+quindi prezzo finale del titolo - prezzo iniziale + dividendo / prezzo iniziale

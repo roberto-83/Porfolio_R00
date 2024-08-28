@@ -36,6 +36,7 @@ sp500 = yf.download('^GSPC', start='2024-01-01',progress=False)['Adj Close']
 
 # Calcola la performance relativa
 relative_performance = data.divide(sp500, axis=0)
+print(relative_performance)
 
 # Plot della performance relativa
 relative_performance.plot(figsize=(14, 7))
@@ -85,22 +86,36 @@ def getShortNameTicker(ticker):
   info1 = tic.info
   return info1.get('longName')
 
+#Calcolo il rendimento di ogni singolo titolo
+def calculate_rendimento(ticker_data):
+  #p_finale - p_iniziale + Dividendo / P_iniziale
+  #in questo caso i settori generici che ho preso non danno dividendi
+  return ((ticker_data['Adj Close'].iloc[-1] - ticker_data['Adj Close'].iloc[0])/ticker_data['Adj Close'].iloc[0])*100
+
 # Calcola il volume medio e il ROC per ogni settore
 results = {}
 for ticker in tickers:
     descr = getShortNameTicker(ticker)
     obv = calculate_obv(data[ticker])
+    rendimento = calculate_rendimento(data[ticker])
     delta_volume = calculate_delta_volume(data[ticker])
     avg_volume = calculate_average_volume(data[ticker])
     volume_roc = calculate_volume_roc(data[ticker])
-    results[ticker] = {'average_volume': avg_volume, 'volume_roc': volume_roc, 'descr':descr, 'delta_volume':delta_volume, 'on_balance_volume':obv}
+    results[ticker] = {'average_volume': avg_volume,
+                       'volume_roc': volume_roc,
+                       'descr':descr,
+                       'delta_volume':delta_volume,
+                       'on_balance_volume':obv,
+                       'rendimento':rendimento}
 
 # Ordina i settori per volume medio
-sorted_results = sorted(results.items(), key=lambda x: x[1]['on_balance_volume'], reverse=True)
+sorted_results = sorted(results.items(), key=lambda x: x[1]['rendimento'], reverse=True)
 
 # Stampa i risultati
 for sector, metrics in sorted_results:
-    print(f"Settore: {sector} - {metrics['descr']}, Volume medio: {metrics['average_volume']}, Delta Volume: {metrics['delta_volume']}, ROC dei volumi: {metrics['volume_roc']:.2f}%, OBV: {metrics['on_balance_volume']:.2f}%")
+    print(f"Settore: {sector} - {metrics['descr']}, Volume medio: {metrics['average_volume']},\
+          Delta Volume: {metrics['delta_volume']}, ROC dei volumi: {metrics['volume_roc']:.2f}%,\
+          OBV: {metrics['on_balance_volume']:.2f}%, Rendimento:{metrics['rendimento']:.2f}%")
 
 
 #ticker1 = 'US10.MI'

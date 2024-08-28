@@ -141,7 +141,7 @@ def listEtfCountries(isin):
   driverExt = webdriver.Chrome( options=chrome_options)
   driverExt.get(URL)
   #print("5 sec wait")
-  time.sleep(2)
+  time.sleep(5)
   listCountry=[]
   i = 1
   while i < 30:

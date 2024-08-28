@@ -125,8 +125,9 @@ for stock in assets_1:
 df.ffill(limit=5, inplace=True)
 df=df.fillna(0)
 print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
-print(df)
-#print(df.to_string())
+#print(df)
+print('Tabella dei prezzi storici')
+print(df.to_string())
 
 #----------------------------------------------------
 # Salvo Grafico su tmpFiles
@@ -162,7 +163,7 @@ returns.replace([np.inf, -np.inf], 0, inplace=True)
 #----------------------------------------------------
 #252 sono i trading days
 cov_matrix_annual = returns.cov()*252
-print(cov_matrix_annual)
+#print(cov_matrix_annual)
 
 #----------------------------------------------------
 # Varianza del portafoglio
@@ -196,7 +197,10 @@ print(f"Ritorno Annuo atteso {percent_ret}")
 print(f"Rischio/Volatilità Annuale {percent_vols}")
 print(f"Varianza Annuale {percent_var}")
 
-
+#----------------------------------------------------
+# Scrivo su Sheet
+#----------------------------------------------------
+listToPrint=[[today]]
 
 #----------------------------------------------------
 # Ottimizza portafolgio
@@ -301,13 +305,58 @@ print(f"Expected Annual Return: {optimal_portfolio_return:.4f}")
 print(f"Expected Volatility: {optimal_portfolio_volatility:.4f}")
 print(f"Sharpe Ratio: {optimal_sharpe_ratio:.4f}")
 
+#----------------------------------------------------
+# 3° metodo  Coletti
+#----------------------------------------------------
+import seaborn
+print("---- Ottimizzazione Terzo metodo ----")
+print(returns.to_string())
+#stampo rendimenti annualizzati
+#print((returns.mean()+1)**253-1)
+#Correlazione
+plt.figure(figsize=(23,18))
+seaborn.heatmap(returns.corr(),cmap='Reds',annot=True, annot_kws={'size':12})
+seaborn.set(font_scale=1.5)
+script_dir = os.path.dirname(__file__)+'/tmpFiles'
+plt.savefig(script_dir+'/portfolio_correlation.png',  bbox_inches=0, orientation='landscape', pad_inches=0.1, dpi=100)
+plt.show()
 
+#comincio la simulazione
+quante=10000
+rendimenti=returns
+nomi=assets_1
+dati=df_full
+cov = rendimenti.cov()*100*253
+medie = ((rendimenti.mean()+1)**253-1)*100
+#tabella che conterrà i portafogli con piu item
+tabella = pd.DataFrame(columns=["rendimento","varianza","quasi Sharpe"]+nomi)
+#tabella che conterrà solo i portafogli con un solo item
+tabella1 = pd.DataFrame(columns=["rendimento","varianza","quasi Sharpe"]+nomi)
+for k in range(len(dati.columns)):
+  w = np.zeros(len(dati.columns))
+  w[k]=1.00
+  w = w/sum(w)
+  rend = np.dot(medie,w)
+  vol = np.dot(w,np.dot(cov,w))
+  tabella1.loc[k]=[rend,vol,rend/vol]+list(w*100)
+for k in range(quante):
+#  w = np.random.random(len(dati.columns))
+  w=np.random.normal(1,0.2,len(dati.columns))
+  w[w>1]=w[w>1]-1
+  w = w/sum(w)
+  rend = np.dot(medie,w)
+  vol = np.dot(w,np.dot(cov,w))
+  tabella.loc[k]=[rend,vol,rend/vol]+list(w*100)
+  #if k%1000==0:
+    #print(k)
 
+#print('Tabella che contiene tutti i portafogli')
+#print(tabella1.to_string())
+#print(tabella.to_string())
+print('Portafoglio con piu rendimento')
+print(tabella["rendimento"].idxmax(),tabella.loc[tabella["rendimento"].idxmax()])
 
-
-
-
-
+#varianza è misura della volatilità
 
 
 
