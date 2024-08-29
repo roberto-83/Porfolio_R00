@@ -3,8 +3,22 @@ RENDIMENTO
 R = ((P1 - P0 ) + D) / P0
 quindi prezzo finale del titolo - prezzo iniziale + dividendo / prezzo iniziale
 
+SHARPE RATIO
+ sharpe ratio = (Rp - Rf ) / S
+ Rp = ritorno del portafoglio
+ Rf = risk free rate che sarebbe il tasso di rischio 0 e quindi obbligazione a 10Y
+ S = deviazione standard = rischio  quindi quanto richio prendo per avere 1 euro
 
-MACROECONOMIA
+RITORNO ATTESO PORTAFOGLIO 
+somma ponderata dei rirotni di ogni singolo asset quindi
+Rp = r1*w1+r2*w2+....
+r è il ritorno del singolo asset
+w è il peso dell'asset
+
+
+
+--------- MACROECONOMIA ------------
+
 fonte https://www.schroders.com/it-it/it/istituzionali/view/ecco-i-settori-e-gli-stili-che-performano-meglio-con-il-calo-dell-inflazione/
 STILI AZIONARI da piu volatile a meno volatile (beta)
 
