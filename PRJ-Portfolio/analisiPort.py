@@ -10,7 +10,7 @@ import os
 import pandas as pd
 import numpy as np
 import yfinance as yf
-from pandas_datareader import data as web
+#from pandas_datareader import data as web
 from datetime import datetime
 import matplotlib.pyplot as plt 
 plt.style.use('fivethirtyeight')

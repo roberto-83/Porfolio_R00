@@ -2,3 +2,42 @@
 RENDIMENTO
 R = ((P1 - P0 ) + D) / P0
 quindi prezzo finale del titolo - prezzo iniziale + dividendo / prezzo iniziale
+
+
+MACROECONOMIA
+fonte https://www.schroders.com/it-it/it/istituzionali/view/ecco-i-settori-e-gli-stili-che-performano-meglio-con-il-calo-dell-inflazione/
+STILI AZIONARI da piu volatile a meno volatile (beta)
+
+-Small Cap
+-Growth
+-Quality
+-Momentum
+-Value 
+-high dividend yeald
+-minimum volatility
+
+SETTORI da piu volatile a meno volatile (beta)
+-consumer discretionary
+-energy
+-tech
+-material
+-financials
+-comunication services
+-real estate
+-health care
+-staples
+-utilities
+
+PERIDOO ALTA INFLAZIONE:
+1)settori difensivi sovraperformano quando l’inflazione è elevata, poiché sono più resilienti all’incremento dei prezzi
+2)settore cicliclo come l'energia performa bene perchè legato al petrolio che è una commodity e dovrebbe essere alle stelle
+3)settore bancario performa perchè la banca centrale alza i tassi e loro guadagnano
+
+1) stili azionari piu difensivi
+2) per il discorso sopra anche i value e high yeald dividend energetici vanno bene
+
+INFLAZIONE BASSA
+1)performano i tecnologici e consumo discrezionali. cmq i settori ciclici
+
+
+
