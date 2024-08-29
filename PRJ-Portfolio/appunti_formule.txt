@@ -10,11 +10,29 @@ SHARPE RATIO
  S = deviazione standard = rischio  quindi quanto richio prendo per avere 1 euro
 
 RITORNO ATTESO PORTAFOGLIO 
+Il ritorno è la variazione del prezzo. dato che piu asset hanno prezzi diversi non si possono confrontare direttamente.
+calcolato prendendo il prezzo di oggi meno quello di ieri 
+rit = ( Pt - P(t-1) ) / P(t-1)
+che è uguale a
+rit = (Pt / P(t-1)  ) -1
+quindi se ieri valeva 100 e oggi 110 ho (110-100)/100 = 0,1  che corrisponde a un ritorno del 10%
+
+LOG RETURNS
+z = log(1+rt)
+quindi 
+z= log((Pt / P(t-1)  ))
+si preferiscono ai ritorni "normali" perchè:
+-log sono limitati al minimo a -1
+-log sopprime i rendimenti piu alti evidenziando di pià i bassi ritorna quindi valori piu simmetrici e lineari
+
+
 somma ponderata dei rirotni di ogni singolo asset quindi
 Rp = r1*w1+r2*w2+....
 r è il ritorno del singolo asset
 w è il peso dell'asset
 
+come ritorno è meglio usare il log_return anche se non ho capito il motivo..
+lo
 
 
 --------- MACROECONOMIA ------------

@@ -714,23 +714,33 @@ class Portfolio:
   
   def readlastDate(self,tab):
     fulldata = read_range(tab+'!A:A',newPrj)
-    dateSheet = fulldata['Data'].iloc[-1]
-    print(f"ultima data del foglio {dateSheet} e oggi è {Portfolio.todayDate}")
-    if dateSheet == Portfolio.todayDate :
-      status = 0 #non faccio nulla
-    else:
+    if(len(fulldata) == 0):
       status = 1 #proseguo
+    else:
+      dateSheet = fulldata['Data'].iloc[-1]
+      print(f"ultima data del foglio {dateSheet} e oggi è {Portfolio.todayDate}")
+      if dateSheet == Portfolio.todayDate :
+        status = 0 #non faccio nulla
+      else:
+        status = 1 #proseguo
     return status
 
   def readCalendar(self,dateRead):
+    #cambio formato data
+    dateRead=datetime.strptime(dateRead ,'%d/%m/%Y').strftime('%Y-%m-%d')
     #Leggo i dati dal calendar
     fulldata = read_range('tab_calendar!A:I',newPrj)
     #imposto filtro
     partData = fulldata[(fulldata['Data'] == dateRead)]
     partData = partData.drop(columns=['Q.ta Incrementata','Prezzo pagato','Prezzo mercato (EUR)','Dividendo','Valore Investito','Valore Mercato'])
+    #print(f'Leggo il celandar alla data {dateRead}')
+    #print(partData)
     return partData
 
   def calcAndamPort(self):
+    #########################
+    #E' da rifare, non posso leggere da calendar, devo leggere da yahho finance.. solo criptalia e i btp magari..
+    #########################
     if Portfolio.readlastDate(self,'tab_and_port') == 1:
       #prima mi prendo i dati del portafoglio ad oggi
       port = Portfolio.dFPortf(self)
@@ -743,6 +753,7 @@ class Portfolio:
       twoWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,15)
       fourWeeksAgo = Portfolio.subDayToDate(Portfolio.todayDate,30)
       twoHundredAgo = Portfolio.subDayToDate(Portfolio.todayDate,200)
+      print(f"Primo anno {firstY}, due settimane fa {twoWeeksAgo}, un mese fa {fourWeeksAgo}, duecento giorni fa {twoHundredAgo}")
       #ottengo i dataframe con i prezzi
       firstYDF = Portfolio.readCalendar(self,firstY)
       twoWeeksAgoDF = Portfolio.readCalendar(self,twoWeeksAgo)
@@ -764,7 +775,7 @@ class Portfolio:
       finalDF3 = finalDF2.merge(fourWeeksAgoDF, on='Ticker', how='left')
       finalDF3 = finalDF3.drop(columns=['Data_y'])
       finalDF3 = finalDF3.rename(columns={"Prezzo mercato":"Prezzo 200gg","Data_x":"Data"})
-
+      #print(finalDF3.to_string())
       #sostituisco i NaN
       finalDF3['Prezzo Oggi'] = finalDF3['Prezzo Oggi'].fillna(0)
       finalDF3['Prezzo YTD'] = finalDF3['Prezzo YTD'].fillna(0)
@@ -783,7 +794,7 @@ class Portfolio:
       finalDF3['Gap 15gg'] = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo 15gg'])*100 / finalDF3['Prezzo Oggi']
       finalDF3['Gap 30gg'] = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo 30gg'])*100 / finalDF3['Prezzo Oggi']
       finalDF3['Gap 200gg'] = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo 200gg'])*100 / finalDF3['Prezzo Oggi']
-
+      #print(finalDF3.to_string())
       #stampo dataframe su foglio
       numRows = len(finalDF3)+1
       arr = finalDF3.values.tolist()

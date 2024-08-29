@@ -156,6 +156,7 @@ def analisiPort(stockStartDate):
     # Mostro i ritorni giornalieri
     #----------------------------------------------------
     returns = df.pct_change()
+    log_returns = np.log(1+df.pct_change())
     #tolgo i valori "inf" che sta per infinito per divisione con 0
     returns.replace([np.inf, -np.inf], 0, inplace=True)
     #print(returns)
@@ -187,21 +188,30 @@ def analisiPort(stockStartDate):
     #print(f"Il ritorno annualizzato del portafoglio è {portAnnualReturn}")
 
     #----------------------------------------------------
+    # Sharpe Ratio
+    #----------------------------------------------------
+    #qui mancherebbe il risk free rate da aggiungere...
+    risk_free=0.01 #considero risk free 1%
+    sharpe_ratio_calc = (portAnnualReturn - risk_free) / port_volatility
+    #----------------------------------------------------
     # Risultato
     #----------------------------------------------------
-    percent_var = str (round(port_variance,2)*100)+'%'
-    percent_vols = str (round(port_volatility,2)*100)+'%'
-    percent_ret = str (round(portAnnualReturn,2)*100)+'%'
+    percent_var = str(round(port_variance,2)*100)+'%'
+    percent_vols = str(round(port_volatility,2)*100)+'%'
+    percent_ret = str(round(portAnnualReturn,2)*100)+'%'
+    sharpe_ratio = str(round(sharpe_ratio_calc,2)*100)+'%'
+    
 
     print("---- Dati mio portafoglio ----")
 
     print(f"Ritorno Annuo atteso {percent_ret}")
     print(f"Rischio/Volatilità Annuale {percent_vols}")
     print(f"Varianza Annuale {percent_var}")
+    print(f"Sharpe Ratio {sharpe_ratio}")
 
     #----------------------------------------------------
     # Scrivo su Sheet
     #----------------------------------------------------
-    listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret]]
-    appendRow('tab_analysis!A:E',listToPrint,newPrj)
+    listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio]]
+    appendRow('tab_analysis!A:F',listToPrint,newPrj)
     return 'Done Analisi Portafolgio'

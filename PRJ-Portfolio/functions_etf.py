@@ -76,14 +76,16 @@ def getPriceETF(ticker):
   #except: #MEGLIO lasciare solo yFINANCE?? anzichè Yahooquery che da sempre errori??
   stock = yf.Ticker(ticker)
   tickInfo = stock.info
+  #print(tickInfo)
   curre = verifKey(tickInfo,'currency')
   price1d = verifKey(tickInfo,'previousClose')
-  livePrice = verifKey(tickInfo, 'currentPrice')
+  #livePrice = verifKey(tickInfo, 'currentPrice')
+  livePrice = verifKey(tickInfo, 'bid')
   datePrice = datetime.today().strftime('%Y-%m-%d')
   output = [ticker, livePrice,datePrice,curre,price1d]
     
   return output
-#print(getPriceETF('EMAE.MI'))
+#print(getPriceETF('XDWS.MI'))
 
 def getSummary(ticker):
   fund = Ticker(ticker)
