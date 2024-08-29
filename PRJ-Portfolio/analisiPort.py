@@ -12,8 +12,8 @@ import numpy as np
 import yfinance as yf
 #from pandas_datareader import data as web
 from datetime import datetime
-import matplotlib.pyplot as plt 
-plt.style.use('fivethirtyeight')
+#import matplotlib.pyplot as plt 
+#plt.style.use('fivethirtyeight')
 #Mio codice
 from functions_sheets import read_range
 from settings import * #importa variabili globali
