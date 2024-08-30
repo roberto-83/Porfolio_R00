@@ -22,6 +22,22 @@ from settings import * #importa variabili globali
 
 #stockStartDate='2020-01-01'
 
+def readMyPort():
+  portfolio_0 = read_range('tab_portfolio!A:M',newPrj)
+  #tolgo colonne che non mi interessano
+  portfolio_1 = portfolio_0[['Tipologia','ISIN','TICKER','%Composizione']]
+  #tolgo il simbolo percentuale
+  #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
+  portfolio_1['%Composizione'].replace('%', '', regex=True, inplace=True)
+  #cambio virgola con punto
+  #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace(',', '.', regex=True)
+  portfolio_1['%Composizione'].replace(',', '.', regex=True, inplace=True)
+  #converto in numero la colonna
+  portfolio_1['%Composizione'] = pd.to_numeric(portfolio_1['%Composizione'])
+  #divido 100
+  portfolio_1['%Composizione'] = portfolio_1['%Composizione']/100
+  return portfolio_1
+
 def analisiPort(stockStartDate):
     #-----------------------
     #voglio calcolare rendimento e sharp ratio
@@ -36,17 +52,7 @@ def analisiPort(stockStartDate):
     #----------------------------------------------------
     # Leggo portafoglio
     #----------------------------------------------------
-    portfolio_0 = read_range('tab_portfolio!A:M',newPrj)
-    #tolgo colonne che non mi interessano
-    portfolio_1 = portfolio_0[['Tipologia','ISIN','TICKER','%Composizione']]
-    #tolgo il simbolo percentuale
-    portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
-    #cambio virgola con punto
-    portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace(',', '.', regex=True)
-    #converto in numero la colonna
-    portfolio_1['%Composizione'] = pd.to_numeric(portfolio_1['%Composizione'])
-    #divido 100
-    portfolio_1['%Composizione'] = portfolio_1['%Composizione']/100
+    portfolio_1 = readMyPort()
     #print(portfolio_1)
     #quindi variabili che serviranno per analisi sono
     assets_1 = portfolio_1['TICKER'].tolist()
@@ -208,10 +214,44 @@ def analisiPort(stockStartDate):
     print(f"Rischio/Volatilità Annuale {percent_vols}")
     print(f"Varianza Annuale {percent_var}")
     print(f"Sharpe Ratio {sharpe_ratio}")
-
+    #CAGR??? (compound annual growth rate)
     #----------------------------------------------------
     # Scrivo su Sheet
     #----------------------------------------------------
-    listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio]]
-    appendRow('tab_analysis!A:F',listToPrint,newPrj)
+    listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free]]
+    appendRow('tab_analysis!A:G',listToPrint,newPrj)
     return 'Done Analisi Portafolgio'
+
+################
+#Analisi con quantstats che sarebbe bello ma solo per singolo ticker, non per portafoglio
+#################
+import quantstats as qs 
+
+#stock = qs.utils.download_returns('RACE.MI')
+#print(stock)
+#stampo i possibili metodi
+#print(dir(stock))
+#sharpe_ratio  = qs.stats.sharpe(stock)
+#print(sharpe_ratio)
+
+def testQuantStat():
+  portfolioFull = readMyPort()
+  #tolgo BTP e P2P
+  subport = portfolioFull[portfolioFull['Tipologia'].isin(["AZIONI","ETF-AZIONI"])]
+  portfolio = subport[['TICKER','%Composizione']]
+  portfolio['%Composizione'] = portfolio['%Composizione'].round(2)
+  #print(portfolio.dtypes)
+  portDict = portfolio.to_dict('split')
+  listDict = portDict['data']
+  dicTickers=dict(listDict)
+  #print(dicTickers)
+  #print(type(dicTickers))
+  
+  #ora che ho i miei ticker (senza BTP) creo il mio index con quantstat
+  #, period='10y'
+  portf = qs.utils.make_index(dicTickers,rebalance=None)
+  #report html comparando con LCWD
+  qs.reports.html(portf, "LCWD.MI", output=os.path.dirname(__file__)+"/tmpFiles/quantstatPortReport.html")
+
+  return 'Done'
+print(testQuantStat())

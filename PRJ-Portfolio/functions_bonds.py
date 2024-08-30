@@ -172,7 +172,10 @@ def readEuronextREV2(isin, data):
     #dfsExt = pd.read_html(driverExt.page_source)
     dfsExt = pd.read_html(StringIO(driverExt.page_source))
     time.sleep(5)
+    
     #prendo la tabella
+    ####METTO UN TRY CATCH?? vediamo se mi si blocca ancora..
+
     histBtpExt = dfsExt[22]
     histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
     #print("stampo quello che leggo")##########################################################
