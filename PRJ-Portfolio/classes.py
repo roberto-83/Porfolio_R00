@@ -972,10 +972,16 @@ class Portfolio:
       qta = tab_watch['QTA'][i]
       tot = tab_watch['TOT'][i]
       dOrdine = tab_watch['Data Ordine'][i]
-      if ordin is not None or ordin !='' or len(ordin)>1:
+      print(f"Lunghezza dell'ordine {len(str(ordin))}")
+      print(f"Tipo dell'ordine {type(ordin)}")
+      print(f"Ordine è {ordin}")
+
+      if str(ordin) != 'None':
+      #if ordin is not None or ordin !='' or len(ordin)>1 or not ordin:
         ordin = ordin.replace(',','.')
       else:
         ordin = 0
+
       print(f"Read info of {tick}")
       tickInfo = Portfolio.getDescr(asset,isin,tick)
       print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}, valori 52 week {tickInfo[13]} e {tickInfo[14]}")
