@@ -21,6 +21,7 @@ from functions_sheets import delete_range,appendRow
 from settings import * #importa variabili globali
 
 #stockStartDate='2020-01-01'
+#print(yf.download('CSSPX.MI', start='2019-08-16', end = '2024-01-01',progress=False)['Adj Close'].to_string())
 
 #leggo ultima data
 def readLastDate():
@@ -237,7 +238,9 @@ def analisiPort(stockStartDate):
       #----------------------------------------------------
       listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free]]
       appendRow('tab_analysis!A:G',listToPrint,newPrj)
-    return 'Done Analisi Portafolgio'
+      return 'Done Analisi Portafolgio'
+    else:
+      return 'Aggiornamento non necessario'
 
 ################
 #Analisi con quantstats che sarebbe bello ma solo per singolo ticker, non per portafoglio

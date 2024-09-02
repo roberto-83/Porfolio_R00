@@ -388,7 +388,7 @@ class Portfolio:
     rendim=histDf.loc['total']['ctvMerc'] - histDf.loc['total']['TotInvest']
     rendimperc= (rendim * 100) / histDf.loc['total']['TotInvest']
     mercato = prezzoMerc['Close'].iloc[0]
-    rendimMerc=100*(float(mercato)-287.56)/287.56
+    rendimMerc=100*(float(mercato)-257.01)/257.01
     delta = rendimMerc - rendimperc
     arrTot = [[histDf['dataHist'].iloc[0],
       histDf.loc['total']['TotInvest'],
