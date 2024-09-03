@@ -277,5 +277,5 @@ def testQuantStat():
   qs.reports.html(portf, "LCWD.MI", output=os.path.dirname(__file__)+"/tmpFiles/quantstatPortReport.html")
 
   return 'Done'
-#print(testQuantStat())
+#print(testQuantStat()) 
 #print(analisiPort('2020-01-01'))

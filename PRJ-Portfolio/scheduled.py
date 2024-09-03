@@ -24,7 +24,7 @@ from yahooread import readYahooSite
 ### INIZIO PROCEDURA
 
 #variabile per non eseguire tutto il codice..
-developerMode=0
+developerMode=1
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio()
@@ -106,10 +106,11 @@ if developerMode == 0:
 else:
   print('Sono in modalità Developer')
   port = Portfolio()
+  print(port.whatchlist())
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   #print(port.portCompanies())
   #print(readHoldings())
-  print(port.portafPaesi())
+  #print(port.portafPaesi())
   #print(port.whatchlist())
  
   #print(port.getPriceYah('GB00BLD4ZL17.SG'))

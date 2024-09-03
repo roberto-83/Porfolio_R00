@@ -925,30 +925,48 @@ class Portfolio:
       'Bond','Bond','','','',price['pric'],'','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
+      #uso yFinance
+      InfoTickerYF = yf.Ticker(tick)
+      # get all stock info
+      infoTick=InfoTickerYF.info
+      print(f"Con yFinance 52 LOw {infoTick['fiftyTwoWeekLow']}")
+      print(f"Con yFinance 52 LOw {infoTick['fiftyTwoWeekHigh']}")
+
+
+
       ##stock = Ticker(tick)
       #prezzo live
       #fund = Ticker(tick)
       #info = fund.history(period="1d")
       #priceItem=info['close'].iloc[0]
       livePrice = Portfolio.getPriceYah(tick)
-      #print(stock)
+
       #get all stock info
       #######questa va in errrore ogn tanto.. metti try catch?
-      print(f"leggo dati per {tick}")
-      try:
-        infoStockYQ = stock.quotes[tick]
-      except:
-        print("ci sono problemi su chiamata API")
-        infoStockYQ = {'fullExchangeName':'','trailingPE':''}
+      #print(f"leggo dati per {tick}")
+     # try:
+        #infoStockYQ = stock.quotes[tick]
+      #except:
+        #print("ci sono problemi su chiamata API")
+       # infoStockYQ = {'fullExchangeName':'','trailingPE':''}
       ##################################Prendi alcuni campi da qui!!!
       infoStock = getStockInfo(tick)
-      #print(infoStockYQ)
-      print(f"trovo trailing PE {Portfolio.verifKey(infoStockYQ,'trailingPE')}")
-      print(f"trovo 52low {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow')}")
-      print(f"trovo 52high {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh')}")
+ 
+      #print(f"trovo trailing PE {Portfolio.verifKey(infoStockYQ,'trailingPE')}")
+      #print(f"trovo 52low {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow')}")
+      #print(f"trovo 52high {Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh')}")
+      
+      print(f"trovo trailing PE {infoStock['trailingPE']}")
+      print(f"trovo 52low {infoStock['fiftyTwoWeekLow']}")
+      print(f"trovo 52high {infoStock['fiftyTwoWeekHigh']}")
+
+      #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
+      #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
+      #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
-      Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
+      infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE']]
+      print(infoTick)
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
