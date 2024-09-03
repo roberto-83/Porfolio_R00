@@ -25,12 +25,13 @@ from settings import * #importa variabili globali
 
 #leggo ultima data
 def readLastDate():
+    todayDate = datetime.today().strftime('%Y-%m-%d')
     tabIsinsNew= read_range('tab_analysis!A:G',newPrj)
     #print(tabIsinsNew.head())
     if len(tabIsinsNew) != 0: #caso in cui tabella sia vuota
-      lastDate = tabIsinsNew['Data calcolo'].iloc[0]
+      lastDate = tabIsinsNew['Data calcolo'].iloc[-1]
       #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
-      if lastDate == Portfolio.todayDate:
+      if lastDate == todayDate:
         return 'Aggiornamento non Necessario'
       else:
         return 'ok'
@@ -55,7 +56,8 @@ def readMyPort():
   return portfolio_1
 
 def analisiPort(stockStartDate):
-    if readLastDate != 'ok':
+    readLastDateVar = readLastDate()
+    if readLastDateVar == 'ok':
       #-----------------------
       #voglio calcolare rendimento e sharp ratio
       #per farlo mi serve il portafolgio di oggi ma con tutti i dati storici possibili
@@ -151,8 +153,8 @@ def analisiPort(stockStartDate):
       df=df.fillna(0)
       print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
       #print(df)
-      print('Tabella dei prezzi storici')
-      print(df.to_string())
+      #print('Tabella dei prezzi storici')
+      #print(df.to_string())
 
       #----------------------------------------------------
       # Salvo Grafico su tmpFiles
@@ -215,7 +217,8 @@ def analisiPort(stockStartDate):
       # Sharpe Ratio
       #----------------------------------------------------
       #qui mancherebbe il risk free rate da aggiungere...
-      risk_free=0.01 #considero risk free 1%
+      risk_free=0.02 #considero risk free 1%
+      print(f"faccio {portAnnualReturn} meno {risk_free} e poi diviso {port_volatility}")
       sharpe_ratio_calc = (portAnnualReturn - risk_free) / port_volatility
       #----------------------------------------------------
       # Risultato
@@ -223,7 +226,7 @@ def analisiPort(stockStartDate):
       percent_var = str(round(port_variance,2)*100)+'%'
       percent_vols = str(round(port_volatility,2)*100)+'%'
       percent_ret = str(round(portAnnualReturn,2)*100)+'%'
-      sharpe_ratio = str(round(sharpe_ratio_calc,2)*100)+'%'
+      sharpe_ratio = round(sharpe_ratio_calc,2)
       
 
       print("---- Dati mio portafoglio ----")
