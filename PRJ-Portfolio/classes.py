@@ -36,6 +36,7 @@ class Portfolio:
   rome = pytz.timezone("Europe/Rome")
   todDateTime0 = datetime.now(rome)
   todayDateHour  = todDateTime0.strftime("%d/%m/%Y %H:%M:%S")
+  todayDateHourAm  = todDateTime0.strftime("%Y-%m-%d %H:%M:%S")
 
   #metodo costruttore
   def __init__(self):
@@ -232,7 +233,7 @@ class Portfolio:
     #richianmo portafoglio
     portfin = Portfolio.financialsPartPort(self)
     #ggiungo data
-    portfin['DataUpdate'] = Portfolio.todayDateHour
+    portfin['DataUpdate'] = Portfolio.todayDateHourAm
     #stampo tutto il dataframe
     #print(portfin.to_string())
     #trasformo in lista
@@ -926,11 +927,11 @@ class Portfolio:
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       #uso yFinance
-      InfoTickerYF = yf.Ticker(tick)
+      #InfoTickerYF = yf.Ticker(tick)
       # get all stock info
-      infoTick=InfoTickerYF.info
-      print(f"Con yFinance 52 LOw {infoTick['fiftyTwoWeekLow']}")
-      print(f"Con yFinance 52 LOw {infoTick['fiftyTwoWeekHigh']}")
+      #infoTick=InfoTickerYF.info
+      #print(f"Con yFinance 52 LOw {infoTick['fiftyTwoWeekLow']}")
+      #print(f"Con yFinance 52 LOw {infoTick['fiftyTwoWeekHigh']}")
 
 
 
@@ -966,7 +967,7 @@ class Portfolio:
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
       infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE']]
-      print(infoTick)
+      #print(infoTick)
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
@@ -991,7 +992,7 @@ class Portfolio:
       tot = tab_watch['TOT'][i]
       dOrdine = tab_watch['Data Ordine'][i]
       print(f"Lunghezza dell'ordine {len(str(ordin))}")
-      print(f"Tipo dell'ordine {type(ordin)}")
+      #print(f"Tipo dell'ordine {type(ordin)}")
       print(f"Ordine è {ordin}")
 
       if str(ordin) != 'None':
@@ -1012,7 +1013,7 @@ class Portfolio:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
       elif float(tickInfo[13]) > 0 and float(tickInfo[14]) > 0 and float(tickInfo[4]) > 0:
-          fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round((float(tickInfo[13])+float(tickInfo[14])/2),2))+ ' )'
+          fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round(((float(tickInfo[13])+float(tickInfo[14]))/2),2))+ ' )'
           fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
           deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[12])) / float(tickInfo[12]),2)
       else:
