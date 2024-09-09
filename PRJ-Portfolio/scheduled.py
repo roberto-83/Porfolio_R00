@@ -21,8 +21,6 @@ from yahooquery import Ticker
 from yahooread import readYahooSite
 #from get_all_tickers import get_tickers as gt
 
-### INIZIO PROCEDURA
-
 #variabile per non eseguire tutto il codice..
 developerMode=0
 if developerMode == 0:

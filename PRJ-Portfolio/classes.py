@@ -923,7 +923,7 @@ class Portfolio:
       #print(tick)
       #print(price)
       infoTick = [price['isin'],tick,price['desc'],price['curr'],price['pric'],price['yeld'],price['scad'],
-      'Bond','Bond','','','',price['pric'],'','','']
+      'Bond','Bond','','','',price['pric'],'','','','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       #uso yFinance
@@ -965,14 +965,15 @@ class Portfolio:
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
       infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
-      infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
+      infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['forwardPE'],
+      infoStock['trailingEps'],infoStock['forwardEps'],livePrice[3],
       infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE']]
       #print(infoTick)
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
     else:
-      infoTick=[isin,tick,'','','','','','','','','','','','','','']
+      infoTick=[isin,tick,'','','','','','','','','','','','','','','','']
     return infoTick
 
   def whatchlist(self):
@@ -1003,7 +1004,7 @@ class Portfolio:
 
       print(f"Read info of {tick}")
       tickInfo = Portfolio.getDescr(asset,isin,tick)
-      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}, valori 52 week {tickInfo[13]} e {tickInfo[14]}")
+      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}, valori 52 week {tickInfo[15]} e {tickInfo[16]}")
       if float(tickInfo[4]) != 0:
         percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
       else:
@@ -1012,24 +1013,25 @@ class Portfolio:
       if asset == 'BTP':
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
-      elif float(tickInfo[13]) > 0 and float(tickInfo[14]) > 0 and float(tickInfo[4]) > 0:
-          fiftyTwoWeek = str(tickInfo[13]) + ' - ' +str(tickInfo[14]) + '( '+str(round(((float(tickInfo[13])+float(tickInfo[14]))/2),2))+ ' )'
-          fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[13]))/(float(tickInfo[14]) - float(tickInfo[13]))
-          deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[12])) / float(tickInfo[12]),2)
+      elif float(tickInfo[15]) > 0 and float(tickInfo[16]) > 0 and float(tickInfo[4]) > 0:
+          fiftyTwoWeek = str(tickInfo[15]) + ' - ' +str(tickInfo[16]) + '( '+str(round(((float(tickInfo[15])+float(tickInfo[16]))/2),2))+ ' )'
+          fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[15]))/(float(tickInfo[16]) - float(tickInfo[15]))
+          deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[14])) / float(tickInfo[14]),2)
       else:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
         deltaIeri=0
       listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
       ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[3],
-      tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11] ])
+      tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11],tickInfo[12],tickInfo[13] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #print(len(listPrin))
     numRow = len(listPrin)+1
+
     #cancello vecchie righe
-    deleteOldRowsWat = delete_range('tab_watchlist!A2:Y250',newPrj)
+    deleteOldRowsWat = delete_range('tab_watchlist!A2:AA250',newPrj)
     #scrivo le nuove
-    write_range('tab_watchlist!A2:Y'+str(numRow),listPrin,newPrj)
+    write_range('tab_watchlist!A2:AA'+str(numRow),listPrin,newPrj)
     return 'ok'
 
 ################################################################################
