@@ -257,6 +257,7 @@ class Portfolio:
   def getHistPrice(row):
 
     print(f"Recupero prezzo storico di {row['Ticker']} alla data {row['dataHist']}")
+    print(row)
     #funzione che mi da il prezzo a mercato dei vari asset
     dateRead = row['dataHist']
     if row['Asset'] == 'P2P':
@@ -887,30 +888,20 @@ class Portfolio:
     livePrice = verifKey(tickInfo, 'currentPrice')
     datePrice = datetime.today().strftime('%Y-%m-%d')
     arr = [ticker, '',livePrice,price1d]
+    print(f"Per il ticker {ticker} il prezzo live è {livePrice}")
     
+    if(livePrice == '0'):
+      print('Leggo il prezzo e i vari dati da yahoo finance')
+
+      #arr = [tick,title,price,price1d]
+      yInfo = readYahooSite(ticker)
+      curre = ''
+      price1d = yInfo[3]
+      livePrice = yInfo[2]
+      datePrice = datetime.today().strftime('%Y-%m-%d')
+      arr = [ticker, '',livePrice,price1d]
+
     
-
-    #trovo i prezzi con Yahooquery
-    #print(f"trovo prezzo per {tick}")
-    #arr =[]
-    #fund = Ticker(tick)
-    #info = fund.history(period="5d")
-    #print(info)
-    #e fallisce prendo i dati letti dal sito
-    #if info.empty:
-      #print('Leggo dati da sito yahoo')
-      #info = readYahooSite(tick)
-      #['GB00BLD4ZL17.SG', 'CoinShares Physical Bitcoin ', '58,73', '58,22']
-      #arr = info
-    #else:
-      #print(info.to_string())
-      #arr = [tick,'',info['close'].iloc[0],info['close'].iloc[1]]
-    #print(arr)
-
-    #prezzo = info['close'].iloc[0]
-    #if prezzo == 0:
-      #prezzoNew = readYahooSite(tick)
-      #prezzo = prezzoNew[2]
     return arr
 
   def getDescr(asset,isin,tick):

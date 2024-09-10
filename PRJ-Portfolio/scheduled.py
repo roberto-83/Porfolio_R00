@@ -240,3 +240,8 @@ else:
 
 
 
+#STOCK LIST
+ #https://eoddata.com/stocklist/LSE.htm
+ #su file excel https://investexcel.net/all-yahoo-finance-stock-tickers/
+
+#https://public.acho.io/embed/9bffe75f11a5a99349359c98c74b9b0ba41cf563b351ffbb7ecc19614706f827861e5171a35b6f8296aa1d43a7558cfb978ae74ac969094d1c991bf7d8c8ca9f
