@@ -886,20 +886,21 @@ class Portfolio:
     curre = verifKey(tickInfo,'currency')
     price1d = verifKey(tickInfo,'previousClose')
     livePrice = verifKey(tickInfo, 'currentPrice')
-    datePrice = datetime.today().strftime('%Y-%m-%d')
-    arr = [ticker, '',livePrice,price1d]
-    print(f"Per il ticker {ticker} il prezzo live è {livePrice}")
+    #datePrice = datetime.today().strftime('%Y-%m-%d')
+    #arr = [ticker, '',livePrice,price1d]
+    print(f"API - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
     
     if(livePrice == '0'):
       print('Leggo il prezzo e i vari dati da yahoo finance')
 
       #arr = [tick,title,price,price1d]
       yInfo = readYahooSite(ticker)
-      curre = ''
+      curre = yInfo[4]
       price1d = yInfo[3]
       livePrice = yInfo[2]
-      datePrice = datetime.today().strftime('%Y-%m-%d')
-      arr = [ticker, '',livePrice,price1d]
+      print(f"SITO - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
+    datePrice = datetime.today().strftime('%Y-%m-%d')
+    arr = [ticker, '',livePrice,price1d]
 
     
     return arr
@@ -995,7 +996,7 @@ class Portfolio:
 
       print(f"Read info of {tick}")
       tickInfo = Portfolio.getDescr(asset,isin,tick)
-      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} per tick {tickInfo[2]}, valori 52 week {tickInfo[15]} e {tickInfo[16]}")
+      print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} , chiusura precedente {tickInfo[14]} per tick {tickInfo[2]}, valori 52 week {tickInfo[15]} e {tickInfo[16]}")
       if float(tickInfo[4]) != 0:
         percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
       else:
@@ -1012,8 +1013,11 @@ class Portfolio:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
         deltaIeri=0
-      listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],tickInfo[4],tickInfo[12],
-      ordin,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[3],
+      priceLiveWatch = changeFormatNumberPrint(tickInfo[4])
+      priceYestWatch = changeFormatNumberPrint(tickInfo[14])
+      priceOrder = changeFormatNumberPrint(ordin)
+      listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],priceLiveWatch,priceYestWatch,priceOrder
+      ,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[3],
       tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11],tickInfo[12],tickInfo[13] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #print(len(listPrin))
@@ -1302,3 +1306,11 @@ def replace_dot_with_comma(x):
   return x
 
 #print(caldRendimento())
+
+def changeFormatNumberPrint(numb):
+  #per stampare su google sheet serve la virgola
+  if(str(numb).find('.') != -1):
+    numb1 = str(numb).replace('.',',')
+  else:
+    numb1 = numb
+  return numb1

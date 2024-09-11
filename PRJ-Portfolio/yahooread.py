@@ -44,7 +44,7 @@ def readYahooSite(tick):
     msg = 0
 
   #msg = driverExt.find_element(By.XPATH,'/html/body/table/tbody/tr/td/h1').text
-  print(f"Messaggio {msg}")
+  #print(f"Messaggio {msg}")
   if(msg == 'Will be right back...'):
     print('Server non disponibile')
     arr=[tick,'',0,0,0,0,0]
@@ -87,7 +87,7 @@ def readYahooSite(tick):
   return arr
 
 #print(readYahooSite('GB00BLD4ZL17.SG'))
-print(readYahooSite('ICGA.DE'))
+#print(readYahooSite('ICGA.DE'))
 
 #2 proviamo con le api di yahoo finance
 #guida qui https://cryptocointracker.com/yahoo-finance/yahoo-finance-api
