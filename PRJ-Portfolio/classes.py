@@ -1008,7 +1008,7 @@ class Portfolio:
       elif float(tickInfo[15]) > 0 and float(tickInfo[16]) > 0 and float(tickInfo[4]) > 0:
           fiftyTwoWeek = str(tickInfo[15]) + ' - ' +str(tickInfo[16]) + '( '+str(round(((float(tickInfo[15])+float(tickInfo[16]))/2),2))+ ' )'
           fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[15]))/(float(tickInfo[16]) - float(tickInfo[15]))
-          deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[14])) / float(tickInfo[14]),2)
+          deltaIeri = round( (float(tickInfo[4]) - float(tickInfo[14]))*100 / float(tickInfo[14]),2)
       else:
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
