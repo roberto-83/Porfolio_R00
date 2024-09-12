@@ -25,15 +25,14 @@ def readYahooSite(tick):
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
-  
-  #chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
-  #chrome_options.add_argument('--no-sandbox')
-  chrome_options.add_argument("--enable-javascript")
-  chrome_options.add_argument('--disable-dev-shm-usage')
-  chrome_options.add_argument("enable-automation")
-  chrome_options.add_argument("--disable-extensions")
-  chrome_options.add_argument("--dns-prefetch-disable")
   chrome_options.add_argument("--disable-gpu")
+
+
+
+  #chrome_options.add_argument("enable-automation")
+  #chrome_options.add_argument("--disable-extensions")
+  #chrome_options.add_argument("--dns-prefetch-disable")
+  #chrome_options.add_argument("--disable-gpu")
 
 
   driverExt = webdriver.Chrome( options=chrome_options)
