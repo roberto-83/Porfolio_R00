@@ -67,14 +67,8 @@ if developerMode == 0:
   delta5 = time.time() - time5s
   log_insert1("Aggiornamento Tab Andamento","Fine",delta5)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Fine - Aggiornamento Andamento")
-  #aggiorno watchlist
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Inizio - Aggiornamento Watchlist")
-  log_insert1("Aggiornamento Tab Watchlist","Inizio","")
-  time6s = time.time()
-  print(port.whatchlist())
-  delta6 = time.time() - time6s
-  log_insert1("Aggiornamento Tab Watchlist","Fine",delta6)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
+  #old watchlist
+
   #aggiorno settori
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Aggiornamento Settori")
   log_insert1("Aggiornamento Tab Settori","Inizio","")
@@ -99,7 +93,14 @@ if developerMode == 0:
   delta9 = time.time() - time9s
   log_insert1("Analisi Portafoglio","Fine",delta9)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Fine -  Analisi Portafoglio")
-
+  #aggiorno watchlist
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Inizio - Aggiornamento Watchlist")
+  log_insert1("Aggiornamento Tab Watchlist","Inizio","")
+  time6s = time.time()
+  print(port.whatchlist())
+  delta6 = time.time() - time6s
+  log_insert1("Aggiornamento Tab Watchlist","Fine",delta6)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
 
 else:
   print('Sono in modalità Developer')
