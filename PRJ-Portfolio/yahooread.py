@@ -27,6 +27,7 @@ def readYahooSite(tick):
   chrome_options.add_argument('--disable-dev-shm-usage')
   chrome_options.add_argument("--disable-gpu")
   chrome_options.add_argument("--disable-extensions")
+  
 
 
   #chrome_options.add_argument("enable-automation")
@@ -36,13 +37,14 @@ def readYahooSite(tick):
 
 
   driverExt = webdriver.Chrome( options=chrome_options)
+  driverExt.set_page_load_timeout(40)
   driverExt.get(URL)
   driverExt.maximize_window()
   #prendo il bottone "accetta tutto"
   button=driverExt.find_element(By.XPATH,'/html/body/div/div/div/div/form/div[2]/div[2]/button[1]')
   #print(button)
   driverExt.execute_script("arguments[0].click();", button)
-  time.sleep(5)
+  time.sleep(3)
   #print('fin qui tutto bene')
   #leggo i dati
   #print(driverExt.page_source)
