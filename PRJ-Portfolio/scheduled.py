@@ -27,15 +27,15 @@ if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio()
   #scrivo la tabella degli Isin
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
-  log_insert1("Aggiornamento Tab Isin","Inizio","")
-  time1s = time.time()
-  print(port.writeAllIsins())
-  delta1 = time.time() - time1s
-  log_insert1("Aggiornamento Tab Isin","Fine",delta1)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Fine - Aggiornamento Tab Isin")
+  #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
+  #log_insert1("Aggiornamento Tab Isin","Inizio","")
+  #time1s = time.time()
+  #print(port.writeAllIsins())
+  #delta1 = time.time() - time1s
+  #log_insert1("Aggiornamento Tab Isin","Fine",delta1)
+  #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Fine - Aggiornamento Tab Isin")
   #Crea la tabella del portafoglio
-  time.sleep(5) #aspetto tempo perchè la tabella sopra sia scritta
+  #time.sleep(5) #aspetto tempo perchè la tabella sopra sia scritta
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio")
   log_insert1("Aggiornamento Tab Portafoglio","Inizio","")
   time2s = time.time()
