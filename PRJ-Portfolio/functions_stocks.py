@@ -8,6 +8,7 @@ def getStockInfo(ticker):
    #print(stock)
   #get all stock info
   info = stock.info
+  #print(info)
   #Creo dizionario filtrato
   qType = verifKey(info,'quoteType')
   if qType == "CRYPTOCURRENCY" : qType = "CRYPTO"
@@ -30,6 +31,7 @@ def getStockInfo(ticker):
   "trailingEps": verifKey(info,'trailingEps'),
   "forwardEps": verifKey(info,'forwardEps'),
   "pegRatio": verifKey(info,'pegRatio'),
+  "trailingPegRatio": verifKey(info,'trailingPegRatio'),
   #PRICE
   "prevClose": verifKey(info,'previousClose'),
   "currentPrice": verifKey(info,'currentPrice'),
@@ -64,12 +66,16 @@ def getStockInfo(ticker):
   "enterpriseToRevenue": verifKey(info,'enterpriseToRevenue'),
   "enterpriseToEbitda": verifKey(info,'enterpriseToEbitda'),
   "earningsQuarterlyGrowth": verifKey(info,'earningsQuarterlyGrowth'),
+  "quickRatio": verifKey(info,'quickRatio'),
+  "currentRatio": verifKey(info,'currentRatio'),
   #TARGET
   "targetHighPrice": verifKey(info,'targetHighPrice'),
   "targetLowPrice": verifKey(info,'targetLowPrice'),
   "targetMeanPrice": verifKey(info,'targetMeanPrice'),
+  "targetMedianPrice": verifKey(info,'targetMedianPrice'),
   "recommendationMean": verifKey(info,'recommendationMean'),
   "recommendationKey": verifKey(info,'recommendationKey'),
+  "marketCap": verifKey(info,'marketCap'),
   "numberOfAnalystOpinions": verifKey(info,'numberOfAnalystOpinions')
   }
   return stockInfo
@@ -104,7 +110,7 @@ def verifKey(dict,val):
   else:
     return '0'
 
-
+#print(getStockInfo('1QZ.DE'))
 #print(getStockInfo('3V64.DE'))
 #print(dividends('3V64.DE'))
 

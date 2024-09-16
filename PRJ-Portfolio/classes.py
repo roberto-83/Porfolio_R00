@@ -917,7 +917,7 @@ class Portfolio:
       #print(tick)
       #print(price)
       infoTick = [price['isin'],tick,price['desc'],price['curr'],price['pric'],price['yeld'],price['scad'],
-      'Bond','Bond','','','',price['pric'],'','','','','']
+      'Bond','Bond','','','',price['pric'],'','','','','','','','','','','','','','','','','','','','','','','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       livePrice = Portfolio.getPriceYah(tick)     #yahoo query 
@@ -937,19 +937,26 @@ class Portfolio:
       infoTick = [isin,tick,titleStock,infoStock['currency'],livePrice[2],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['forwardPE'],
       infoStock['trailingEps'],infoStock['forwardEps'],livePrice[3],
-      infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE']]
+      infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE'],infoStock['pegRatio'],infoStock['trailingPegRatio'],
+      infoStock['bookValue'],infoStock['priceToBook'],
+      infoStock['earningsQuarterlyGrowth'],infoStock['enterpriseToRevenue'],infoStock['enterpriseToEbitda'],infoStock['quickRatio'],infoStock['currentRatio'],infoStock['debtToEquity'],
+      infoStock['revenuePerShare'],infoStock['returnOnAssets'],infoStock['returnOnEquity'],infoStock['earningsGrowth'],
+      infoStock['revenueGrowth'],infoStock['targetHighPrice'],infoStock['targetLowPrice'],infoStock['targetMeanPrice'],infoStock['targetMedianPrice']]
+
+
       #print(infoTick)
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],infoStock['currentPrice'],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],infoStock['prevClose'],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
+
     else:
-      infoTick=[isin,tick,'','','','','','','','','','','','','','','','']
+      infoTick=[isin,tick,'','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
     return infoTick
 
   def whatchlist(self):
     #loop sulla pagina tab_whatchlist
     tab_watch = read_range('tab_watchlist!A:R',newPrj)
-    print(tab_watch.keys())
+    #print(tab_watch.keys())
     #modifico il dataframe mettendo i dati aggiornati
     listPrin =[]
     #loop sui ticker
@@ -962,9 +969,9 @@ class Portfolio:
       qta = tab_watch['QTA'][i]
       tot = tab_watch['TOT'][i]
       dOrdine = tab_watch['Data Ordine'][i]
-      print(f"Lunghezza dell'ordine {len(str(ordin))}")
+      #print(f"Lunghezza dell'ordine {len(str(ordin))}")
       #print(f"Tipo dell'ordine {type(ordin)}")
-      print(f"Ordine è {ordin}")
+      #print(f"Ordine è {ordin}")
 
       if str(ordin) != 'None':
       #if ordin is not None or ordin !='' or len(ordin)>1 or not ordin:
@@ -996,15 +1003,17 @@ class Portfolio:
       priceOrder = changeFormatNumberPrint(ordin)
       listPrin.append([Portfolio.todayDateHour,asset,isin,tick,tickInfo[2],priceLiveWatch,priceYestWatch,priceOrder
       ,percPrezz,av,qta,tot,dOrdine,fiftyTwoWeek,fiftyTwoWeekPerc,deltaIeri,tab_watch['NOTE'][i],tickInfo[3],
-      tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11],tickInfo[12],tickInfo[13] ])
+      tickInfo[5],tickInfo[6],tickInfo[7],tickInfo[8],tickInfo[9],tickInfo[10],tickInfo[11],tickInfo[12],tickInfo[13],
+      tickInfo[18],tickInfo[19],tickInfo[20],tickInfo[21],tickInfo[22],tickInfo[23],tickInfo[24],tickInfo[25],
+      tickInfo[26],tickInfo[27],tickInfo[28],tickInfo[29],tickInfo[30],tickInfo[31],tickInfo[32],tickInfo[33],tickInfo[34],tickInfo[35] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #print(len(listPrin))
     numRow = len(listPrin)+1
 
     #cancello vecchie righe
-    deleteOldRowsWat = delete_range('tab_watchlist!A2:AA250',newPrj)
+    deleteOldRowsWat = delete_range('tab_watchlist!A2:AS250',newPrj)
     #scrivo le nuove
-    write_range('tab_watchlist!A2:AA'+str(numRow),listPrin,newPrj)
+    write_range('tab_watchlist!A2:AS'+str(numRow),listPrin,newPrj)
     return 'ok'
 
 ################################################################################
