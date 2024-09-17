@@ -1,6 +1,30 @@
 import yfinance as yf #dettaglio https://aroussi.com/post/python-yahoo-finance
 
-
+#yfinance
+def testReadDataYf(tick):
+  ticker = yf.Ticker(tick)
+  #analysisData = ticker.get_analysis()
+  FutureDates = ticker.get_calendar()
+  print(FutureDates)
+  DividensSplit = ticker.get_actions()
+  print(DividensSplit)
+  News = ticker.get_news()
+  print(News)
+  reccomand = ticker.get_recommendations()
+  print(reccomand)
+  balance_sheet = ticker.get_balance_sheet()
+  print(balance_sheet)
+  cashflow = ticker.get_cashflow()
+  print(cashflow)
+  info = ticker.get_info()
+  print(info)
+  institutional_holders = ticker.get_institutional_holders()
+  print(institutional_holders)
+  #analisi non mi va..
+  analysis = ticker.get_analysis()
+  print(analysis)
+  return 'ok0'
+#print(testReadDataYf('RACE.MI'))
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):

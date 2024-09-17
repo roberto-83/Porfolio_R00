@@ -15,3 +15,11 @@ transact = transact.sort_values(by=['Asset']) -> Ordino Df
 
 GITHUB guida
 https://medium.com/analytics-vidhya/how-to-use-google-colab-with-github-via-google-drive-68efb23a42d
+
+
+
+GUIDA YFINANCE
+https://mayerkrebs.com/yfinance-library-the-definitive-guide/
+
+SORGENTE DATI
+valutare https://www.macrotrends.net/stocks/charts/NVDA/nvidia/financial-statements
