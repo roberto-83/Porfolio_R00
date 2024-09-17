@@ -982,14 +982,18 @@ class Portfolio:
       print(f"Read info of {tick}")
       tickInfo = Portfolio.getDescr(asset,isin,tick)
       print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} , chiusura precedente {tickInfo[14]} per tick {tickInfo[2]}, valori 52 week {tickInfo[15]} e {tickInfo[16]}")
-      if float(tickInfo[4]) != 0:
-        percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
+      if tickInfo[4] != '':
+        if float(tickInfo[4]) != 0:
+          percPrezz = (float(ordin) - float(tickInfo[4]))/float(tickInfo[4])
+        else:
+          percPrezz = 0
       else:
-        percPrezz = 0
+          percPrezz = 0
       #Calcolo 52 WEEK
-      if asset == 'BTP':
+      if asset == 'BTP' or asset == 'CRYPTO' or asset == 'CURRENCY':
         fiftyTwoWeek=''
         fiftyTwoWeekPerc=''
+        deltaIeri=0
       elif float(tickInfo[15]) > 0 and float(tickInfo[16]) > 0 and float(tickInfo[4]) > 0:
           fiftyTwoWeek = str(tickInfo[15]) + ' - ' +str(tickInfo[16]) + '( '+str(round(((float(tickInfo[15])+float(tickInfo[16]))/2),2))+ ' )'
           fiftyTwoWeekPerc = (float(tickInfo[4])-float(tickInfo[15]))/(float(tickInfo[16]) - float(tickInfo[15]))
