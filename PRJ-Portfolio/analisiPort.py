@@ -248,7 +248,7 @@ def analisiPort(stockStartDate):
 ################
 #Analisi con quantstats che sarebbe bello ma solo per singolo ticker, non per portafoglio
 #################
-import quantstats as qs 
+#import quantstats as qs 
 
 #stock = qs.utils.download_returns('RACE.MI')
 #print(stock)
