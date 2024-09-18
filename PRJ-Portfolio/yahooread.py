@@ -38,6 +38,7 @@ def readYahooSite(tick):
 
   driverExt = webdriver.Chrome( options=chrome_options)
   driverExt.set_page_load_timeout(40)
+  driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
   driverExt.get(URL)
   driverExt.maximize_window()
   #prendo il bottone "accetta tutto"
