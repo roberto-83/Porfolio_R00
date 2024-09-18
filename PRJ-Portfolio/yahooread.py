@@ -34,7 +34,7 @@ def readYahooSite(tick):
   chrome_options.add_argument("--ignore-ssl-errors")
   chrome_options.add_argument("--log-level=3")
   chrome_options.add_argument("enable-features=NetworkServiceInProcess")
-  chrome_options.add_argument("--log-level=3")
+  chrome_options.add_argument("disable-features=NetworkService")
 
   driverExt = webdriver.Chrome( options=chrome_options)
   driverExt.set_page_load_timeout(50)
