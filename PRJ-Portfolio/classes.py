@@ -924,7 +924,7 @@ class Portfolio:
     #datePrice = datetime.today().strftime('%Y-%m-%d')
     #arr = [ticker, '',livePrice,price1d]
     print(f"API - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
-    print('continuo ad analizzare il prezzo ')
+
     if(livePrice == '0'):
       print('Leggo il prezzo e i vari dati da yahoo finance')
 
