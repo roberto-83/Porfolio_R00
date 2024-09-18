@@ -37,8 +37,8 @@ def readYahooSite(tick):
   chrome_options.add_argument("disable-features=NetworkService")
 
   driverExt = webdriver.Chrome( options=chrome_options)
-  driverExt.set_page_load_timeout(50)
-  driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
+  driverExt.set_page_load_timeout(30)
+  #driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
   driverExt.get(URL)
   driverExt.maximize_window()
   #prendo il bottone "accetta tutto"
@@ -96,6 +96,7 @@ def readYahooSite(tick):
       fiftyTwoWeek_high = changeFormatNumber(fiftyTwoWeek_high1)
 
     arr = [tick,title,price,price1d,currency2,fiftyTwoWeek_low,fiftyTwoWeek_high]
+    driverExt.quit()
   return arr
 
 #print(readYahooSite('GB00BLD4ZL17.SG'))
