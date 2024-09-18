@@ -30,10 +30,14 @@ def readYahooSite(tick):
   chrome_options.add_argument("enable-automation")
   chrome_options.add_argument("--dns-prefetch-disable")
   chrome_options.add_argument("--disable-gpu")
-
+  chrome_options.add_argument("--ignore-certificate-errors")
+  chrome_options.add_argument("--ignore-ssl-errors")
+  chrome_options.add_argument("--log-level=3")
+  chrome_options.add_argument("enable-features=NetworkServiceInProcess")
+  chrome_options.add_argument("--log-level=3")
 
   driverExt = webdriver.Chrome( options=chrome_options)
-  driverExt.set_page_load_timeout(40)
+  driverExt.set_page_load_timeout(50)
   driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
   driverExt.get(URL)
   driverExt.maximize_window()
