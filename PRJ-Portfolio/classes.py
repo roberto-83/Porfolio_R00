@@ -914,7 +914,7 @@ class Portfolio:
 ################################################################################
   
   def getPriceYah(ticker):
-
+    print('Leggo i dati del ticker')
     stock = yf.Ticker(ticker)
     tickInfo = stock.info
     curre = verifKey(tickInfo,'currency')

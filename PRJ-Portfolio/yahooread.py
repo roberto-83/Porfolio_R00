@@ -35,7 +35,7 @@ def readYahooSite(tick):
   #chrome_options.add_argument("--log-level=3")
   #chrome_options.add_argument("enable-features=NetworkServiceInProcess")
   #chrome_options.add_argument("disable-features=NetworkService")
-
+  print('Chrome opions ok')
   driverExt = webdriver.Chrome( options=chrome_options)
   driverExt.set_page_load_timeout(10)
   #driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
