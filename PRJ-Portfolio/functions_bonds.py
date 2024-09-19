@@ -163,6 +163,7 @@ def readEuronextREV2(isin, data):
   else:
     print("inizia driver")
     driverExt = webdriver.Chrome( options=chrome_options)
+    driverExt.set_page_load_timeout(10)
     #Get URL
     driverExt.get(URL_ESTESO)
     print("10 sec wait")
