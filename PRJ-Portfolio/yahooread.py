@@ -37,7 +37,7 @@ def readYahooSite(tick):
   #chrome_options.add_argument("disable-features=NetworkService")
 
   driverExt = webdriver.Chrome( options=chrome_options)
-  driverExt.set_page_load_timeout(10)
+  #driverExt.set_page_load_timeout(10)
   #driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
   driverExt.get(URL)
   driverExt.maximize_window()
@@ -45,10 +45,10 @@ def readYahooSite(tick):
   button=driverExt.find_element(By.XPATH,'/html/body/div/div/div/div/form/div[2]/div[2]/button[1]')
   #print(button)
   driverExt.execute_script("arguments[0].click();", button)
-  time.sleep(3)
+  time.sleep(5)
   #print('fin qui tutto bene')
   #leggo i dati
-  print(driverExt.page_source)
+  #print(driverExt.page_source)
 
   try:
     msg = driverExt.find_element(By.XPATH,'/html/body/table/tbody/tr/td/h1').text
