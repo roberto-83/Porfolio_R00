@@ -945,6 +945,7 @@ class Portfolio:
     infoTick=[]
     #isin, ticker, descrizione, currency, prezzo, rendimen, scadenza , settore, industria, beta, pe,eps, price1D
     if(asset == 'BTP' or asset == 'BOT'):
+      print('Leggo la descrizione')
       price=getBtpData(isin)
       #print(tick)
       #print(price)
