@@ -942,8 +942,6 @@ class Portfolio:
     return arr
 
   def getDescr(asset,isin,tick):
-    #isin='IT0005273013'
-    #asset='BTP'
     infoTick=[]
     #isin, ticker, descrizione, currency, prezzo, rendimen, scadenza , settore, industria, beta, pe,eps, price1D
     if(asset == 'BTP' or asset == 'BOT'):
@@ -990,7 +988,6 @@ class Portfolio:
   def whatchlist(self):
     #loop sulla pagina tab_whatchlist
     tab_watch = read_range('tab_watchlist!A:R',newPrj)
-    #print(tab_watch.keys())
     #modifico il dataframe mettendo i dati aggiornati
     listPrin =[]
     #loop sui ticker
@@ -1013,7 +1010,7 @@ class Portfolio:
       else:
         ordin = 0
 
-      print(f"Read info of {tick}")
+      print(f"Read info of {tick} che è un {asset} con isin {isin}")
       tickInfo = Portfolio.getDescr(asset,isin,tick)
       print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} , chiusura precedente {tickInfo[14]} per tick {tickInfo[2]}, valori 52 week {tickInfo[15]} e {tickInfo[16]}")
       if tickInfo[4] != '':
