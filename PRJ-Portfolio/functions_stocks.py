@@ -28,6 +28,7 @@ def testReadDataYf(tick):
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
+  print('Leggo stock info')
   stock = yf.Ticker(ticker)
    #print(stock)
   #get all stock info

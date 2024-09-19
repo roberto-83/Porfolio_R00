@@ -951,18 +951,18 @@ class Portfolio:
       #print(price)
       infoTick = [price['isin'],tick,price['desc'],price['curr'],price['pric'],price['yeld'],price['scad'],
       'Bond','Bond','','','',price['pric'],'','','','','','','','','','','','','','','','','','','','','','','','']
+    elif(asset == 'CRYPTO' or asset == 'CURRENCY'):
+      infoTick = ['',tick,'','','','','',
+      'Bond','Bond','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
       livePrice = Portfolio.getPriceYah(tick)     #yahoo query 
       infoStock = getStockInfo(tick)
-      
-      #print(f"trovo trailing PE {infoStock['trailingPE']}")
-      #print(f"trovo 52low {infoStock['fiftyTwoWeekLow']}")
-      #print(f"trovo 52high {infoStock['fiftyTwoWeekHigh']}")
 
-      titleStock = infoStock['longName']
-      if(len(titleStock)<2):
-        titleStock = livePrice[4] #prendo il titolo dal sito web
+      #titleStock = infoStock['longName']
+      titleStock = livePrice[4]
+      #if(len(titleStock)<2):
+        #titleStock = livePrice[4] #prendo il titolo dal sito web
 
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],

@@ -37,9 +37,10 @@ def readYahooSite(tick):
   #chrome_options.add_argument("disable-features=NetworkService")
   print('Chrome opions ok')
   driverExt = webdriver.Chrome( options=chrome_options)
-  driverExt.set_page_load_timeout(10)
   #driverExt.implicitly_wait(10) # attendi fino a 10 secondi per gli elementi
   driverExt.get(URL)
+  print('Chiamo url')
+  driverExt.set_page_load_timeout(10)
   driverExt.maximize_window()
   #prendo il bottone "accetta tutto"
   button=driverExt.find_element(By.XPATH,'/html/body/div/div/div/div/form/div[2]/div[2]/button[1]')
