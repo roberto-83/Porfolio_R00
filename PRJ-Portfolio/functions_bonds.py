@@ -99,7 +99,6 @@ def readEuronext(isin):
 #print(readEuronext('IT0005580003'))
 
 def readEuronextREV2(isin, data):
-  
   #URl singola mi da alcune info
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
