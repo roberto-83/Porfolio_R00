@@ -216,7 +216,7 @@ def readEuronextREV2(isin, data):
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
 
 def getBtpData(isin_val):
-  print('Inizio a utilizzare BEAUTIFUL SOUP')
+  #print('Inizio a utilizzare BEAUTIFUL SOUP')
   URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=italia&yieldtype=G&timescale=DUR" 
   print(URL)
   r = requests.get(URL) 

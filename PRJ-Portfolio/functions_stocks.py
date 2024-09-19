@@ -58,7 +58,7 @@ def getStockInfo(ticker):
   "pegRatio": verifKey(info,'pegRatio'),
   "trailingPegRatio": verifKey(info,'trailingPegRatio'),
   #PRICE
-  "prevClose": verifKey(info,'previousClose'),
+  "previousClose": verifKey(info,'previousClose'),
   "currentPrice": verifKey(info,'currentPrice'),
   #DIVIDEND
   "dividRate": verifKey(info,'dividRate'),
@@ -135,7 +135,7 @@ def verifKey(dict,val):
   else:
     return '0'
 
-#print(getStockInfo('1QZ.DE'))
+#print(getStockInfo('21BC.DE'))
 #print(getStockInfo('3V64.DE'))
 #print(dividends('3V64.DE'))
 

@@ -921,6 +921,8 @@ class Portfolio:
     price1d = verifKey(tickInfo,'previousClose')
     livePrice = verifKey(tickInfo, 'currentPrice')
     title = verifKey(tickInfo, 'longName')
+    if title == 0: 
+      title = verifKey(tickInfo, 'shortName')
     #datePrice = datetime.today().strftime('%Y-%m-%d')
     #arr = [ticker, '',livePrice,price1d]
     print(f"API - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
@@ -956,20 +958,19 @@ class Portfolio:
       'Bond','Bond','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
     elif(asset == 'AZIONI' or asset == 'ETF'):
       
-      livePrice = Portfolio.getPriceYah(tick)     #yahoo query 
+      #livePrice = Portfolio.getPriceYah(tick)     #yahoo query 
       infoStock = getStockInfo(tick)
 
-      #titleStock = infoStock['longName']
-      titleStock = livePrice[4]
-      #if(len(titleStock)<2):
-        #titleStock = livePrice[4] #prendo il titolo dal sito web
+      titleStock = infoStock['longName']
+      if(len(titleStock)<2):
+        titleStock = infoStock['shortName'] #prendo il titolo dal sito web
 
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
-      infoTick = [isin,tick,titleStock,infoStock['currency'],livePrice[2],'','',
+      infoTick = [isin,tick,titleStock,infoStock['currency'],infoStock['currentPrice'],'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['forwardPE'],
-      infoStock['trailingEps'],infoStock['forwardEps'],livePrice[3],
+      infoStock['trailingEps'],infoStock['forwardEps'],infoStock['previousClose'],
       infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE'],infoStock['pegRatio'],infoStock['trailingPegRatio'],
       infoStock['bookValue'],infoStock['priceToBook'],
       infoStock['earningsQuarterlyGrowth'],infoStock['enterpriseToRevenue'],infoStock['enterpriseToEbitda'],infoStock['quickRatio'],infoStock['currentRatio'],infoStock['debtToEquity'],
