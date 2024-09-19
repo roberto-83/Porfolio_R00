@@ -925,16 +925,16 @@ class Portfolio:
     #arr = [ticker, '',livePrice,price1d]
     print(f"API - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
 
-    if(livePrice == '0'):
-      print('Leggo il prezzo e i vari dati da yahoo finance')
+    #if(livePrice == '0'):
+      #print('Leggo il prezzo e i vari dati da yahoo finance')
 
       #arr = [tick,title,price,price1d]
-      yInfo = readYahooSite(ticker)
-      curre = yInfo[4]
-      price1d = yInfo[3]
-      livePrice = yInfo[2]
-      title = yInfo[1]
-      print(f"SITO - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
+      #yInfo = readYahooSite(ticker)
+      #curre = yInfo[4]
+      #price1d = yInfo[3]
+      #livePrice = yInfo[2]
+      #title = yInfo[1]
+      #print(f"SITO - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
     datePrice = datetime.today().strftime('%Y-%m-%d')
     arr = [ticker, '',livePrice,price1d,title]
 
