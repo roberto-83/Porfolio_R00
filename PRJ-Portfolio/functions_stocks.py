@@ -1,8 +1,5 @@
 import yfinance as yf #dettaglio https://aroussi.com/post/python-yahoo-finance
 
-
-
-
 #yfinance
 def testReadDataYf(tick):
   ticker = yf.Ticker(tick)
