@@ -925,6 +925,8 @@ class Portfolio:
     title = verifKey(tickInfo, 'longName')
     if title == 0: 
       title = verifKey(tickInfo, 'shortName')
+    if ticker == 'BITC.DU':
+      title='CoinShares Physical Bitcoin'
     #datePrice = datetime.today().strftime('%Y-%m-%d')
     #arr = [ticker, '',livePrice,price1d]
     print(f"API - Per il ticker {ticker} il prezzo live è {livePrice} mentre il prezzo di ieri {price1d}")
