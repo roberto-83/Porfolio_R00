@@ -6,6 +6,7 @@ from settings import * #importa variabili globali
 import pytz
 import platform
 
+
 def log_insert(message,stato):
   rome = pytz.timezone("Europe/Rome")
   todDateTime0 = datetime.now(rome)
@@ -14,6 +15,7 @@ def log_insert(message,stato):
   appendRow('tab_log!A:C',arrLog,newPrj)
   return 'ok'
 def log_insert1(message,stato,delta):
+  #hostname = platform.node()
   hostname = platform.node()
   if delta != '':
     deltaMin = delta/60

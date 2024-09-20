@@ -1,5 +1,8 @@
 import yfinance as yf #dettaglio https://aroussi.com/post/python-yahoo-finance
 
+
+
+
 #yfinance
 def testReadDataYf(tick):
   ticker = yf.Ticker(tick)
@@ -34,6 +37,7 @@ def testReadDataYf(tick):
   print(analysis)
   return 'ok0'
 #print(testReadDataYf('EURUSD=X'))
+
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
