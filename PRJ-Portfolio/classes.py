@@ -968,8 +968,8 @@ class Portfolio:
       livePrice =infoStock['currentPrice']
       if(livePrice == 0):
         livePrice = infoStock['bid'] #per gli ETF devo usare il bid perchè manca prezzo su api
-          if(livePrice ==0):
-            livePrice = infoStock['open']#per le cripto manca prezzo attuale, devo usare quello di apertura
+      if(livePrice ==0):
+        livePrice = infoStock['open']#per le cripto manca prezzo attuale, devo usare quello di apertura
 
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
