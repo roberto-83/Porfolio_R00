@@ -33,7 +33,7 @@ def testReadDataYf(tick):
   analysis = ticker.get_analysis()
   print(analysis)
   return 'ok0'
-#print(testReadDataYf('CSSPX.MI'))
+print(testReadDataYf('EURUSD=X'))
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
@@ -69,6 +69,8 @@ def getStockInfo(ticker):
   #PRICE
   "previousClose": verifKey(info,'previousClose'),
   "currentPrice": verifKey(info,'currentPrice'),
+  "bid": verifKey(info,'bid'),
+  "open": verifKey(info,'regularMarketOpen'),
   #DIVIDEND
   "dividRate": verifKey(info,'dividRate'),
   "dividYield": verifKey(info,'dividYield'),
