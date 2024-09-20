@@ -955,10 +955,10 @@ class Portfolio:
       #print(price)
       infoTick = [price['isin'],tick,price['desc'],price['curr'],price['pric'],price['yeld'],price['scad'],
       'Bond','Bond','','','',price['pric'],'','','','','','','','','','','','','','','','','','','','','','','','']
-    elif(asset == 'CRYPTO' or asset == 'CURRENCY'):
-      infoTick = ['',tick,'','','','','',
-      'Bond','Bond','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
-    elif(asset == 'AZIONI' or asset == 'ETF' or asset == 'ETC'):
+    #elif( ):
+      #infoTick = ['',tick,'','','','','',
+      #'Bond','Bond','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
+    elif(asset == 'AZIONI' or asset == 'ETF' or asset == 'ETC' or asset == 'CURRENCY' or asset == 'CRYPTO'):
       
       #livePrice = Portfolio.getPriceYah(tick)     #yahoo query 
       infoStock = getStockInfo(tick)
