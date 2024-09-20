@@ -33,7 +33,7 @@ def testReadDataYf(tick):
   analysis = ticker.get_analysis()
   print(analysis)
   return 'ok0'
-print(testReadDataYf('BITC.DU'))
+#print(testReadDataYf('BITC.DU'))
 
 
 #FUNZIONI COMPLETE
