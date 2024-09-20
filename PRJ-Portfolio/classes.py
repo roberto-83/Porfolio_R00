@@ -107,7 +107,8 @@ class Portfolio:
     print(f"Leggo il prezzo di {row['Ticker']}, asset {row['Asset']}")
     if row['Asset'] == 'AZIONI':
       infoStock = getStockInfo(row['Ticker'])
-      price1d = infoStock['prevClose']
+      #price1d = infoStock['prevClose']
+      price1d = infoStock['previousClose']
       price1d = Portfolio.calcCurren(price1d,row['CURRENCY'])
       delta = row['LivePrice'] - price1d
     elif row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
