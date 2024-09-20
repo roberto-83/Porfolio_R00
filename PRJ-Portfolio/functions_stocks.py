@@ -33,7 +33,7 @@ def testReadDataYf(tick):
   analysis = ticker.get_analysis()
   print(analysis)
   return 'ok0'
-print(testReadDataYf('EURUSD=X'))
+#print(testReadDataYf('EURUSD=X'))
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
