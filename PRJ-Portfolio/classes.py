@@ -965,10 +965,14 @@ class Portfolio:
       if(len(titleStock)<2):
         titleStock = infoStock['shortName'] #prendo il titolo dal sito web
 
+      livePrice =infoStock['currentPrice']
+      if(livePrice == 0):
+        livePrice = infoStock['bid'] #per gli ETF devo usare il bid perchè manca prezzo su api
+
       #infoTick = [isin,tick,infoStock['longName'],infoStock['currency'],livePrice[2],'','',
       #infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['trailingEps'],livePrice[3],
       #Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekLow'),Portfolio.verifKey(infoStockYQ,'fiftyTwoWeekHigh'),Portfolio.verifKey(infoStockYQ,'trailingPE')]
-      infoTick = [isin,tick,titleStock,infoStock['currency'],infoStock['currentPrice'],'','',
+      infoTick = [isin,tick,titleStock,infoStock['currency'],livePrice,'','',
       infoStock['sector'],infoStock['industry'],infoStock['beta'],infoStock['trailingPE'],infoStock['forwardPE'],
       infoStock['trailingEps'],infoStock['forwardEps'],infoStock['previousClose'],
       infoStock['fiftyTwoWeekLow'],infoStock['fiftyTwoWeekHigh'],infoStock['trailingPE'],infoStock['pegRatio'],infoStock['trailingPegRatio'],
