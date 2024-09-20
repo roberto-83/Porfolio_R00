@@ -99,6 +99,7 @@ def getSummary(ticker):
 def sectorsEtf(ticker):
   #lista di settori di un etf
   fund = Ticker(ticker)
+  #print(fund)
   try:
     fund_df = fund.fund_sector_weightings
     fund_df_desc = fund_df.sort_values(by=ticker, ascending=False)
@@ -107,6 +108,7 @@ def sectorsEtf(ticker):
     #return  pd.DataFrame() #dataframe vuoto
     return  pd.DataFrame({ticker:'0'},index=['0']) #dataframe vuoto
 
+#print(sectorsEtf('BITC.SW'))
 #########################################
 ####API di ETFDB
 ####https://pypi.org/project/etfpy/

@@ -33,12 +33,11 @@ def testReadDataYf(tick):
   analysis = ticker.get_analysis()
   print(analysis)
   return 'ok0'
-#print(testReadDataYf('EURUSD=X'))
+#print(testReadDataYf('BITC.SW'))
 
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
-  print('Leggo stock info')
   stock = yf.Ticker(ticker)
    #print(stock)
   #get all stock info

@@ -93,6 +93,7 @@ class Portfolio:
       liveprice='0'
     #cambio valuta
     liveprice = Portfolio.calcCurren(liveprice,row['CURRENCY'])
+    #print(f"prezzo di {row['Ticker']} è {liveprice}")
     return liveprice
 
   def getCtvMerc(row):
@@ -152,7 +153,7 @@ class Portfolio:
     #riordino
     portIsinCalc = portIsinCalc[['Asset','Isin','Ticker','DESCRIZIONE LUNGA','Qta','PrezzoPond','PrezzoPondEur','Divid','TotInvest',
     'LivePrice','LivePriceEur','CtvMercato','peso','pL','ppL','CURRENCY','Costi','SCADENZA','Delta','SETTORE','INDUSTRIA']]
-
+    #print(portIsinCalc.to_string())
     return portIsinCalc
 
   def financialsPartPort(self):
@@ -582,7 +583,7 @@ class Portfolio:
       #for i in portShort.iterrows():
       allSectors = pd.DataFrame()
       for i in range(len(portShort)):
-        if(portShort['Asset'].loc[i] == "ETF-AZIONI" or portShort['Asset'].loc[i] == "ETC"):
+        if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
           #leggo i settori dell'etf
           settori = sectorsEtf(portShort['Ticker'].loc[i])
           #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
