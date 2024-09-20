@@ -22,7 +22,7 @@ from yahooread import readYahooSite
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
-developerMode=0
+developerMode=1
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio()
@@ -105,7 +105,8 @@ if developerMode == 0:
 else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
-  print(gcolabAnalysis())
+  #print(gcolabAnalysis())
+
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
