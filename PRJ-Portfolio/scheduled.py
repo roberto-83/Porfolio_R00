@@ -9,7 +9,7 @@ from classes import Portfolio,caldRendimento
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
-from analisiPort import analisiPort
+from analisiPort import analisiPort,gcolabAnalysis
 import yfinance as yf
 from functions_sheets import read_range,appendRow
 from functions_etf import readHoldings,testapiFinnhub
@@ -104,6 +104,8 @@ if developerMode == 0:
 
 else:
   print('Sono in modalità Developer')
+  #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
+  print(gcolabAnalysis())
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)

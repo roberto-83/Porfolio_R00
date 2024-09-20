@@ -279,3 +279,27 @@ def testQuantStat():
   return 'Done'
 #print(testQuantStat()) 
 #print(analisiPort('2020-01-01'))
+
+
+#voglio preparare i dati per lanciare il colab delle analisi del portafoglio
+def gcolabAnalysis():
+  #voglio i ticker e il valore comprato  
+  portfolio_0 = read_range('tab_portfolio!A:M',newPrj)
+  #tolgo colonne che non mi interessano
+  portfolio_1 = portfolio_0[['Tipologia','TICKER','Totale Investito']]
+  #tolgo il simbolo euro
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace('€', '', regex=True)
+  #cambio virgola con punto
+  portfolio_1['Totale Investito'].replace('\.', '', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(',', '.', regex=True, inplace=True)
+  #converto in numero la colonna
+  portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
+  #tolgo bot, btp e p2p
+  portfolio_2=portfolio_1.loc[portfolio_1['Tipologia'].isin(['AZIONI','ETF-AZIONI'])]
+  #print(portfolio_2)
+  print('Lista ticker')
+  print(portfolio_2['TICKER'].to_list())
+  print('Lista valori')
+  print(portfolio_2['Totale Investito'].to_list())
+
+#print(gcolabAnalysis())

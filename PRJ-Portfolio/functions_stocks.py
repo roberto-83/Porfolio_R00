@@ -24,7 +24,7 @@ def testReadDataYf(tick):
   analysis = ticker.get_analysis()
   print(analysis)
   return 'ok0'
-#print(testReadDataYf('RACE.MI'))
+#print(testReadDataYf('CSSPX.MI'))
 
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):

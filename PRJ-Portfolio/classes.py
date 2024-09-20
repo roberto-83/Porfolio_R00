@@ -82,7 +82,7 @@ class Portfolio:
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
       price=getBtpData(row['Isin'])
       liveprice = float(price['pric'])
-    elif row['Asset'] == 'ETF-AZIONI':
+    elif row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
       price=getPriceETF(row['Ticker'])
       #print(price)
       liveprice=price[1]
@@ -110,7 +110,7 @@ class Portfolio:
       price1d = infoStock['prevClose']
       price1d = Portfolio.calcCurren(price1d,row['CURRENCY'])
       delta = row['LivePrice'] - price1d
-    elif row['Asset'] == 'ETF-AZIONI':
+    elif row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
       price=getPriceETF(row['Ticker'])
       price1d = price[4]
       price1d = Portfolio.calcCurren(price1d,row['CURRENCY'])
@@ -172,7 +172,7 @@ class Portfolio:
         #print(tabIsinData)
         tick = tabIsinData['TICKER YAHOO'].iloc[0]
         #---------
-        if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF'):
+        if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF' or tabIsinData['ASSET'].iloc[0] == 'ETC'):
           list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         elif tabIsinData['ASSET'].iloc[0] == 'BTP' or tabIsinData['ASSET'].iloc[0] == 'BOT':
           list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
@@ -271,7 +271,7 @@ class Portfolio:
         #se ci sono festività e non posso filtrare il giorno giusto prendo l'ultimo valore disponibile
         histPrice = histTot['Close'].iloc[-1] 
 
-    elif row['Asset'] == 'AZIONI' or row['Asset'] == 'ETF-AZIONI':
+    elif row['Asset'] == 'AZIONI' or row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
       #converto la data di lettura
       #dateRead1 = datetime.strptime(dateRead, '%d/%m/%Y').strftime('%Y-%m-%d')
       dateRead1 = datetime.strptime(dateRead, '%Y-%m-%d').strftime('%Y-%m-%d')
@@ -488,7 +488,7 @@ class Portfolio:
     #"i" arriva come tupla, converto in df
     #row = pd.DataFrame(i, columns=['Asset','Ticker','DESCRIZIONE LUNGA'])
     oggiData = datetime.today().strftime('%d/%m/%Y')
-    if row['Asset'] == 'ETF-AZIONI':
+    if row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
       print(f"cerco dati del ticker {row['Ticker']}")
       fund = Ticker(row['Ticker'])
       outpList = fund.fund_holding_info[row['Ticker']]['holdings']
@@ -581,7 +581,7 @@ class Portfolio:
       #for i in portShort.iterrows():
       allSectors = pd.DataFrame()
       for i in range(len(portShort)):
-        if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
+        if(portShort['Asset'].loc[i] == "ETF-AZIONI" or portShort['Asset'].loc[i] == "ETC"):
           #leggo i settori dell'etf
           settori = sectorsEtf(portShort['Ticker'].loc[i])
           #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
@@ -673,7 +673,7 @@ class Portfolio:
       allCountries = pd.DataFrame()
       for i in range(len(portShort)):
         print(f"Lavoro con {portShort['Isin'].loc[i]}" )
-        if(portShort['Asset'].loc[i] == "ETF-AZIONI"):  #se è etf
+        if(portShort['Asset'].loc[i] == "ETF-AZIONI" or portShort['Asset'].loc[i] == "ETC"):  #se è etf
           #leggo i settori dell'etf
           paesidF = listEtfCountries(portShort['Isin'].loc[i])
           paesidF.dropna(inplace=True)
@@ -956,7 +956,7 @@ class Portfolio:
     elif(asset == 'CRYPTO' or asset == 'CURRENCY'):
       infoTick = ['',tick,'','','','','',
       'Bond','Bond','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
-    elif(asset == 'AZIONI' or asset == 'ETF'):
+    elif(asset == 'AZIONI' or asset == 'ETF' or asset == 'ETC'):
       
       #livePrice = Portfolio.getPriceYah(tick)     #yahoo query 
       infoStock = getStockInfo(tick)
@@ -1149,7 +1149,7 @@ class Portfolio:
     #prendo i dati di azioni e etf per tab_isin
     #stock = yf.Ticker(tikcer)
     info = getStockInfo(ticker)
-    if (Portfolio.verifKey(info,'quoteType') == 'ETF'):
+    if (Portfolio.verifKey(info,'quoteType') == 'ETF' or Portfolio.verifKey(info,'quoteType') == 'ETC'):
        #print(f"scrivo dati ETF {ticker}")
        sector = sectorsEtf(ticker)
        sectName = Portfolio.beautyString(sector.index[0])
