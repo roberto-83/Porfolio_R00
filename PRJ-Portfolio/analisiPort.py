@@ -97,7 +97,7 @@ def analisiPort(stockStartDate):
       #print(subport_1)
 
       #azioni
-      subport_2 = portfolio_1[portfolio_1['Tipologia'].isin(["AZIONI","ETF-AZIONI"])]
+      subport_2 = portfolio_1[portfolio_1['Tipologia'].isin(["AZIONI","ETF-AZIONI","ETC"])]
       subassets_2 = subport_2['TICKER'].tolist()
       #print(subport_2)
 
@@ -154,7 +154,7 @@ def analisiPort(stockStartDate):
       print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
       #print(df)
       #print('Tabella dei prezzi storici')
-      #print(df.to_string())
+      print(df.to_string())
 
       #----------------------------------------------------
       # Salvo Grafico su tmpFiles
