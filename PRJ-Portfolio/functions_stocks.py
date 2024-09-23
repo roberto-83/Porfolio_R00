@@ -1,4 +1,6 @@
 import yfinance as yf #dettaglio https://aroussi.com/post/python-yahoo-finance
+import datetime
+from datetime import datetime,timedelta
 
 #yfinance
 def testReadDataYf(tick):
@@ -28,12 +30,38 @@ def testReadDataYf(tick):
   print('get_institutional_holders()')
   institutional_holders = ticker.get_institutional_holders()
   print(institutional_holders)
+  print('dati storici')
+  todayCon = datetime.today().strftime('%Y-%m-%d')
+  dataInizio = (datetime.strptime(todayCon, '%Y-%m-%d')+timedelta(days=-20)).strftime('%Y-%m-%d')
+  print(f"data inizio {dataInizio} e data fine {todayCon}")
+  prices = yf.download(tick,dataInizio,todayCon,progress=False)  
+  print(prices)
   #analisi non mi va..
   print('get_analysis()')
   analysis = ticker.get_analysis()
   print(analysis)
   return 'ok0'
-#print(testReadDataYf('BITC.DU'))
+
+#def getcurrencyEtc(tick,price):
+  #cerco currency
+  #ticker = yf.Ticker(tick)
+  #info = ticker.get_info()
+  #currency=info['currency']
+  #prendo il cambio
+  #if(currency == 'CHF'):
+  #elif(currency == 'GBP'):
+  #else:
+  #'EURCHF=X'
+  #calcolo il prezzo
+  #if currency == 'EUR':
+    #priceConv = price
+  #else:
+
+  #print(currency)
+  #return currency
+
+#print(getcurrencyEtc('BITC.SW',52))
+#print(testReadDataYf('EURCHF=X'))
 
 
 #FUNZIONI COMPLETE

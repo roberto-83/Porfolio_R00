@@ -93,7 +93,7 @@ class Portfolio:
       liveprice='0'
     #cambio valuta
     liveprice = Portfolio.calcCurren(liveprice,row['CURRENCY'])
-    #print(f"prezzo di {row['Ticker']} è {liveprice}")
+    print(f"prezzo di {row['Ticker']} è {liveprice} e ha currency {row['CURRENCY']}")
     return liveprice
 
   def getCtvMerc(row):
@@ -430,6 +430,10 @@ class Portfolio:
     if str(currency).upper() == 'GBP':
       c = CurrencyConverter()
       priceConv = c.convert(importo, 'GBP', 'EUR')/100
+      return priceConv
+    elif str(currency).upper() == 'CHF':
+      c = CurrencyConverter()
+      priceConv = c.convert(importo, 'CHF', 'EUR')
       return priceConv
     else:
       return importo
