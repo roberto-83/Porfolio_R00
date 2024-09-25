@@ -67,7 +67,7 @@ def testReadDataYf(tick):
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
   stock = yf.Ticker(ticker)
-   #print(stock)
+  print(stock)
   #get all stock info
   info = stock.info
   #print(info)

@@ -75,7 +75,7 @@ class Portfolio:
 ################################################################################
 
   def getLivePrice(row):
-    #print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
+    print(f"Calcolo i prezzi live del ticker {row['Ticker']} e isin {row['Isin']}")
     #funzione che mi da il prezzo a mercato dei vari asset
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
