@@ -58,7 +58,7 @@ def read_range(range_name,spreadsheet_id):
           #print('{0} rows retrieved.'.format(rows))
       except ValueError as error:
         if(attempt_no <= num_retries):
-          print("FAIL: Lettura dati da google API")
+          print(f"FAIL: Lettura dati da google API. rety numero {attempt_no}")
           time.sleep(10)
         else:
           raise error
@@ -85,15 +85,23 @@ def appendRow(range_name,values,spreadsheet_id):
     #range_name = 'Sheet1!A1:B1'
     #values = read_range()
     #values=[["1","2"]]
-    value_input_option = 'USER_ENTERED'
-    body = {
-        'values': values
-    }
-    result = spreadsheet_service.spreadsheets().values().append(
-        spreadsheetId=spreadsheet_id, range=range_name,
-        valueInputOption=value_input_option, body=body).execute()
-    print('cells updated.'.format(result.get('updatedCells')))
-
+    num_retries=3
+    for attempt_no in range (num_retries):
+      try:
+        value_input_option = 'USER_ENTERED'
+        body = {
+            'values': values
+        }
+        result = spreadsheet_service.spreadsheets().values().append(
+            spreadsheetId=spreadsheet_id, range=range_name,
+            valueInputOption=value_input_option, body=body).execute()
+        print('cells updated.'.format(result.get('updatedCells')))
+      except ValueError as error:
+        if(attempt_no <= num_retries):
+          print(f"FAIL: Lettura dati da google API. rety numero {attempt_no}")
+          time.sleep(10)
+        else:
+          raise error
 ######################################
 ############# DELETE DATA #############
 ######################################
