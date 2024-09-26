@@ -4,6 +4,7 @@ from auth import spreadsheet_service
 from auth import drive_service
 from settings import *
 import pandas as pd
+import time
 
 ########################################
 ############# CREATE SHEET #############
@@ -58,6 +59,7 @@ def read_range(range_name,spreadsheet_id):
       except ValueError as error:
         if(attempt_no <= num_retries):
           print("Error, retry")
+          time.sleep(10)
         else:
           raise error
     return df
