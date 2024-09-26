@@ -45,6 +45,7 @@ def read_range(range_name,spreadsheet_id):
     #range_name = 'Sheet1!A2:D30'
     num_retries=3
     for attempt_no in range (num_retries):
+      print(f"Tentativo numero {attempt_no}")
       try:
           result = spreadsheet_service.spreadsheets().values().get(
           spreadsheetId=spreadsheet_id, range=range_name).execute()
@@ -87,6 +88,7 @@ def appendRow(range_name,values,spreadsheet_id):
     #values=[["1","2"]]
     num_retries=3
     for attempt_no in range (num_retries):
+      print(f"Tentativo numero {attempt_no}")
       try:
         value_input_option = 'USER_ENTERED'
         body = {
