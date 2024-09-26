@@ -42,16 +42,24 @@ def create():
     #return rows
 def read_range(range_name,spreadsheet_id):
     #range_name = 'Sheet1!A2:D30'
-    result = spreadsheet_service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id, range=range_name).execute()
-    rows = result.get('values', [])
-    #converto in dataframe per riempire i dati vuoti
-    #questo perchè se ci sono celle vuote alla fine del range il metodo non le esporta
-    df = pd.DataFrame(rows[0:])
-    df.columns = df.iloc[0]
-    df = df.drop(axis=0, index=0)
-    #print('{0} rows retrieved.'.format(len(rows)))
-    #print('{0} rows retrieved.'.format(rows))
+    num_retries=3
+    for attempt_no in range (num_retries):
+      try:
+          result = spreadsheet_service.spreadsheets().values().get(
+          spreadsheetId=spreadsheet_id, range=range_name).execute()
+          rows = result.get('values', [])
+          #converto in dataframe per riempire i dati vuoti
+          #questo perchè se ci sono celle vuote alla fine del range il metodo non le esporta
+          df = pd.DataFrame(rows[0:])
+          df.columns = df.iloc[0]
+          df = df.drop(axis=0, index=0)
+          #print('{0} rows retrieved.'.format(len(rows)))
+          #print('{0} rows retrieved.'.format(rows))
+      except ValueError as error:
+        if(attempt_no <= num_retries):
+          print("Error, retry")
+        else:
+          raise error
     return df
 
 ######################################
