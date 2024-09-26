@@ -58,7 +58,7 @@ def read_range(range_name,spreadsheet_id):
           #print('{0} rows retrieved.'.format(rows))
       except ValueError as error:
         if(attempt_no <= num_retries):
-          print("Error, retry")
+          print("FAIL: Lettura dati da google API")
           time.sleep(10)
         else:
           raise error
