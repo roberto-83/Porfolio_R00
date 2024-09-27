@@ -98,12 +98,14 @@ def appendRow(range_name,values,spreadsheet_id):
             spreadsheetId=spreadsheet_id, range=range_name,
             valueInputOption=value_input_option, body=body).execute()
         print('cells updated.'.format(result.get('updatedCells')))
-      except ValueError as error:
+      #except ValueError as error:
+      except:
         if(attempt_no <= num_retries):
           print(f"FAIL: Lettura dati da google API. rety numero {attempt_no}")
           time.sleep(10)
         else:
-          raise error
+          #raise error
+          raise TypeError("Errore Google Sheet")
 ######################################
 ############# DELETE DATA #############
 ######################################
