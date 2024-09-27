@@ -57,6 +57,7 @@ def read_range(range_name,spreadsheet_id):
           df = df.drop(axis=0, index=0)
           #print('{0} rows retrieved.'.format(len(rows)))
           #print('{0} rows retrieved.'.format(rows))
+          break
       except ValueError as error:
         if(attempt_no <= num_retries):
           print(f"FAIL: Lettura dati da google API. rety numero {attempt_no}")
@@ -98,6 +99,7 @@ def appendRow(range_name,values,spreadsheet_id):
             spreadsheetId=spreadsheet_id, range=range_name,
             valueInputOption=value_input_option, body=body).execute()
         print('cells updated.'.format(result.get('updatedCells')))
+        break
       #except ValueError as error:
       except:
         if(attempt_no <= num_retries):
