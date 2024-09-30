@@ -37,7 +37,7 @@ if developerMode == 0:
   #Crea la tabella del portafoglio
   #time.sleep(5) #aspetto tempo perchè la tabella sopra sia scritta
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio")
-  log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
+  #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
   time2s = time.time()
   initialTime=time2s   #START
   print(port.writePortfolio())
@@ -46,7 +46,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio")
   #creo calendar
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
-  log_insert1("Aggiornamento Tab Calendar","Inizio","","")
+  #log_insert1("Aggiornamento Tab Calendar","Inizio","","")
   time3s = time.time()
   print(port.updateCalendarTab())
   delta3 = time.time() - time3s
@@ -54,7 +54,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Fine - Aggiornamento Calendar")
   #aggiorno rendimento
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Inizio - Aggiornamento Rendimento")
-  log_insert1("Aggiornamento Tab Rendimento","Inizio","","")
+  #log_insert1("Aggiornamento Tab Rendimento","Inizio","","")
   time4s = time.time()
   print(caldRendimento())
   delta4 = time.time() - time4s
@@ -62,7 +62,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Fine - Aggiornamento Rendimento")
   #aggiorno andamento
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Inizio - Aggiornamento Andamento")
-  log_insert1("Aggiornamento Tab Andamento","Inizio","","")
+  #log_insert1("Aggiornamento Tab Andamento","Inizio","","")
   time5s = time.time()
   print(port.calcAndamPort())
   delta5 = time.time() - time5s
@@ -72,7 +72,7 @@ if developerMode == 0:
 
   #aggiorno settori
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Aggiornamento Settori")
-  log_insert1("Aggiornamento Tab Settori","Inizio","","")
+  #log_insert1("Aggiornamento Tab Settori","Inizio","","")
   time7s = time.time()
   print(port.portafSettori())
   delta7 = time.time() - time7s
@@ -80,7 +80,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Aggiornamento Settori")
   #aggiorno paesi
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Inizio - Aggiornamento Paesi")
-  log_insert1("Aggiornamento Tab Paesi","Inizio","","")
+  #log_insert1("Aggiornamento Tab Paesi","Inizio","","")
   time8s = time.time()
   print(port.portafPaesi())
   delta8 = time.time() - time8s
@@ -88,7 +88,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Fine - Aggiornamento Paesi")
   #analisi portafoglio
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Inizio - Analisi Portafoglio")
-  log_insert1("Analisi Portafoglio","Inizio","","")
+  #log_insert1("Analisi Portafoglio","Inizio","","")
   time9s = time.time()
   print(analisiPort('2010-01-01'))
   delta9 = time.time() - time9s
@@ -96,7 +96,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Fine -  Analisi Portafoglio")
   #aggiorno watchlist
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Inizio - Aggiornamento Watchlist")
-  log_insert1("Aggiornamento Tab Watchlist","Inizio","","")
+  #log_insert1("Aggiornamento Tab Watchlist","Inizio","","")
   time6s = time.time()
   print(port.whatchlist())
   delta6 = time.time() - time6s
