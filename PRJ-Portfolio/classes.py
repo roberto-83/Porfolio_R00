@@ -49,11 +49,12 @@ class Portfolio:
 
   def readActiveIsinByDate(self,date):
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
-    transact = read_range('tab_transazioni!A:P',oldPrj)
+    transact = read_range('tab_transazioni!A:Q',oldPrj)
+    transact = transact[transact['Num Portfolio'] == 1] #solo port1
     transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
     #print(transact[transact['Ticker'] == 'CSNDX.MI'])
     #print(transact[transact['Ticker'] == 'NKE.DE'])
-    transact = transact[transact['Data operazione'] <= date]  
+    transact = transact[transact['Data operazione'] <= date ]  
     #print(transact[transact['Ticker'] == 'CSNDX.MI'])
     #print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
