@@ -26,7 +26,7 @@ developerMode=0
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio('1')
-  port1 = Portfolio('2')
+  port2 = Portfolio('2')
   #scrivo la tabella degli Isin
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
   #log_insert1("Aggiornamento Tab Isin","Inizio","")
@@ -45,6 +45,16 @@ if developerMode == 0:
   delta2 = time.time() - time2s
   log_insert1("Aggiornamento Tab Portafoglio","Fine",delta2,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio")
+
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio2")
+  #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
+  time2s_b = time.time()
+  #initialTime=time2s   #START
+  print(port2.writePortfolio())
+  delta2_b = time.time() - time2s_b
+  log_insert1("Aggiornamento Tab Portafoglio 2","Fine",delta2_b,initialTime)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio2")
+
   #creo calendar
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
   #log_insert1("Aggiornamento Tab Calendar","Inizio","","")
