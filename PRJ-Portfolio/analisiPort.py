@@ -39,8 +39,9 @@ def readLastDate():
       return 'ok'
 
 
-def readMyPort():
+def readMyPort(num_port):
   portfolio_0 = read_range('tab_portfolio!A:N',newPrj)
+  portfolio_0 = portfolio_0[portfolio_0['Num Port'] == num_port] #solo portafoglio specifico
   #tolgo colonne che non mi interessano
   portfolio_1 = portfolio_0[['Asset','Isin','Ticker','%Composizione']]
   #tolgo il simbolo percentuale
@@ -71,8 +72,7 @@ def analisiPort(stockStartDate,num_port):
       #----------------------------------------------------
       # Leggo portafoglio
       #----------------------------------------------------
-      portfolio_1 = readMyPort()
-      portfolio_1 = portfolio_1[portfolio_1['Num Port'] == num_port] #solo portafoglio specifico
+      portfolio_1 = readMyPort(num_port)
       #print(portfolio_1)
       #quindi variabili che serviranno per analisi sono
       assets_1 = portfolio_1['Ticker'].tolist()
