@@ -4,6 +4,10 @@ print(livePriceDf) -> stampa intero DF
 CHIAVI
 print(livePriceDf.keys()) -> stampa le chiavi
 
+ILOC
+df.iloc[0] dovrebbe tornare la prima riga
+df.iloc[:,0] dovrebbe tornare la prima colonna
+
 INDICI
 print(livePriceDf.index) -> stamp agli indici
 print(livePriceDf.index[0][1]) -> stampo il valore dell'indice 1 in caso di multiindice

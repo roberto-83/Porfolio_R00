@@ -40,9 +40,9 @@ def readLastDate():
 
 
 def readMyPort():
-  portfolio_0 = read_range('tab_portfolio!A:M',newPrj)
+  portfolio_0 = read_range('tab_portfolio!A:N',newPrj)
   #tolgo colonne che non mi interessano
-  portfolio_1 = portfolio_0[['Tipologia','ISIN','TICKER','%Composizione']]
+  portfolio_1 = portfolio_0[['Asset','Isin','Ticker','%Composizione']]
   #tolgo il simbolo percentuale
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
   portfolio_1['%Composizione'].replace('%', '', regex=True, inplace=True)
@@ -74,7 +74,7 @@ def analisiPort(stockStartDate):
       portfolio_1 = readMyPort()
       #print(portfolio_1)
       #quindi variabili che serviranno per analisi sono
-      assets_1 = portfolio_1['TICKER'].tolist()
+      assets_1 = portfolio_1['Ticker'].tolist()
       weights_1 = np.array(portfolio_1['%Composizione'].tolist())
       #altre variabili data
 
@@ -85,20 +85,20 @@ def analisiPort(stockStartDate):
       #----------------------------------------------------
 
       #divido il dataframe - prendo solo btp, bot
-      subport_1 = portfolio_1[portfolio_1['Tipologia'].isin(["BOT","BTP"])]
+      subport_1 = portfolio_1[portfolio_1['Asset'].isin(["BOT","BTP"])]
       #subport_1 = portfolio_1[portfolio_1['Tipologia'].isin(["BOT","BTP"])]
-      subassets_1 = subport_1['TICKER'].tolist()
+      subassets_1 = subport_1['Ticker'].tolist()
       #print(subport_1)
 
       #divido il dataframe - prendo solo p2p
-      subport_3 = portfolio_1[portfolio_1['Tipologia'].isin(["P2P"])]
+      subport_3 = portfolio_1[portfolio_1['Asset'].isin(["P2P"])]
       #subport_1 = portfolio_1[portfolio_1['Tipologia'].isin(["BOT","BTP"])]
-      subassets_3 = subport_3['TICKER'].tolist()
+      subassets_3 = subport_3['Ticker'].tolist()
       #print(subport_1)
 
       #azioni
-      subport_2 = portfolio_1[portfolio_1['Tipologia'].isin(["AZIONI","ETF-AZIONI","ETC"])]
-      subassets_2 = subport_2['TICKER'].tolist()
+      subport_2 = portfolio_1[portfolio_1['Asset'].isin(["AZIONI","ETF-AZIONI","ETC"])]
+      subassets_2 = subport_2['Ticker'].tolist()
       #print(subport_2)
 
       #----------------------------------------------------

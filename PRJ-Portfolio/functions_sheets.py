@@ -53,8 +53,9 @@ def read_range(range_name,spreadsheet_id):
           #converto in dataframe per riempire i dati vuoti
           #questo perchè se ci sono celle vuote alla fine del range il metodo non le esporta
           df = pd.DataFrame(rows[0:])
-          df.columns = df.iloc[0]
-          df = df.drop(axis=0, index=0)
+          if(df.size >0):
+            df.columns = df.iloc[0]
+            df = df.drop(axis=0, index=0)
           #print('{0} rows retrieved.'.format(len(rows)))
           #print('{0} rows retrieved.'.format(rows))
           break

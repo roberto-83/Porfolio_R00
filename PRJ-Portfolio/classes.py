@@ -39,7 +39,8 @@ class Portfolio:
   todayDateHourAm  = todDateTime0.strftime("%Y-%m-%d %H:%M:%S")
 
   #metodo costruttore
-  def __init__(self):
+  def __init__(self,num_port):
+    self.num_port = num_port #specifico il numero del portafolgio
     #tutte le transazioni fino ad oggi
     self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f)
     #prima parte portafoglio con gli isin validi ad oggi
@@ -48,9 +49,10 @@ class Portfolio:
    
 
   def readActiveIsinByDate(self,date):
+    num_port = self.num_port #numero portafoglio
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
     transact = read_range('tab_transazioni!A:Q',oldPrj)
-    transact = transact[transact['Num Portfolio'] == 1] #solo port1
+    transact = transact[transact['Num Portfolio'] == num_port] #solo portafoglio passato
     transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
     #print(transact[transact['Ticker'] == 'CSNDX.MI'])
     #print(transact[transact['Ticker'] == 'NKE.DE'])
@@ -237,18 +239,45 @@ class Portfolio:
     portfin = Portfolio.financialsPartPort(self)
     #ggiungo data
     portfin['DataUpdate'] = Portfolio.todayDateHourAm
+    #aggiungo colonna con numero portafoglio
+    portfin['Num Port'] = self.num_port
+    #numport esporto colonna
+    numport=portfin.pop('Num Port')
+    #riaggiongo colonna all'inizio
+    portfin.insert(0, 'Num Port', numport) 
     #stampo tutto il dataframe
-    #print(portfin.to_string())
+    print(portfin.to_string())
+    myColumns = portfin.columns.tolist()
+    print(myColumns)
+    ################# A questo punto inizio a gestire la casistica dei due o piu portafogli
+    oldPortRead = read_range('tab_portfolio!A1:AS100',newPrj)
+    if oldPortRead.empty:
+      portfin0 = portfin
+    else:
+      print(oldPortRead.to_string())
+      #salvare solo id portafolgio che non sto scrivendo
+      deltPort = oldPortRead[(oldPortRead.iloc[:,0] != self.num_port)] 
+      deltPort.columns = myColumns
+      print(deltPort.to_string())
+      #unisco i due dataframe
+      #deltPort.reset_index(inplace=True,drop=True)
+      frames = [portfin, deltPort]
+      portfin0 = pd.concat(frames, ignore_index=True)
+    #ordino dataframe per id portaf e asset e composizione
+    portFinal = portfin0.sort_values(by=['Num Port', 'Asset', 'peso'])
+    print(portFinal.to_string())
+    ################# End multiple portfolio
     #trasformo in lista
-    listPrint = portfin.values.tolist()
+    listPrint = portFinal.values.tolist()
+    #print(listPrint)
     #lunghezza lista
     lastRowSt=str(len(listPrint)+1)
     print("stampo il portafoglio prima di scriverlo")
     #print(listPrint)
-    #cancello esistente
-    deleteOldRows = delete_range('tab_portfolio!A2:AR100',newPrj)
+    #cancello tutto l'esistente
+    deleteOldRows = delete_range('tab_portfolio!A2:AS100',newPrj)
     #scrivo portafolgio
-    write_range('tab_portfolio!A2:AR'+lastRowSt,listPrint,newPrj)
+    write_range('tab_portfolio!A2:AS'+lastRowSt,listPrint,newPrj)
     #print(portfin.head())
     return 'Ho completato aggiornamento del portafoglio'
 

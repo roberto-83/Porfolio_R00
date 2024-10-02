@@ -22,10 +22,10 @@ from yahooread import readYahooSite
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
-developerMode=0
+developerMode=1
 if developerMode == 0:
   print('Sono in modalità Normale')
-  port = Portfolio()
+  port = Portfolio('1')
   #scrivo la tabella degli Isin
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
   #log_insert1("Aggiornamento Tab Isin","Inizio","")
@@ -111,9 +111,10 @@ else:
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
-  port = Portfolio()
+  port = Portfolio('2')
+  print(port.writePortfolio())
   #print(port.portafSettori())
-  print(port.whatchlist())
+   #print(port.whatchlist())
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")
   #print(port.portCompanies())
   #print(readHoldings())
