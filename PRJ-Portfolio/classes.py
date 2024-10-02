@@ -249,7 +249,7 @@ class Portfolio:
     #riaggiongo colonna all'inizio
     portfin.insert(0, 'Num Port', numport) 
     #stampo tutto il dataframe
-    print(portfin.to_string())
+    #print(portfin.to_string())
     myColumns = portfin.columns.tolist()
     #print(myColumns)
     ################# A questo punto inizio a gestire la casistica dei due o piu portafogli
@@ -268,7 +268,7 @@ class Portfolio:
       portfin0 = pd.concat(frames, ignore_index=True)
     #ordino dataframe per id portaf e asset e composizione
     portFinal = portfin0.sort_values(by=['Num Port', 'Asset', 'peso'])
-    print(portFinal.to_string())
+    #print(portFinal.to_string())
     ################# End multiple portfolio
     #trasformo in lista
     listPrint = portFinal.values.tolist()

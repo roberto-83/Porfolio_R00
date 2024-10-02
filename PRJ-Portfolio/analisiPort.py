@@ -55,7 +55,7 @@ def readMyPort():
   portfolio_1['%Composizione'] = portfolio_1['%Composizione']/100
   return portfolio_1
 
-def analisiPort(stockStartDate):
+def analisiPort(stockStartDate,num_port):
     readLastDateVar = readLastDate()
     if readLastDateVar == 'ok':
       #-----------------------
@@ -72,6 +72,7 @@ def analisiPort(stockStartDate):
       # Leggo portafoglio
       #----------------------------------------------------
       portfolio_1 = readMyPort()
+      portfolio_1 = portfolio_1[portfolio_1['Num Port'] == num_port] #solo portafoglio specifico
       #print(portfolio_1)
       #quindi variabili che serviranno per analisi sono
       assets_1 = portfolio_1['Ticker'].tolist()

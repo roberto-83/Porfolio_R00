@@ -101,7 +101,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Inizio - Analisi Portafoglio")
   #log_insert1("Analisi Portafoglio","Inizio","","")
   time9s = time.time()
-  print(analisiPort('2010-01-01'))
+  print(analisiPort('2010-01-01','1'))
   delta9 = time.time() - time9s
   log_insert1("Analisi Portafoglio","Fine",delta9,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Fine -  Analisi Portafoglio")
