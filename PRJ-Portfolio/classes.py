@@ -174,12 +174,13 @@ class Portfolio:
       if len(tabIsinData) == 0:
         list2d.append([i,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
       else:
-        #print(tabIsinData)
+        #print(tabIsinData.to_string())
         tick = tabIsinData['TICKER YAHOO'].iloc[0]
         #---------
         if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF' or tabIsinData['ASSET'].iloc[0] == 'ETC'):
           list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         elif tabIsinData['ASSET'].iloc[0] == 'BTP' or tabIsinData['ASSET'].iloc[0] == 'BOT':
+          print('sono in questa casistica')
           list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
         else:
           #VAI COI FINANCIALS
@@ -219,9 +220,11 @@ class Portfolio:
             list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
         #divlastdate=
         #appendo Settore, industria
-        list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
-        peforward,pegratio,beta, earnings, ptb, book, shares, divrate, divyield,divlastval,
-        divlastdate,divexdate,payout,avg52,dist52,avg200,dist200])
+        #print(f'lavoro con TICK {tick}')
+        #print(tabIsinData['ASSET'].iloc[0])
+          list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
+          peforward,pegratio,beta, earnings, ptb, book, shares, divrate, divyield,divlastval,
+          divlastdate,divexdate,payout,avg52,dist52,avg200,dist200])
 
     #trasformo la lista in DF
     portaf2 = pd.DataFrame(list2d, columns =['Isin-JOIN','Ticker-JOIN','marketCap','volume','epstrailing','epsforward','petrailing',
@@ -248,17 +251,17 @@ class Portfolio:
     #stampo tutto il dataframe
     print(portfin.to_string())
     myColumns = portfin.columns.tolist()
-    print(myColumns)
+    #print(myColumns)
     ################# A questo punto inizio a gestire la casistica dei due o piu portafogli
     oldPortRead = read_range('tab_portfolio!A1:AS100',newPrj)
     if oldPortRead.empty:
       portfin0 = portfin
     else:
-      print(oldPortRead.to_string())
+      #print(oldPortRead.to_string())
       #salvare solo id portafolgio che non sto scrivendo
       deltPort = oldPortRead[(oldPortRead.iloc[:,0] != self.num_port)] 
       deltPort.columns = myColumns
-      print(deltPort.to_string())
+      #print(deltPort.to_string())
       #unisco i due dataframe
       #deltPort.reset_index(inplace=True,drop=True)
       frames = [portfin, deltPort]

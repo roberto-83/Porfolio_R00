@@ -26,6 +26,7 @@ developerMode=0
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio('1')
+  port1 = Portfolio('2')
   #scrivo la tabella degli Isin
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
   #log_insert1("Aggiornamento Tab Isin","Inizio","")
