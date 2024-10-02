@@ -218,7 +218,12 @@ def readEuronextREV2(isin, data):
 
 def getBtpData(isin_val):
   #print('Inizio a utilizzare BEAUTIFUL SOUP')
-  URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=italia&yieldtype=G&timescale=DUR" 
+  if isin_val[0:2] == 'IT':  #se è un bond italiano
+    URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=italia&yieldtype=G&timescale=DUR" 
+  else if isin_val[0:2] == '': #se è un bond rumeno
+    URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=romania&yieldtype=G&timescale=DUR"
+  else: # se non è come sopra do per scontato che sia europeo..
+    URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=europa&yieldtype=G&timescale=DUR"
   print(URL)
   r = requests.get(URL) 
   soup = BeautifulSoup(r.content, 'html5lib') 
