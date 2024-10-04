@@ -180,8 +180,9 @@ class Portfolio:
         if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF' or tabIsinData['ASSET'].iloc[0] == 'ETC'):
           list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         elif tabIsinData['ASSET'].iloc[0] == 'BTP' or tabIsinData['ASSET'].iloc[0] == 'BOT':
-          print('sono in questa casistica')
-          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+          dataBTP=getBtpData(i)
+          datacedola = dataBTP['cedo']
+          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,datacedola,datacedola,0,0,0,0,0]) 
         else:
           #VAI COI FINANCIALS
           #print(tick)
@@ -1279,7 +1280,10 @@ def caldRendimento():
   deltaMonth = diff_month(todayDate,lastDate)
   print(f"Ultima data del foglio è mese: {lastMonth} dell'anno: {lastYear} quindi siamo {lastDate}, mentre oggi {todayDate} quindi differenza mesi è {diff_month(todayDate,lastDate)}")
   #if(deltaMonth >= 1 and datetime.today().strftime('%d') != '01' ): #tolgo se sono al primo del mese perchè mi serve avere il primo giorno completo nel calendar
-  if(deltaMonth > 1 ): #volgio che scriva il mese precedente e non quello in corso. quindi se deve scrivere ottobre dobbiamo essere in novembre.. proviamo
+  if(deltaMonth > 1 ): #voglio che scriva il mese precedente e non quello in corso. quindi se deve scrivere ottobre dobbiamo essere in novembre.. proviamo
+    
+    ####Cancello ultima riga  delete_range('tab_performance!A63:L63',newPrj)
+    
     i=1
     while i <= deltaMonth:
       #leggo ultimo giorno del mese dal foglio

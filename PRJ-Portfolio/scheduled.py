@@ -11,7 +11,7 @@ from functions_stocks import histData
 from datetime import datetime
 from analisiPort import analisiPort,gcolabAnalysis
 import yfinance as yf
-from functions_sheets import read_range,appendRow
+from functions_sheets import read_range,appendRow,delete_range
 from functions_etf import readHoldings,testapiFinnhub
 from settings import * #importa variabili globali
 from manage_logs import log_insert,log_insert1
@@ -122,8 +122,10 @@ else:
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
-  port = Portfolio('2')
-  print(port.writePortfolio())
+  #port = Portfolio('2')
+  #print(port.writePortfolio())
+  #appendRow('tab_performance!A:L',arr,newPrj)
+  #delete_range('tab_performance!A63:L63',newPrj)
   #print(port.portafSettori())
    #print(port.whatchlist())
   #print(f"esempio {datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')}")

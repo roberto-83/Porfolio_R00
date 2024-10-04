@@ -248,20 +248,27 @@ def getBtpData(isin_val):
           pric = columns[9].text.strip()
           pric = pric.replace(',','.')
           yeld = columns[13].text.strip()
-          df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad})
+          dataCedola = getDividBtp(info,scad)
+          df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad, 'cedo':dataCedola})
           break
   return df
 
-def getDividBtp(isin_val):
-  df = getBtpData(isin_val)
-  URL = df['info']
-  print(URL)
+def getDividBtp(URL,scad):
+  #df = getBtpData(isin_val)
+  #URL = df['info']
+  #print(URL)
   r = requests.get(URL) 
   soup = BeautifulSoup(r.content, 'html5lib') 
-  print(soup)
-  table = soup.find('table', id='YieldTable')
-  print(table)
-  return 'ok'
+  table = soup.find('table')
+  dataCedola = scad
+  for row in table.tbody.find_all('tr'):    
+    columns = row.find_all('td')
+    if(columns != []): 
+        if(columns[1].text.strip() == 'Incasso cedola lorda'):
+          dataCedola = columns[0].text.strip()
+          #print(f" colonna 0 {columns[0].text.strip()} , colonna 1 {columns[1].text.strip()} , colonna 2 {columns[2].text.strip()}")
+          break
+  return dataCedola
 
 def getBotData(isin_val):
   URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=bot&yieldtype=G&timescale=DUR" 
@@ -286,16 +293,16 @@ def getBotData(isin_val):
           scad = columns[5].text.strip()
           pric = columns[9].text.strip()
           yeld = columns[13].text.strip()
-          df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad})
+          dataCedola = scad
+          df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad, 'cedo':dataCedola})
 
           break
   return df
 
 
-
-
-
 #print(getBotData('IT0005580003'))
-#test = getBtpData('IT0005273013')
+#test = getBtpData('IT0005273013')#btp
+#test = getBtpData('IT0005580003')#bot
 #print(test)
-print(getDividBtp('IT0005273013'))
+
+#print(getDividBtp('IT0005273013'))
