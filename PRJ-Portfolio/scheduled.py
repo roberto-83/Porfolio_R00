@@ -43,7 +43,7 @@ if developerMode == 0:
   initialTime=time2s   #START
   print(port.writePortfolio())
   delta2 = time.time() - time2s
-  log_insert1("Aggiornamento Tab Portafoglio","Fine",delta2,initialTime)
+  log_insert1("Aggiornamento Tab Portafoglio VARIAZIONEEEE","Fine",delta2,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio")
 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio2")

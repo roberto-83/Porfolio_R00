@@ -1278,7 +1278,8 @@ def caldRendimento():
   lastDate = datetime(int(lastYear), int(lastMonth), 1).strftime('%d/%m/%Y')
   deltaMonth = diff_month(todayDate,lastDate)
   print(f"Ultima data del foglio è mese: {lastMonth} dell'anno: {lastYear} quindi siamo {lastDate}, mentre oggi {todayDate} quindi differenza mesi è {diff_month(todayDate,lastDate)}")
-  if(deltaMonth >= 1 and datetime.today().strftime('%d') != '01' ): #tolgo se sono al primo del mese perchè mi serve avere il primo giorno completo nel calendar
+  #if(deltaMonth >= 1 and datetime.today().strftime('%d') != '01' ): #tolgo se sono al primo del mese perchè mi serve avere il primo giorno completo nel calendar
+  if(deltaMonth > 1 ): #volgio che scriva il mese precedente e non quello in corso. quindi se deve scrivere ottobre dobbiamo essere in novembre.. proviamo
     i=1
     while i <= deltaMonth:
       #leggo ultimo giorno del mese dal foglio

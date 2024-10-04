@@ -224,7 +224,7 @@ def getBtpData(isin_val):
     URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=romania&yieldtype=G&timescale=DUR"
   else: # se non è come sopra do per scontato che sia europeo..
     URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=europa&yieldtype=G&timescale=DUR"
-  print(URL)
+  #print(URL)
   
   r = requests.get(URL) 
   soup = BeautifulSoup(r.content, 'html5lib') 
@@ -248,10 +248,20 @@ def getBtpData(isin_val):
           pric = columns[9].text.strip()
           pric = pric.replace(',','.')
           yeld = columns[13].text.strip()
-          
           df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad})
           break
   return df
+
+def getDividBtp(isin_val):
+  df = getBtpData(isin_val)
+  URL = df['info']
+  print(URL)
+  r = requests.get(URL) 
+  soup = BeautifulSoup(r.content, 'html5lib') 
+  print(soup)
+  table = soup.find('table', id='YieldTable')
+  print(table)
+  return 'ok'
 
 def getBotData(isin_val):
   URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=bot&yieldtype=G&timescale=DUR" 
@@ -277,10 +287,15 @@ def getBotData(isin_val):
           pric = columns[9].text.strip()
           yeld = columns[13].text.strip()
           df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad})
+
           break
   return df
 
 
-#print(getBotData('IT0005571960'))
+
+
+
+#print(getBotData('IT0005580003'))
 #test = getBtpData('IT0005273013')
 #print(test)
+print(getDividBtp('IT0005273013'))
