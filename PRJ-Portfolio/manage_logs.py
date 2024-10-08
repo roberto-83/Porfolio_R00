@@ -16,7 +16,7 @@ def log_insert(message,stato):
   return 'ok'
 def log_insert1(message,stato,delta,initialTime):
   #hostname = platform.node()
-  hostname = f"Sysname: {os.uname()[0]}, nodename: {os.uname()[1]}, release: {os.uname()[2]}, version: {os.uname()[3]}, machine: {os.uname()[4]}"
+  hostname = f"Sysname: {os.uname()[0]}, release: {os.uname()[2]}, version: {os.uname()[3]}, machine: {os.uname()[4], nodename: {os.uname()[1]}}"
  #scrivo il delta della singola fase
   if delta != '':
     deltaMin = delta/60
