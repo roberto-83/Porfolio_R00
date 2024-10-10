@@ -67,7 +67,7 @@ def testReadDataYf(tick):
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
   stock = yf.Ticker(ticker)
-  print(stock)
+  #print(stock)
   #get all stock info
   info = stock.info
   #print(info)
@@ -175,6 +175,11 @@ def verifKey(dict,val):
     return '0'
 
 #print(getStockInfo('21BC.DE'))
+#print(getStockInfo('^VIX'))
+#g = getStockInfo('^VIX')
+#print(g['previousClose'])
+
+#print(getStockInfo('^VIX1D'))
 #print(getStockInfo('3V64.DE'))
 #print(dividends('3V64.DE'))
 

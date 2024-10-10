@@ -16,9 +16,11 @@ from datetime import datetime
 #plt.style.use('fivethirtyeight')
 #Mio codice
 from functions_sheets import read_range
+from functions_stocks import getStockInfo
 from settings import * #importa variabili globali
 from functions_sheets import delete_range,appendRow
 from settings import * #importa variabili globali
+import fear_and_greed
 
 #stockStartDate='2020-01-01'
 #print(yf.download('CSSPX.MI', start='2019-08-16', end = '2024-01-01',progress=False)['Adj Close'].to_string())
@@ -238,10 +240,16 @@ def analisiPort(stockStartDate,num_port):
       print(f"Sharpe Ratio {sharpe_ratio}")
       #CAGR??? (compound annual growth rate)
       #----------------------------------------------------
+      # Leggo altri indici
+      #----------------------------------------------------
+      vix_prev_close = getStockInfo('^VIX')['previousClose']
+      fear_greed = fear_and_greed.get()
+      fear_greed_idx = str(fear_greed[1]).upper() + " ("+str(round(fear_greed[0],2))+")"
+      #----------------------------------------------------
       # Scrivo su Sheet
       #----------------------------------------------------
-      listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free]]
-      appendRow('tab_analysis!A:G',listToPrint,newPrj)
+      listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free,vix_prev_close,fear_greed_idx]]
+      appendRow('tab_analysis!A:I',listToPrint,newPrj)
       return 'Done Analisi Portafolgio'
     else:
       return 'Aggiornamento non necessario'
@@ -279,7 +287,7 @@ def testQuantStat():
 
   return 'Done'
 #print(testQuantStat()) 
-#print(analisiPort('2020-01-01'))
+#print(analisiPort('2020-01-01',1))
 
 
 #voglio preparare i dati per lanciare il colab delle analisi del portafoglio
