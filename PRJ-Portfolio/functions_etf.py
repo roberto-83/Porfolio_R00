@@ -103,12 +103,15 @@ def sectorsEtf(ticker):
   try:
     fund_df = fund.fund_sector_weightings
     fund_df_desc = fund_df.sort_values(by=ticker, ascending=False)
+    #print(fund_df_desc.to_string())
     return fund_df_desc
   except:
     #return  pd.DataFrame() #dataframe vuoto
-    return  pd.DataFrame({ticker:'0'},index=['0']) #dataframe vuoto
+    #return  pd.DataFrame({ticker:[0,0]},index=[0,'Other']) #dataframe vuoto
+    return  pd.DataFrame({ticker:[0]},index=[0]) #dataframe vuoto
 
-#print(sectorsEtf('BITC.SW'))
+#print(sectorsEtf('XDWS.MI'))
+#print(sectorsEtf('CSSPX.MIT'))
 #########################################
 ####API di ETFDB
 ####https://pypi.org/project/etfpy/

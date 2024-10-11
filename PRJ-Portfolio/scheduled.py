@@ -22,7 +22,7 @@ from yahooread import readYahooSite
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
-developerMode=0
+developerMode=1
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio('1')
@@ -122,7 +122,8 @@ else:
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
-  #port = Portfolio('2')
+  port = Portfolio('1')
+  print(port.portafSettori())
   #print(port.writePortfolio())
   #appendRow('tab_performance!A:L',arr,newPrj)
   #delete_range('tab_performance!A63:L63',newPrj)

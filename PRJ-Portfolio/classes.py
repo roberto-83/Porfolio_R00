@@ -629,22 +629,30 @@ class Portfolio:
           settori['Settore_ETF'] = settori.index
           #cambio l'index che conteneva il settore
           settori=settori.reset_index()
-
+          
           #costruisco il DF
           settori['Data'] = Portfolio.todayDate_f
           settori['Asset'] = portShort['Asset'].loc[i]
           settori['Ticker'] = portShort['Ticker'].loc[i]
           settori['Descrizione'] = portShort['DESCRIZIONE LUNGA'].loc[i]
-          settori['Settore'] = settori['Settore_ETF'].str.upper()
           settori['Peso_Tick'] = portShort['peso'].loc[i]
-          settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]
-          settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
-          
-          #tolgo la colonna che si chiama come il ticker
-          settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF',0], axis =1)
-          #tolgo trattino
-          settori['Settore']=settori['Settore'].str.replace('_',' ')
+          if len(settori[portShort['Ticker'].loc[i]]) > 1:
+            settori['Settore'] = settori['Settore_ETF'].str.upper()
+            settori['Settore'] = settori['Settore'].str.replace('_',' ')
+            settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]       
+            settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
+            #tolgo la colonna che si chiama come il ticker
+            settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF',0], axis =1)
+            
+            #print(settori.to_string())
+          else : #caso in cui la funzione non mi torna i settori
+            settori['Settore'] = 'Other'
+            settori['Peso_singolo'] =0 
+            settori['Peso'] = portShort['peso'].loc[i]
+            settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF','index'], axis =1)
+
           #print(settori.to_string())
+   
         else: #azione o bond
           d = {'Data' :Portfolio.todayDate_f,
               'Asset':portShort['Asset'].loc[i],
