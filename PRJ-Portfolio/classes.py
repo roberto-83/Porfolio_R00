@@ -602,17 +602,23 @@ class Portfolio:
 ################################################################################
   
   def readDateTabSettori(self):
-    tabIsinsNew= read_range('tab_sectors!A:M',newPrj)
-    #print(tabIsinsNew.head())
-    if len(tabIsinsNew) != 0: #xaso in cui tabella sia vuota
-      lastDate = tabIsinsNew['DATA'].iloc[0]
-      print(f" Ultima data folgio {lastDate} e data oggi {datetime.today().strftime('%Y-%m-%d')}")
-      if lastDate == datetime.today().strftime('%Y-%m-%d'):
-        return 'Aggiornamento non Necessario'
+    tabIsinsNew = read_range('tab_sectors!A:M',newPrj)
+    statusReadDf = read_range('tab_sectors!O2:O2',newPrj)
+    statusRead = statusReadDf.columns[0]
+    print(statusRead)
+    if(statusRead == 'INCOMPLETE'):
+      return 'ok'
+    else:
+      #print(tabIsinsNew.head())
+      if len(tabIsinsNew) != 0: #xaso in cui tabella sia vuota
+        lastDate = tabIsinsNew['DATA'].iloc[0]
+        print(f" Ultima data foglio {lastDate} e data oggi {datetime.today().strftime('%Y-%m-%d')}")
+        if lastDate == datetime.today().strftime('%Y-%m-%d'):
+          return 'Aggiornamento non Necessario'
+        else:
+          return 'ok'
       else:
         return 'ok'
-    else:
-      return 'ok'
 
   def portafSettori(self):
     if Portfolio.readDateTabSettori(self) == 'ok':
@@ -621,6 +627,7 @@ class Portfolio:
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
       #for i in portShort.iterrows():
       allSectors = pd.DataFrame()
+      AllData='Ok'
       for i in range(len(portShort)):
         if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
           #leggo i settori dell'etf
@@ -650,6 +657,7 @@ class Portfolio:
             settori['Peso_singolo'] =0 
             settori['Peso'] = portShort['peso'].loc[i]
             settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF','index'], axis =1)
+            AllData='INCOMPLETE'
 
           #print(settori.to_string())
    
@@ -693,6 +701,8 @@ class Portfolio:
       write_range('tab_sectors!A2:H'+lastRowSt,listPrint,newPrj)
       write_range('tab_sectors!J2:J2',[[totalWeight]],newPrj)
       write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
+      write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
+      
       return 'Done writing sectors'
     else:
       return 'Aggiornamento non necessario'
