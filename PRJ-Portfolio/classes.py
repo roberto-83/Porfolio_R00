@@ -632,6 +632,7 @@ class Portfolio:
         if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
           #leggo i settori dell'etf
           settori = sectorsEtf(portShort['Ticker'].loc[i])
+          time.sleep(20) #aspetto un po perchè vedo che non mi da sempre i valori
           #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
           settori['Settore_ETF'] = settori.index
           #cambio l'index che conteneva il settore
