@@ -188,8 +188,10 @@ def verifKey(dict,val):
 #testinfo = teststock.info
 #print(testinfo)
 
-#test2 = yf.download('FOO.DE','2024-05-11','2024-05-23',progress=False)
+#test2 = yf.download('RCPL.XC','2020-01-01','2024-10-14',progress=False)
 #print(test2)
+#test3 = yf.download('RCP.L','2000-01-01','2024-10-14',progress=False)
+#print(test3)
 #test3 = test2.asfreq('D')
 #print(test3)
 #test4 = test3.fillna(method='ffill')

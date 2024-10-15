@@ -75,11 +75,19 @@ def analisiPort(stockStartDate,num_port):
       # Leggo portafoglio
       #----------------------------------------------------
       portfolio_1 = readMyPort(num_port)
+      #sostituisco RCP
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTCE.SW")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
+      
       #print(portfolio_1)
       #quindi variabili che serviranno per analisi sono
       assets_1 = portfolio_1['Ticker'].tolist()
+      #pos = assets_1.index('RCPL.XC')
+      #assets_1 = list(map(lambda x: x.replace('RCPL.XC', 'RCP.L'), assets_2))
+      #assets_1 = list(map(lambda x: x.replace('RCPL.XC', '1IH.F'), assets_2))
       weights_1 = np.array(portfolio_1['%Composizione'].tolist())
-      print(weights_1)
+      #print(weights_1)
       #altre variabili data
 
       today = datetime.today().strftime('%Y-%m-%d')
@@ -103,6 +111,7 @@ def analisiPort(stockStartDate,num_port):
       #azioni
       subport_2 = portfolio_1[portfolio_1['Asset'].isin(["AZIONI","ETF-AZIONI","ETC"])]
       subassets_2 = subport_2['Ticker'].tolist()
+      
       #print(subport_2)
 
       #----------------------------------------------------
@@ -138,11 +147,15 @@ def analisiPort(stockStartDate,num_port):
       # Costruisico la matrice
       #----------------------------------------------------
       df = pd.DataFrame()
-
+      #print(assets_1)
+      #print(yf.download('SNOW', start=stockStartDate, end = today,progress=False)['Adj Close'])
+      #print(yf.download('BTCE.SW', start=stockStartDate, end = today,progress=False)['Adj Close'])
       #print(subassets_2)
       for stock in assets_1:
         if stock in subassets_2:   #quindi se è un etf o azione
           df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
+          #print(stock)
+          #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
         elif stock in subassets_1:  #quindi se è bot o btp
           priceItem = calend_tot_2[calend_tot_2['Ticker'] == stock]
           df[stock] = priceItem.drop('Ticker', axis=1)
@@ -158,7 +171,7 @@ def analisiPort(stockStartDate,num_port):
       print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
       #print(df)
       #print('Tabella dei prezzi storici')
-      #print(df.to_string())
+      print(df.to_string())
 
       #----------------------------------------------------
       # Drop qualche colonna
@@ -183,8 +196,13 @@ def analisiPort(stockStartDate,num_port):
 
       tick4='BTP-OT53'
       col_index04 = df.columns.get_loc(tick4)
-      weights_f = np.delete(weights_4, col_index04)
+      weights_5 = np.delete(weights_4, col_index04)
       df.drop([tick4], axis=1,inplace=True)
+
+      tick5='CRIPTALIA'
+      col_index05 = df.columns.get_loc(tick5)
+      weights_f = np.delete(weights_5, col_index05)
+      df.drop([tick5], axis=1,inplace=True)
 
       #----------------------------------------------------
       # Calcolo la data piu vecchia
