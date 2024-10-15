@@ -79,6 +79,7 @@ def analisiPort(stockStartDate,num_port):
       #quindi variabili che serviranno per analisi sono
       assets_1 = portfolio_1['Ticker'].tolist()
       weights_1 = np.array(portfolio_1['%Composizione'].tolist())
+      print(weights_1)
       #altre variabili data
 
       today = datetime.today().strftime('%Y-%m-%d')
@@ -157,20 +158,44 @@ def analisiPort(stockStartDate,num_port):
       print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
       #print(df)
       #print('Tabella dei prezzi storici')
-      print(df.to_string())
+      #print(df.to_string())
 
+      #----------------------------------------------------
+      # Drop qualche colonna
+      #----------------------------------------------------
+      #Trovo il numero di colonna del dato che voglio togliere (parte da zero)
+      tick1='BOT-01G25'
+      col_index01 = df.columns.get_loc(tick1)
+      #Tolgo colonna anche da array dei pesi
+      weights_2 = np.delete(weights_1, col_index01)
+      #tolgo anche da dataframe dei prezzi
+      df.drop([tick1], axis=1,inplace=True)
+      #print(weights_f)
+      tick2='BTP-VALORE'
+      col_index02 = df.columns.get_loc(tick2)
+      weights_3 = np.delete(weights_2, col_index02)
+      df.drop([tick2], axis=1,inplace=True)
+
+      tick3='BTP-MZ48'
+      col_index03 = df.columns.get_loc(tick3)
+      weights_4 = np.delete(weights_3, col_index03)
+      df.drop([tick3], axis=1,inplace=True)
+
+      tick4='BTP-OT53'
+      col_index04 = df.columns.get_loc(tick4)
+      weights_f = np.delete(weights_4, col_index04)
+      df.drop([tick4], axis=1,inplace=True)
+
+      #----------------------------------------------------
+      # Calcolo la data piu vecchia
+      #----------------------------------------------------
       mask = (df != 0).all(axis=1)
       data = df.index[mask]
       earliestDate = str(data[0])[0:10]
       #print(earliestDate)
 
-      #for i in df:
-          #print()
-          #asset_data = yf.download(symbol, start=startdate, end=today,progress=False)
-          #data[symbol] = asset_data['Adj Close']
-          #earliest_date = asset_data.index.min()
-          #label = labels[symbols.index(symbol)]
-          #print(f"Earliest date for {symbol} ({label}): {earliest_date}")
+     
+
       #----------------------------------------------------
       # Salvo Grafico su tmpFiles
       #----------------------------------------------------
@@ -213,7 +238,7 @@ def analisiPort(stockStartDate,num_port):
       # Varianza del portafoglio
       #----------------------------------------------------
       #.T serve per transporre
-      port_variance = np.dot(weights_1.T, np.dot(cov_matrix_annual,weights_1))
+      port_variance = np.dot(weights_f.T, np.dot(cov_matrix_annual,weights_f))
       print(f"La variaza del portafolgio è {port_variance}")
 
       #----------------------------------------------------
@@ -225,7 +250,7 @@ def analisiPort(stockStartDate,num_port):
       #----------------------------------------------------
       # Ritorno annuale del portafoglio
       #----------------------------------------------------
-      portAnnualReturn = np.sum(returns.mean() * weights_1) * 252
+      portAnnualReturn = np.sum(returns.mean() * weights_f) * 252
       #print(f"Il ritorno annualizzato del portafoglio è {portAnnualReturn}")
 
       #----------------------------------------------------
