@@ -159,6 +159,18 @@ def analisiPort(stockStartDate,num_port):
       #print('Tabella dei prezzi storici')
       print(df.to_string())
 
+      mask = (df != 0).all(axis=1)
+      data = df.index[mask]
+      earliestDate = data[0]
+      #print(data)
+
+      #for i in df:
+          #print()
+          #asset_data = yf.download(symbol, start=startdate, end=today,progress=False)
+          #data[symbol] = asset_data['Adj Close']
+          #earliest_date = asset_data.index.min()
+          #label = labels[symbols.index(symbol)]
+          #print(f"Earliest date for {symbol} ({label}): {earliest_date}")
       #----------------------------------------------------
       # Salvo Grafico su tmpFiles
       #----------------------------------------------------
@@ -250,7 +262,7 @@ def analisiPort(stockStartDate,num_port):
       #----------------------------------------------------
       # Scrivo su Sheet
       #----------------------------------------------------
-      listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free,vix_prev_close,fear_greed_desc,fear_greed_idx]]
+      listToPrint=[[today,earliestDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free,vix_prev_close,fear_greed_desc,fear_greed_idx]]
       appendRow('tab_analysis!A:J',listToPrint,newPrj)
       return 'Done Analisi Portafolgio'
     else:
