@@ -161,8 +161,8 @@ def analisiPort(stockStartDate,num_port):
 
       mask = (df != 0).all(axis=1)
       data = df.index[mask]
-      earliestDate = data[0]
-      print(earliestDate)
+      earliestDate = str(data[0])[0:10]
+      #print(earliestDate)
 
       #for i in df:
           #print()
