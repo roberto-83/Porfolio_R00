@@ -244,12 +244,14 @@ def analisiPort(stockStartDate,num_port):
       #----------------------------------------------------
       vix_prev_close = getStockInfo('^VIX')['previousClose']
       fear_greed = fear_and_greed.get()
-      fear_greed_idx = str(fear_greed[1]).upper() + " ("+str(round(fear_greed[0],2))+")"
+      #fear_greed_idx = str(fear_greed[1]).upper() + " ("+str(round(fear_greed[0],2))+")"
+      fear_greed_idx = round(fear_greed[0],2)
+      fear_greed_desc = fear_greed[1].upper()
       #----------------------------------------------------
       # Scrivo su Sheet
       #----------------------------------------------------
-      listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free,vix_prev_close,fear_greed_idx]]
-      appendRow('tab_analysis!A:I',listToPrint,newPrj)
+      listToPrint=[[today,stockStartDate,percent_ret,percent_vols,percent_ret,sharpe_ratio, risk_free,vix_prev_close,fear_greed_desc,fear_greed_idx]]
+      appendRow('tab_analysis!A:J',listToPrint,newPrj)
       return 'Done Analisi Portafolgio'
     else:
       return 'Aggiornamento non necessario'
