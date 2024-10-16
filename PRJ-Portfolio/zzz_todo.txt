@@ -1,0 +1,4 @@
+1-Sganciarsi dal file "tab_isin" per le descrizione delle azioni. ora il sistema non dovrebbe avere problemi con i dati
+2-sistemare il tab settori, trovare un modo per prendere tutti i dati, capre se sono sempre gli stessi che non vengono letti o meno
+3-fear index aggiornato piu volte al giorno
+

@@ -18,7 +18,7 @@ from datetime import datetime
 from functions_sheets import read_range
 from functions_stocks import getStockInfo
 from settings import * #importa variabili globali
-from functions_sheets import delete_range,appendRow
+from functions_sheets import delete_range,appendRow,write_range
 from settings import * #importa variabili globali
 import fear_and_greed
 
@@ -29,11 +29,20 @@ import fear_and_greed
 def readLastDate():
     todayDate = datetime.today().strftime('%Y-%m-%d')
     tabIsinsNew= read_range('tab_analysis!A:G',newPrj)
+    numLastRow=len(tabIsinsNew)+1
     #print(tabIsinsNew.head())
     if len(tabIsinsNew) != 0: #caso in cui tabella sia vuota
       lastDate = tabIsinsNew['Data calcolo'].iloc[-1]
       #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
       if lastDate == todayDate:
+        #in questo caso la funzione è già stata lanciata ma aggiorno i dati di mercato
+        datiMercato = getMarketData()
+        vix_prev_close = datiMercato[0]
+        fear_greed_idx = datiMercato[1]
+        fear_greed_desc = datiMercato[2]
+        listToPrint=[[vix_prev_close,fear_greed_desc,fear_greed_idx]]
+        #write_range('tab_portfolio!A2:AS'+numLastRow,listToPrint,newPrj)
+        write_range('tab_analysis!H'+str(numLastRow)+':J'+str(numLastRow),listToPrint,newPrj)
         return 'Aggiornamento non Necessario'
       else:
         return 'ok'
@@ -57,6 +66,14 @@ def readMyPort(num_port):
   #divido 100
   portfolio_1['%Composizione'] = portfolio_1['%Composizione']/100
   return portfolio_1
+
+def getMarketData():
+  vix_prev_close = getStockInfo('^VIX')['previousClose']
+  fear_greed = fear_and_greed.get()
+  #fear_greed_idx = str(fear_greed[1]).upper() + " ("+str(round(fear_greed[0],2))+")"
+  fear_greed_idx = round(fear_greed[0],2)
+  fear_greed_desc = fear_greed[1].upper()
+  return [vix_prev_close,fear_greed_idx,fear_greed_desc]
 
 def analisiPort(stockStartDate,num_port):
     readLastDateVar = readLastDate()
@@ -203,6 +220,7 @@ def analisiPort(stockStartDate,num_port):
       col_index05 = df.columns.get_loc(tick5)
       weights_f = np.delete(weights_5, col_index05)
       df.drop([tick5], axis=1,inplace=True)
+    
 
       #----------------------------------------------------
       # Calcolo la data piu vecchia
@@ -297,11 +315,12 @@ def analisiPort(stockStartDate,num_port):
       #----------------------------------------------------
       # Leggo altri indici
       #----------------------------------------------------
-      vix_prev_close = getStockInfo('^VIX')['previousClose']
-      fear_greed = fear_and_greed.get()
-      #fear_greed_idx = str(fear_greed[1]).upper() + " ("+str(round(fear_greed[0],2))+")"
-      fear_greed_idx = round(fear_greed[0],2)
-      fear_greed_desc = fear_greed[1].upper()
+    
+      datiMercato = getMarketData()
+      vix_prev_close = datiMercato[0]
+      fear_greed_idx = datiMercato[1]
+      fear_greed_desc = datiMercato[2]
+
       #----------------------------------------------------
       # Scrivo su Sheet
       #----------------------------------------------------

@@ -133,6 +133,7 @@ class Portfolio:
     isins = self.tabIsin
     #unisco i due dataframe sopra
     portIsinCalc = orig_portIsinCalc.merge(isins, left_on='Isin',right_on='ISIN',how='left')
+    #print(portIsinCalc.to_string())
     #cancello colonne che non mi servono 
     portIsinCalc = portIsinCalc.drop(columns=['COUNTRY','DESCRIZIONE BREVE','TICKER DATI','TICKER YAHOO','ISIN','ASSET','SITO UFFICIALE'])
     #aggiungo prezzo live
