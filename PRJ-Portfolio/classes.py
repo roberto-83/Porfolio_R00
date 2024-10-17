@@ -644,7 +644,7 @@ class Portfolio:
           #settori = sectorsEtf(portShort['Ticker'].loc[i]) #####QUI capire se posso usare il massivo..
           #print(portShort['Ticker'].loc[i])
           settori1 = allSectorsEtf[portShort['Ticker'].loc[i]]
-          print(settori)
+          #print(settori)
           settori = settori1.to_frame()
           #print(sectors)
           #print('---------------')
