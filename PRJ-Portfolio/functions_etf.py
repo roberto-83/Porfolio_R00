@@ -110,6 +110,14 @@ def sectorsEtf(ticker):
     #return  pd.DataFrame({ticker:[0,0]},index=[0,'Other']) #dataframe vuoto
     return  pd.DataFrame({ticker:[0]},index=[0]) #dataframe vuoto
 
+def sectorsMultipEtf(tickers):
+  #fund = Ticker(['XDEQ.MI','XDWS.MI','CSSPX.MI','CSNDX.MI','GLUX.MI','EMAE.MI','LCWD.MI'])
+  fund = Ticker(tickers)
+  #print(fund)
+  fund_df = fund.fund_sector_weightings
+  #print(fund_df)
+  return fund_df
+
 #print(sectorsEtf('XDWS.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
 #########################################

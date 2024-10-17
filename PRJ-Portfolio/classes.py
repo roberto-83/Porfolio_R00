@@ -7,7 +7,7 @@ from functions_bonds import getBtpData
 from functions_bonds import getBotData,readEuronext,readEuronextREV2
 from functions_stocks import getStockInfo
 from functions_stocks import verifKey
-from functions_etf import sectorsEtf
+from functions_etf import sectorsEtf,sectorsMultipEtf
 from functions_etf import getPriceETF
 from functions_etf import getSummary,listEtfCountries,listStocksCountries
 from settings import * #importa variabili globali
@@ -629,16 +629,39 @@ class Portfolio:
       #for i in portShort.iterrows():
       allSectors = pd.DataFrame()
       AllData='Ok'
+      
+      #voglio lista di etf perchè la funzione massiva di raccoglimento settori funziona meglio della singola..
+      etfs = port[port['Asset'] == "ETF-AZIONI"]
+      etfsList = etfs['Ticker'].tolist()
+      allSectorsEtf = sectorsMultipEtf(etfsList)
+      #primo = allSectorsEtf['XDEQ.MI']
+      #print(primo)
+  
       for i in range(len(portShort)):
         if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
+
           #leggo i settori dell'etf
-          settori = sectorsEtf(portShort['Ticker'].loc[i])
-          time.sleep(20) #aspetto un po perchè vedo che non mi da sempre i valori
+          #settori = sectorsEtf(portShort['Ticker'].loc[i]) #####QUI capire se posso usare il massivo..
+          #print(portShort['Ticker'].loc[i])
+          settori1 = allSectorsEtf[portShort['Ticker'].loc[i]]
+          print(settori)
+          settori = settori1.to_frame()
+          #print(sectors)
+          #print('---------------')
+          #print(type(settori))
+          #print(settori.index)
+          #print('stampo columns')
+          #print(settori.columns)
+          #time.sleep(20) #aspetto un po perchè vedo che non mi da sempre i valori
           #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
           settori['Settore_ETF'] = settori.index
+      
+          #print('creo colonna')
           #cambio l'index che conteneva il settore
+          #print(settori)
+          #print('resetto indice')
           settori=settori.reset_index()
-          
+          #print(settori)
           #costruisco il DF
           settori['Data'] = Portfolio.todayDate_f
           settori['Asset'] = portShort['Asset'].loc[i]
