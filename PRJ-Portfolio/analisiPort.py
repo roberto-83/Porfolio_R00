@@ -43,8 +43,8 @@ def readLastDate():
         listToPrint=[[vix_prev_close,fear_greed_desc,fear_greed_idx]]
         #write_range('tab_portfolio!A2:AS'+numLastRow,listToPrint,newPrj)
         write_range('tab_analysis!H'+str(numLastRow)+':J'+str(numLastRow),listToPrint,newPrj)
-        #return 'Aggiornamento non Necessario'
-        return 'ok'
+        return 'Aggiornamento non Necessario'
+        #return 'ok'
       else:
         return 'ok'
     else:
