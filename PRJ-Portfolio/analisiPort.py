@@ -43,7 +43,8 @@ def readLastDate():
         listToPrint=[[vix_prev_close,fear_greed_desc,fear_greed_idx]]
         #write_range('tab_portfolio!A2:AS'+numLastRow,listToPrint,newPrj)
         write_range('tab_analysis!H'+str(numLastRow)+':J'+str(numLastRow),listToPrint,newPrj)
-        return 'Aggiornamento non Necessario'
+        #return 'Aggiornamento non Necessario'
+        return 'ok'
       else:
         return 'ok'
     else:
@@ -92,9 +93,14 @@ def analisiPort(stockStartDate,num_port):
       # Leggo portafoglio
       #----------------------------------------------------
       portfolio_1 = readMyPort(num_port)
+      today = datetime.today().strftime('%Y-%m-%d')
+      #test profondità storica ticker
+      #print(yf.download('2BTC.DE', start=stockStartDate, end = today,progress=False)['Adj Close'])
+      #print(yf.download('WBIT', start=stockStartDate, end = today,progress=False)['Adj Close'])
+      
       #sostituisco RCP
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
-      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTCE.SW")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "WBIT")
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
       
       #print(portfolio_1)
@@ -107,7 +113,7 @@ def analisiPort(stockStartDate,num_port):
       #print(weights_1)
       #altre variabili data
 
-      today = datetime.today().strftime('%Y-%m-%d')
+      
 
       #----------------------------------------------------
       # Divido in due parti
@@ -158,7 +164,8 @@ def analisiPort(stockStartDate,num_port):
       #print(calend_tot_2)
       #print(calend_tot_2.dtypes)
       #print(calend_tot_2.index)
-      #print(yf.download('RACE.MI', start=stockStartDate, end = today,progress=False)['Adj Close'])
+      
+     
 
       #----------------------------------------------------
       # Costruisico la matrice
