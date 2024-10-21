@@ -95,13 +95,20 @@ def analisiPort(stockStartDate,num_port):
       portfolio_1 = readMyPort(num_port)
       today = datetime.today().strftime('%Y-%m-%d')
       #test profondità storica ticker
-      #print(yf.download('2BTC.DE', start=stockStartDate, end = today,progress=False)['Adj Close'])
-      #print(yf.download('WBIT', start=stockStartDate, end = today,progress=False)['Adj Close'])
+      #print(yf.download('SWDA.MI', start=stockStartDate, end = today,progress=False)['Adj Close'])
+      #print(yf.download('GOOG', start=stockStartDate, end = today,progress=False)['Adj Close'])
       
       #sostituisco RCP
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
-      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "WBIT")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["LCWD.MI"], "SWDA.MI")
+      #portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "WBIT")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTC-EUR")
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+      
+
       
       #print(portfolio_1)
       #quindi variabili che serviranno per analisi sono

@@ -519,6 +519,12 @@ class Portfolio:
 ################################################################################
 ##### TABELLA COMPOSIZIONE - AZIENDE
 ################################################################################
+  #provo a usare API alpha vantage https://www.alphavantage.co/documentation/
+  #//limiti uso
+  #//We are pleased to provide free stock API service covering the majority of our datasets 
+  #//for up to 5 API requests per minute and 100 requests per day. 
+  #//If you would like to target a larger API call volume, please visit premium membership.
+
   def getLinkTabIsin(ticker):
     fulldata = read_range('tab_isin!A:M',newPrj)
     partData = fulldata[(fulldata['TICKER YAHOO'] == ticker)]

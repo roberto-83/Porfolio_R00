@@ -482,4 +482,44 @@ def testapiFinnhub():
   finnhub_client = finnhub.Client(api_key="cpule6pr01qj8qq19rs0cpule6pr01qj8qq19rsg")
   print(finnhub_client.etfs_holdings('SPY'))
  
+################################################################################
+##### ALPHA VANTAGE
+################################################################################
 
+ #provo a usare API alpha vantage https://www.alphavantage.co/documentation/
+  #//limiti uso
+  #//We are pleased to provide free stock API service covering the majority of our datasets 
+  #//for up to 5 API requests per minute and 100 requests per day. 
+  #//If you would like to target a larger API call volume, please visit premium membership.
+  #pikey=DH1RD4VL3WSY8SK4
+#import requests
+#ma che isin usa? lo spy sarebbe qyello con i dividendi... e per gli altri etf dove li trovo?
+#url = 'https://www.alphavantage.co/query?function=ETF_PROFILE&symbol=SPY&apikey=DH1RD4VL3WSY8SK4'
+#r = requests.get(url)
+#data = r.json()
+#print(data)
+#MIEI ETF
+#XDEQ.MI	Xtrackers MSCI World Quality UCITS ETF 1C
+#XDWS.MI	Xtrackers MSCI World Consumer Staples UCITS ETF 1C
+#GLUX.MI	Amundi Index Solutions - Amundi S&P Global Luxury
+#EMAE.MI	SPDR MSCI EM Asia UCITS ETF
+#LCWD.MI	Amundi MSCI World V UCITS ETF
+#CSSPX.MI-> SPY
+#CSNDX.MI-> QQQ
+
+#ricerca ticker
+#api_key = 'DH1RD4VL3WSY8SK4'
+
+
+# Parola chiave per la ricerca del ticker
+#keyword = 'staples'
+
+# URL per la ricerca del ticker
+#url = f'https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords={keyword}&apikey={api_key}'
+
+# Richiesta dei dati
+#response = requests.get(url)
+#dataread = response.json()
+
+# Visualizza i risultati della ricerca
+#print(dataread)
