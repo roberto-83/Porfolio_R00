@@ -219,6 +219,29 @@ class Portfolio:
             if len(divexdate) > 2: #quindi se non è 0
               divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
           except:
+            marketCap = 0
+            volume = 0
+            epstrailing = 0
+            epsforward =0
+            petrailing = 0
+            peforward =0
+            pegratio = 0
+            beta = 0
+            earnings = 0
+            ptb = 0
+            book = 0
+            shares = 0
+            divrate = 0
+            divyield = 0
+            divlastval = 0
+            divlastdate = 0
+            divexdate = 0
+            payout = 0
+            avg52 = 0
+            dist52=0
+            avg200 = 0
+            dist200=0
+            divexdate=0
             list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
         #divlastdate=
         #appendo Settore, industria
