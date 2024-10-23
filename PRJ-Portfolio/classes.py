@@ -344,7 +344,7 @@ class Portfolio:
       dataFine = (datetime.strptime(todayCon, '%Y-%m-%d')+timedelta(days=3)).strftime('%Y-%m-%d')
       #trovo i prezzi
       prices = yf.download(row['Ticker'],dataInizio,dataFine,progress=False) 
-      print(prices)  
+      #print(prices)  
       #aggiungo le date vuote
       prices1 = prices.asfreq('D')
       #copio i valori delle righe vuote dalla riga sopra
