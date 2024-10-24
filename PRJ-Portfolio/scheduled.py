@@ -19,6 +19,7 @@ import pytz
 import time
 from yahooquery import Ticker
 from yahooread import readYahooSite
+from fred_data import writeMacroData
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
@@ -113,7 +114,13 @@ if developerMode == 0:
   delta6 = time.time() - time6s
   log_insert1("Aggiornamento Tab Watchlist","Fine",delta6,initialTime) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
-
+  #dati fed
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Dati Fed")
+  time7s = time.time()
+  print(writeMacroData())
+  delta7 = time.time() - time7s
+  log_insert1("Aggiornamento Tab US","Fine",delta6,initialTime) 
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Dati Fed")
 else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
