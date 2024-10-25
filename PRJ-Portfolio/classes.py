@@ -322,6 +322,8 @@ class Portfolio:
     dateRead = row['dataHist']
     if row['Asset'] == 'P2P':
       histPrice = float(row['TotInvest'])+float(row['Divid'])
+      #d = {'Ticker':}
+      #histPrice = pd.Series( [histPrice1], index=[row['Ticker']])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
       histTot = readEuronextREV2(row['Isin'],dateRead)
       histPriceDf = histTot[histTot['Date'] == dateRead]
@@ -358,18 +360,37 @@ class Portfolio:
         histPrice = prices3['Close'].values[0]
       else:
         #se ci sono festività e non posso filtrare il giorno giusto prendo l'ultimo valore disponibile
-        histPrice = prices2['Close'].iloc[-1] 
+        histPrice = prices2['Close'].iloc[-1].values[0]
+       
       #trovo valuta
       infoStock = getStockInfo(row['Ticker'])
       currency=infoStock['currency']
       #cambio valuta
+      #print('PRE CONVERSION')
+      #print(type(histPrice))
       histPrice = Portfolio.calcCurren(histPrice,currency)
+      #print('POST CONVERSION')
+      #print(type(histPrice))
+      #print('---')
+      #histPrice = histPrice1[0]
+
     else:
       histPrice='0'
+    #print('TIPO DATO')
+    #print(type(histPrice))
+    #print('STAMPO DATO')
+    #print(histPrice)
+    #print('STAMPO VALORE')
+    #print(histPrice[0])
+    #print('--------')
+
     return histPrice
 
   def getHistctvMerc(row):
-    ctvMerc = row['Qta']*row['HistPrice']
+    print(row)
+    print(row['Qta'])
+    print(row['HistPrice'])
+    ctvMerc = float(row['Qta'])*float(row['HistPrice'])
     if row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
       ctvMerc=ctvMerc/100      
     return ctvMerc
@@ -384,11 +405,16 @@ class Portfolio:
     #print(portHist)
     #aggiungo la data
     portHist['dataHist'] = histdate
+    print(portHist.to_string())
     #aggiungo prezzo storico
     portHist['HistPrice']=portHist.apply(Portfolio.getHistPrice,axis=1 )
+    #portHist['HistPrice']=0
+    #portHist['HistPrice']=portHist['HistPrice'].apply(Portfolio.getHistPrice )
+    #portHist['HistPrice']=Portfolio.getHistPrice
     portHist['HistPriceEur']=portHist['HistPrice']
     #calcolo controvalore mercato
     portHist['ctvMerc']=portHist.apply(Portfolio.getHistctvMerc,axis=1 )
+
     #tolgo currency
     #portHist.drop(['CURRENCY','ISIN-JOIN'], axis=1,  inplace=True)
     #riordino
