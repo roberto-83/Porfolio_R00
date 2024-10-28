@@ -42,9 +42,14 @@ def writeMacroData():
     tax_rate = fred.get_series_latest_release('EFFR')
     tax_rate_val = tax_rate.iloc[-1]
     tax_rate_data = str(tax_rate.index[-1])[0:10]
+    # Personal Consumption Expenditures (PCE) Excluding Food and Energy (Chain-Type Price Index)
+    pce = fred.get_series_latest_release('DPCCRV1Q225SBEA')
+    pce_val = pce.iloc[-1]
+    pce_data = str(pce.index[-1])[0:10]
+    
 
-    list2write=[[todayDate,treasury10_data,treasury10_val,gdp_data,gdp_val,cpi_data,cpi_val,tax_rate_data,tax_rate_val]]
-    appendRow('tab_us!A:I',list2write,newPrj)
+    list2write=[[todayDate,treasury10_data,treasury10_val,gdp_data,gdp_val,cpi_data,cpi_val,tax_rate_data,tax_rate_val,pce_data, pce_val]]
+    appendRow('tab_us!A:K',list2write,newPrj)
   else:
     return 'Aggiornamento non necessario'
   return 'Done'
