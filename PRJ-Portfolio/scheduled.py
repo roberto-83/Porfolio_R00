@@ -19,7 +19,7 @@ import pytz
 import time
 from yahooquery import Ticker
 from yahooread import readYahooSite
-from fred_data import writeMacroData
+from fred_data import writeMacroData,writeMacroDataHistory
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
@@ -117,7 +117,7 @@ if developerMode == 0:
   #dati fed
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Dati Fed")
   time7s = time.time()
-  print(writeMacroData())
+  print(writeMacroDataHistory())
   delta7 = time.time() - time7s
   log_insert1("Aggiornamento Tab US","Fine",delta6,initialTime) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Dati Fed")
