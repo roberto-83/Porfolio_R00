@@ -110,6 +110,7 @@ def writeMacroDataHistory():
   # Personal Consumption Expenditures (PCE) Excluding Food and Energy (Chain-Type Price Index)
   pce = fred.get_series_latest_release('DPCCRV1Q225SBEA')
   pce_DF = transfDataf(pce,firstDate)
+  pce_DF=pce_DF.fillna(method='ffill')
   print(pce_DF)
   len_pce_DF = str(len(pce_DF)+1)
   listPrint05 = pce_DF.values.tolist()
