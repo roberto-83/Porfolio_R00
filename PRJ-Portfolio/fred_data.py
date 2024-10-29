@@ -74,6 +74,7 @@ def writeMacroDataHistory():
   #ten year treasury rate
   treasury10 = fred.get_series_latest_release('GS10')
   treasury10_DF = transfDataf(treasury10,firstDate)
+  treasury10_DF=treasury10_DF.fillna(method='ffill')
   print(treasury10_DF)
   len_treasury10_DF = str(len(treasury10_DF)+1)
   listPrint01 = treasury10_DF.values.tolist()
@@ -82,6 +83,7 @@ def writeMacroDataHistory():
   # Gross Domestic Product = prodotto interno lordo
   gdp = fred.get_series('GDP')
   gdp_DF = transfDataf(gdp,firstDate)
+  gdp_DF=gdp_DF.fillna(method='ffill')
   print(gdp_DF)
   len_gdp_DF = str(len(gdp_DF)+1)
   listPrint02 = gdp_DF.values.tolist()
@@ -90,6 +92,7 @@ def writeMacroDataHistory():
   # Median Consumer Price Index (MEDCPIM158SFRBCLE)	
   cpi = fred.get_series_latest_release('MEDCPIM158SFRBCLE')
   cpi_DF = transfDataf(cpi,firstDate)
+  cpi_DF=cpi_DF.fillna(method='ffill')
   print(cpi_DF)
   len_cpi_DF = str(len(cpi_DF)+1)
   listPrint03 = cpi_DF.values.tolist()
