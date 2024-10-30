@@ -106,6 +106,8 @@ def writeMacroDataHistory():
   tax_rate_DF = transfDataf(tax_rate,firstDate)
   tax_rate_DF=tax_rate_DF.fillna(method='ffill')
   tax_rate_DF=tax_rate_DF.fillna(0)
+  #cancello change = 0
+  tax_rate_DF =tax_rate_DF[tax_rate_DF['Change'] !=0]
   print('tax_rate_DF')
   print(tax_rate_DF)
   len_tax_rate_DF = str(len(tax_rate_DF)+1)
