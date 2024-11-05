@@ -3,6 +3,7 @@
 #documentazione della fred qui  https://fred.stlouisfed.org/docs/api/fred/
 #doc della documentazione python https://pypi.org/project/fredapi/
 from fredapi import Fred
+import pandas as pd
 from datetime import datetime,timedelta
 import time
 from settings import * #importa variabili globali
@@ -124,12 +125,25 @@ def writeMacroDataHistory():
   listPrint05 = pce_DF.values.tolist()
   write_range('tab_us!N2:P'+len_pce_DF,listPrint05,newPrj)
 
-  #list2write=[[todayDate,treasury10_data,treasury10_val,gdp_data,gdp_val,cpi_data,cpi_val,tax_rate_data,tax_rate_val,pce_data, pce_val]]
-  #print(list2write)
-  #appendRow('tab_us!A:K',list2write,newPrj)
+  #FINAL DF
+  final_DF = pd.concat([treasury10_DF['Change'], gdp_DF['Change'],cpi_DF['Change'],tax_rate_DF['Change'],pce_DF['Change']], axis=1, keys=['treasury10','Gdp','cpi','tax_rate','pce'])
+  #duplico i valori NaN
+  final_DF.fillna(method='ffill', inplace=True)
+  #tolgo i primi NaN e imposto =0
+  final_DF=final_DF.fillna(0)
+  #copio colonna index per stampare
+  final_DF['index']=final_DF.index
+  #cambio formato data da rtimestamp a stringa
+  final_DF['index']=final_DF['index'].astype(str)
+  final_DF = final_DF[['index', 'treasury10', 'Gdp', 'cpi', 'tax_rate','pce']]
+  print(final_DF)
+  len_final_DF = str(len(final_DF)+1)
+  listPrint_F = final_DF.values.tolist()
+  write_range('tab_us!R2:W'+len_final_DF,listPrint_F,newPrj)
+
 
   return 'Done'
-print(writeMacroDataHistory())
+#print(writeMacroDataHistory())
 
 def test1():
   fred = Fred(api_key='a2d856a46ea11c3c186d0935100b4994')

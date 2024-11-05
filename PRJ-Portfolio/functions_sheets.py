@@ -102,10 +102,11 @@ def appendRow(range_name,values,spreadsheet_id):
         print('cells updated.'.format(result.get('updatedCells')))
         break
       #except ValueError as error:
-      except:
+      except Exception as inst:
         if(attempt_no <= num_retries):
           print(f"FAIL: Lettura dati da google API. rety numero {attempt_no}")
-          time.sleep(10)
+          print(inst)
+          time.sleep(15)
         else:
           #raise error
           raise TypeError("Errore Google Sheet")

@@ -388,8 +388,8 @@ class Portfolio:
 
   def getHistctvMerc(row):
     print(row)
-    print(row['Qta'])
-    print(row['HistPrice'])
+    #print(row['Qta'])
+    #print(row['HistPrice'])
     ctvMerc = float(row['Qta'])*float(row['HistPrice'])
     if row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
       ctvMerc=ctvMerc/100      
@@ -405,7 +405,7 @@ class Portfolio:
     #print(portHist)
     #aggiungo la data
     portHist['dataHist'] = histdate
-    print(portHist.to_string())
+    #print(portHist.to_string())
     #aggiungo prezzo storico
     portHist['HistPrice']=portHist.apply(Portfolio.getHistPrice,axis=1 )
     #portHist['HistPrice']=0
@@ -476,7 +476,8 @@ class Portfolio:
     prezzoMerc = prezzoMerc2.ffill()
     rendim=histDf.loc['total']['ctvMerc'] - histDf.loc['total']['TotInvest']
     rendimperc= (rendim * 100) / histDf.loc['total']['TotInvest']
-    mercato = prezzoMerc['Close'].iloc[0]
+    mercato_df = prezzoMerc['Close'].iloc[0]
+    mercato = mercato_df['CSSPX.MI']
     rendimMerc=100*(float(mercato)-257.01)/257.01
     delta = rendimMerc - rendimperc
     arrTot = [[histDf['dataHist'].iloc[0],
@@ -1399,7 +1400,7 @@ def caldRendimento():
 
       ####### Leggo i dati da TRANSAZIONI
 
-      valTransact = readTransTot(int(newYear) , int(newMonth))
+      valTransact = readTransTot(int(newYear) , int(newMonth),'1')
       deposit=valTransact[0]
       dividen=valTransact[1]
       vendite=valTransact[2]
@@ -1412,7 +1413,7 @@ def caldRendimento():
         valIniYear = valYear[0]
         valFinYear = valYear[1]
 
-        valTranYear = readTransTot(int(newYear) , '0')
+        valTranYear = readTransTot(int(newYear) , '0','1')
         depositY=valTranYear[0]
         dividenY=valTranYear[1]
         venditeY=valTranYear[2]
@@ -1451,8 +1452,9 @@ def readCalTot(anno, mese):
   arr=[valInvFirsyM,valInvLastM]
   return arr
 
-def readTransTot(anno,mese):
-  transact = read_range('tab_transazioni!A:P',oldPrj) 
+def readTransTot(anno,mese,num_port):
+  transact = read_range('tab_transazioni!A:Q',oldPrj) 
+  transact = transact[transact['Num Portfolio'] == num_port] #solo portafoglio passato
   transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
   transact['Month'] = transact['Data operazione'].dt.month
   transact['Year'] = transact['Data operazione'].dt.year
