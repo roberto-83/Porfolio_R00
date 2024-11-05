@@ -387,7 +387,7 @@ class Portfolio:
     return histPrice
 
   def getHistctvMerc(row):
-    print(row)
+    #print(row)
     #print(row['Qta'])
     #print(row['HistPrice'])
     ctvMerc = float(row['Qta'])*float(row['HistPrice'])
