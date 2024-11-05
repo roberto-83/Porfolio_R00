@@ -177,7 +177,7 @@ def readEuronextREV2(isin, data):
     ####METTO UN TRY CATCH?? vediamo se mi si blocca ancora..
 
     histBtpExt = dfsExt[22]
-    print(histBtpExt)
+    #print(histBtpExt)
     histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
     #print("stampo quello che leggo")##########################################################
     #riempio le date vuote
