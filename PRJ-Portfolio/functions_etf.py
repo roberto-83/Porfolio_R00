@@ -118,7 +118,7 @@ def sectorsMultipEtf(tickers):
   #print(fund_df)
   return fund_df
 
-#print(sectorsEtf('XDWS.MI'))
+#print(sectorsEtf('GLUX.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
 #########################################
 ####API di ETFDB

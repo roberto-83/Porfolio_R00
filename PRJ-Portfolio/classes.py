@@ -51,7 +51,7 @@ class Portfolio:
   def readActiveIsinByDate(self,date):
     num_port = self.num_port #numero portafoglio
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
-    transact = read_range('tab_transazioni!A:Q',oldPrj)
+    transact = read_range('tab_transazioni!A:Q',newPrj)
     transact = transact[transact['Num Portfolio'] == num_port] #solo portafoglio passato
     transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
     #print(transact[transact['Ticker'] == 'CSNDX.MI'])
@@ -698,7 +698,8 @@ class Portfolio:
 
           #leggo i settori dell'etf
           #settori = sectorsEtf(portShort['Ticker'].loc[i]) #####QUI capire se posso usare il massivo..
-          #print(portShort['Ticker'].loc[i])
+          #print(allSectorsEtf['GLUX.MI'])
+          print(portShort['Ticker'].loc[i])
           settori1 = allSectorsEtf[portShort['Ticker'].loc[i]]
           #print(settori)
           settori = settori1.to_frame()
@@ -1453,7 +1454,7 @@ def readCalTot(anno, mese):
   return arr
 
 def readTransTot(anno,mese,num_port):
-  transact = read_range('tab_transazioni!A:Q',oldPrj) 
+  transact = read_range('tab_transazioni!A:Q',newPrj) 
   transact = transact[transact['Num Portfolio'] == num_port] #solo portafoglio passato
   transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
   transact['Month'] = transact['Data operazione'].dt.month
