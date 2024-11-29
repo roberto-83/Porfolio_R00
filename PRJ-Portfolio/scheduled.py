@@ -28,6 +28,8 @@ if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio('1')
   port2 = Portfolio('2')
+  #scrivo il dato sul file analisi spese
+  print(port.bankING)
   #scrivo la tabella degli Isin
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
   #log_insert1("Aggiornamento Tab Isin","Inizio","")
@@ -125,11 +127,13 @@ else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
   #print(gcolabAnalysis())
-  print(analisiPort('2010-01-01','1'))
+  #print(analisiPort('2010-01-01','1'))
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
-  #port = Portfolio('1')
+  port = Portfolio('1')
+  #print('##########################')
+  print(port.bankING)
   #print(port.portafSettori())
   #print(port.writePortfolio())
   #appendRow('tab_performance!A:L',arr,newPrj)

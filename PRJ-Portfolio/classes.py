@@ -43,6 +43,7 @@ class Portfolio:
     self.num_port = num_port #specifico il numero del portafolgio
     #tutte le transazioni fino ad oggi
     self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f)
+    self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
@@ -73,6 +74,30 @@ class Portfolio:
 
     return transact
 
+  def readValueBanks(self,date,bank):##################TESTARE
+    #num_port = self.num_port #numero portafoglio
+    #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
+    transact = read_range('tab_transazioni!A:S',newPrj)
+    transact = transact[transact['Banca'] == bank] #solo banca effettiva
+    transact['Data operazione'] = pd.to_datetime(transact['Data operazione'], format='%d/%m/%Y')
+    #print(transact[transact['Ticker'] == 'CSNDX.MI'])
+    #print(transact[transact['Ticker'] == 'NKE.DE'])
+    transact = transact[transact['Data operazione'] <= date ] 
+    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace('\.','',regex=True)
+    transact['Quantità (real)'] = transact['Quantità (real)'].replace('\.','',regex=True)
+    transact = transact.replace(',','.', regex=True)
+    transact = transact.replace('€','', regex=True)
+    transactAcq = transact[transact['Tipo'] == 'ACQ']
+    transactVen = transact[transact['Tipo'] == 'VEND']
+    totAcq=transactAcq['Spesa/incasso effettivo'].astype(float).sum()
+    totVen=transactVen['Spesa/incasso effettivo'].astype(float).sum()
+    #print(f"Acquisti per banca {totAcq}")
+    #print(f"Acquisti per banca {totVen}")
+    netValPortBanca=totAcq-totVen
+    #scrivo il valore sul file delle uscite/entrate
+    write_range('Tabella!L2',[[netValPortBanca]],spese)
+   
+    return netValPortBanca
 ################################################################################
 ##### TABELLA DATI LIVE PORTAFOGLIO
 ################################################################################
@@ -265,6 +290,8 @@ class Portfolio:
   def writePortfolio(self):
     #richianmo portafoglio
     portfin = Portfolio.financialsPartPort(self)
+    #print('Stampa 01')
+    #print(portfin.to_string())
     #ggiungo data
     portfin['DataUpdate'] = Portfolio.todayDateHourAm
     #aggiungo colonna con numero portafoglio
@@ -274,6 +301,7 @@ class Portfolio:
     #riaggiongo colonna all'inizio
     portfin.insert(0, 'Num Port', numport) 
     #stampo tutto il dataframe
+    #print('Stampa 02')
     #print(portfin.to_string())
     myColumns = portfin.columns.tolist()
     #print(myColumns)
@@ -293,6 +321,7 @@ class Portfolio:
       portfin0 = pd.concat(frames, ignore_index=True)
     #ordino dataframe per id portaf e asset e composizione
     portFinal = portfin0.sort_values(by=['Num Port', 'Asset', 'peso'])
+    #print('Stampa 03')
     #print(portFinal.to_string())
     ################# End multiple portfolio
     #trasformo in lista
@@ -300,13 +329,15 @@ class Portfolio:
     #print(listPrint)
     #lunghezza lista
     lastRowSt=str(len(listPrint)+1)
-    print("stampo il portafoglio prima di scriverlo")
+    #print("stampo il portafoglio prima di scriverlo")
     #print(listPrint)
+
     #cancello tutto l'esistente
     deleteOldRows = delete_range('tab_portfolio!A2:AS100',newPrj)
     #scrivo portafolgio
     write_range('tab_portfolio!A2:AS'+lastRowSt,listPrint,newPrj)
     #print(portfin.head())
+
     return 'Ho completato aggiornamento del portafoglio'
 
 
