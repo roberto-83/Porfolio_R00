@@ -6,7 +6,7 @@ from functions_sheets import delete_range,appendRow
 from functions_bonds import getBtpData
 from functions_bonds import getBotData,readEuronext,readEuronextREV2
 from functions_stocks import getStockInfo
-from functions_stocks import verifKey
+from functions_stocks import verifKey,findRowSpes
 from functions_etf import sectorsEtf,sectorsMultipEtf
 from functions_etf import getPriceETF
 from functions_etf import getSummary,listEtfCountries,listStocksCountries
@@ -29,7 +29,6 @@ from yfinance.utils import empty_earnings_dates_df
 pd.options.mode.chained_assignment = None #toglie errori quando sovrascrivo un dataframe
 #import yfinance as yf
 
-
 class Portfolio:
   todayDate = datetime.today().strftime('%d/%m/%Y')
   todayDate_f = datetime.today().strftime('%Y-%m-%d')
@@ -47,6 +46,7 @@ class Portfolio:
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
+    self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
    
 
   def readActiveIsinByDate(self,date):
@@ -94,10 +94,27 @@ class Portfolio:
     #print(f"Acquisti per banca {totAcq}")
     #print(f"Acquisti per banca {totVen}")
     netValPortBanca=totAcq-totVen
+    rowWrit=findRowSpes()
     #scrivo il valore sul file delle uscite/entrate
-    write_range('Tabella!L2',[[netValPortBanca]],spese)
+    write_range('Tabella!L'+str(rowWrit),[[netValPortBanca]],spese)
+
    
     return netValPortBanca
+  
+  def countUsciteSpese(self,date):
+    year = date[0:4]
+    transact = read_range('Tabella!A:I',spese)
+    transact = transact[transact['Anno'] == year]
+    transact['Importo'] = transact['Importo'].replace('\.','',regex=True)
+    transact = transact.replace(',','.', regex=True)
+    transact = transact.replace('€','', regex=True)
+    uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
+    totUscite1 = uscite['Importo'].astype(float).sum()
+    totUscite = round(totUscite1,2)
+    #ora scrivo il dato
+    rowWrit=findRowSpes()
+    write_range('Tabella!M'+str(rowWrit),[[totUscite]],spese)
+    return totUscite
 ################################################################################
 ##### TABELLA DATI LIVE PORTAFOGLIO
 ################################################################################

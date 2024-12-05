@@ -1,6 +1,8 @@
 import yfinance as yf #dettaglio https://aroussi.com/post/python-yahoo-finance
 import datetime
 from datetime import datetime,timedelta
+from settings import * #importa variabili globali
+from functions_sheets import read_range
 
 #yfinance
 def testReadDataYf(tick):
@@ -164,7 +166,18 @@ def dividends(ticker):
   stock = yf.Ticker(ticker)
   return stock.get_dividends()
 
-
+#TROVO RIGA ESATTA SU FOGLIO ANALSI SPESE..
+def findRowSpes():
+  #capisco in che anno siamo
+  currYear = datetime.today().strftime('%Y')
+  #leggo il file dell'analisi spese
+  allRows = read_range('Tabella!F:G',spese)
+  allRows = allRows[allRows['Anno'] == currYear]
+  #print(allRows.index[1])
+  riga = int(allRows.index[1])
+  #print(type(riga))
+  return riga
+#print(findRowSpes())
 
 #FUNZIONI AGGIUNTIVE
 

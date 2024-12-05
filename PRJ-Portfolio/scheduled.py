@@ -30,6 +30,7 @@ if developerMode == 0:
   port2 = Portfolio('2')
   #scrivo il dato sul file analisi spese
   print(port.bankING)
+  print(port.totUsci)
   #scrivo la tabella degli Isin
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Inizio - Aggiornamento Tab Isin")
   #log_insert1("Aggiornamento Tab Isin","Inizio","")
@@ -134,6 +135,7 @@ else:
   port = Portfolio('1')
   #print('##########################')
   print(port.bankING)
+  print(port.totUsci)
   #print(port.portafSettori())
   #print(port.writePortfolio())
   #appendRow('tab_performance!A:L',arr,newPrj)
