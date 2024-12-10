@@ -96,7 +96,7 @@ class Portfolio:
     netValPortBanca=totAcq-totVen
     rowWrit=findRowSpes()
     #scrivo il valore sul file delle uscite/entrate
-    write_range('Tabella!L'+str(rowWrit),[[netValPortBanca]],spese)
+    write_range('Tabella!N'+str(rowWrit),[[netValPortBanca]],spese)
 
    
     return netValPortBanca
@@ -104,17 +104,27 @@ class Portfolio:
   def countUsciteSpese(self,date):
     year = date[0:4]
     transact = read_range('Tabella!A:I',spese)
-    transact = transact[transact['Anno'] == year]
+    transact = transact[transact['Anno'] == year] 
     transact['Importo'] = transact['Importo'].replace('\.','',regex=True)
     transact = transact.replace(',','.', regex=True)
     transact = transact.replace('€','', regex=True)
-    uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
-    totUscite1 = uscite['Importo'].astype(float).sum()
-    totUscite = round(totUscite1,2)
+    transact_out = transact[transact['Importo'].astype(float) <0]
+    #uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
+    totUscite1 = transact_out['Importo'].astype(float).sum()
+    totUscite2= totUscite1 * -1
+    totUscite = round(totUscite2,2)
     #ora scrivo il dato
     rowWrit=findRowSpes()
     write_range('Tabella!M'+str(rowWrit),[[totUscite]],spese)
-    return totUscite
+    ######SOMMO LE ENTRATE
+    transact_in = transact[transact['Importo'].astype(float) >=0]
+    #uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
+    totEntrate1 = transact_in['Importo'].astype(float).sum()
+    totEntrate = round(totEntrate1,2)
+    write_range('Tabella!L'+str(rowWrit),[[totEntrate]],spese)
+    ####SCRIVO FORMULA
+    write_range('Tabella!P'+str(rowWrit),[['=M4080-(N4080-O4080)']],spese)
+    return 'ok'
 ################################################################################
 ##### TABELLA DATI LIVE PORTAFOGLIO
 ################################################################################
