@@ -123,7 +123,8 @@ class Portfolio:
     totEntrate = round(totEntrate1,2)
     write_range('Tabella!L'+str(rowWrit),[[totEntrate]],spese)
     ####SCRIVO FORMULA
-    write_range('Tabella!P'+str(rowWrit),[['=M4080-(N4080-O4080)']],spese)
+    write_range('Tabella!P'+str(rowWrit),[['=M'+str(rowWrit)+'-(N'+str(rowWrit)+'-O'+str(rowWrit)+')']],spese)
+    write_range('Tabella!Q'+str(rowWrit),[['=L'+str(rowWrit)+'-P'+str(rowWrit)]],spese)
     return 'ok'
 ################################################################################
 ##### TABELLA DATI LIVE PORTAFOGLIO
