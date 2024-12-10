@@ -875,7 +875,9 @@ class Portfolio:
         print(f"Lavoro con {portShort['Isin'].loc[i]}" )
         if(portShort['Asset'].loc[i] == "ETF-AZIONI" or portShort['Asset'].loc[i] == "ETC"):  #se è etf
           #leggo i settori dell'etf
+          print('################################ETF COUNTRY################################')
           paesidF = listEtfCountries(portShort['Isin'].loc[i])
+          print(paesidF)
           paesidF.dropna(inplace=True)
           #print(paesidF)
           paesidF['Data'] = Portfolio.todayDate_f

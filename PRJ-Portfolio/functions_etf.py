@@ -190,14 +190,12 @@ def listEtfCountries(isin):
   i = 1
   while i < 30:
     try:
-      print('inizia')
+      #print('inizia')
       #country_old = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
       country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
-      print(country)                             
+      #print(country)                             
       #weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")
-      weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div[1]/div[3]').get_attribute("innerText")
-/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div[4]/div[3]
-      
+      weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")     
       weight = weight.replace('%','').strip()
       weight = weight.replace(',','.')
       print(f"Stato: '{country}' con il peso di {weight}")
@@ -224,7 +222,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 
 
-print(listEtfCountries('IE00B466KX20'))
+#print(listEtfCountries('IE00B466KX20'))
 
 #############################################
 #Sempre da extraEtf prendo il paese delle azioni
