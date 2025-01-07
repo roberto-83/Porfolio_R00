@@ -226,17 +226,17 @@ class Portfolio:
       tabIsinData = tabIsinData[tabIsinData['ISIN'] == i]
       print(f"lunghezza del DF {len(tabIsinData)} per isin {i}")
       if len(tabIsinData) == 0:
-        list2d.append([i,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+        list2d.append([i,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
       else:
         #print(tabIsinData.to_string())
         tick = tabIsinData['TICKER YAHOO'].iloc[0]
         #---------
         if(tabIsinData['ASSET'].iloc[0] == 'P2P' or tabIsinData['ASSET'].iloc[0] == 'ETF' or tabIsinData['ASSET'].iloc[0] == 'ETC'):
-          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         elif tabIsinData['ASSET'].iloc[0] == 'BTP' or tabIsinData['ASSET'].iloc[0] == 'BOT':
           dataBTP=getBtpData(i)
           datacedola = dataBTP['cedo']
-          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,datacedola,datacedola,0,0,0,0,0]) 
+          list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,datacedola,datacedola,0,0,0,0,0,0]) 
         else:
           #VAI COI FINANCIALS
           #print(tick)
@@ -264,6 +264,7 @@ class Portfolio:
             divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
             payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
             avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
+            max52 = verifKey(infoStock['summaryDetail'],'fiftyTwoWeekHigh')
             dist52=0
             avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
             dist200=0
@@ -292,22 +293,23 @@ class Portfolio:
             payout = 0
             avg52 = 0
             dist52=0
+            max52=0
             avg200 = 0
             dist200=0
             divexdate=0
-            list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+            list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
         #divlastdate=
         #appendo Settore, industria
         #print(f'lavoro con TICK {tick}')
         #print(tabIsinData['ASSET'].iloc[0])
           list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
           peforward,pegratio,beta, earnings, ptb, book, shares, divrate, divyield,divlastval,
-          divlastdate,divexdate,payout,avg52,dist52,avg200,dist200])
+          divlastdate,divexdate,payout,avg52,dist52,avg200,dist200,max52])
 
     #trasformo la lista in DF
     portaf2 = pd.DataFrame(list2d, columns =['Isin-JOIN','Ticker-JOIN','marketCap','volume','epstrailing','epsforward','petrailing',
         'peforward','pegratio','beta', 'earnings', 'ptb', 'book', 'shares', 'divrate', 'divyield','divlastval',
-        'divlastdate','divexdate','payout','avg52','dist52','avg200','dist200']) 
+        'divlastdate','divexdate','payout','avg52','dist52','avg200','dist200','max52']) 
 
     #concateno i due DF tramite JOIN
     result = pd.concat([portaf, portaf2], axis=1,join="inner")
@@ -334,13 +336,14 @@ class Portfolio:
     myColumns = portfin.columns.tolist()
     #print(myColumns)
     ################# A questo punto inizio a gestire la casistica dei due o piu portafogli
-    oldPortRead = read_range('tab_portfolio!A1:AS100',newPrj)
+    oldPortRead = read_range('tab_portfolio!A1:AT100',newPrj)
     if oldPortRead.empty:
       portfin0 = portfin
     else:
       #print(oldPortRead.to_string())
       #salvare solo id portafolgio che non sto scrivendo
       deltPort = oldPortRead[(oldPortRead.iloc[:,0] != self.num_port)] 
+      #print(deltPort.columns)
       deltPort.columns = myColumns
       #print(deltPort.to_string())
       #unisco i due dataframe
@@ -361,9 +364,9 @@ class Portfolio:
     #print(listPrint)
 
     #cancello tutto l'esistente
-    deleteOldRows = delete_range('tab_portfolio!A2:AS100',newPrj)
+    deleteOldRows = delete_range('tab_portfolio!A2:AT100',newPrj)
     #scrivo portafolgio
-    write_range('tab_portfolio!A2:AS'+lastRowSt,listPrint,newPrj)
+    write_range('tab_portfolio!A2:AT'+lastRowSt,listPrint,newPrj)
     #print(portfin.head())
 
     return 'Ho completato aggiornamento del portafoglio'
