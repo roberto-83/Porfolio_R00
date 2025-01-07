@@ -275,7 +275,8 @@ def analisiPort(stockStartDate,num_port):
       returns = log_returns
       #tolgo i valori "inf" che sta per infinito per divisione con 0
       returns.replace([np.inf, -np.inf], 0, inplace=True)
-      #print(returns)
+      #print('###################### MATRICE RITORNI ##################')
+      #print(returns.to_string())
 
       #----------------------------------------------------
       # Matrice covarianza annualizzata

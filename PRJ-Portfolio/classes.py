@@ -221,11 +221,13 @@ class Portfolio:
     #creo una lista con i dati finanziari
     list2d=[]
     for i in portaf['Isin']:
+      #time.sleep(10) #provo ad aspettare per vedere se poi i dati finanziari sono piu completi
       tabIsinData = self.tabIsin
+      #print(tabIsinData)
       #print(tabIsinData.keys())
       tabIsinData = tabIsinData[tabIsinData['ISIN'] == i]
       print(f"lunghezza del DF {len(tabIsinData)} per isin {i}")
-      if len(tabIsinData) == 0:
+      if len(tabIsinData) == 0: #caso in cui in tab_isin non c'è isin che mi serve
         list2d.append([i,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
       else:
         #print(tabIsinData.to_string())
@@ -242,6 +244,7 @@ class Portfolio:
           #print(tick)
           try:
             infoStock = getSummary(tick)
+            #infoStock2 = getStockInfo(tick)
             #sector = verifKey(infoStock['assetProfile'],'sector')
             #industry = verifKey(infoStock['assetProfile'],'industry')
             print(f"Controllo se ci sono i dati {len(infoStock['summaryDetail'])}")
@@ -264,9 +267,12 @@ class Portfolio:
             divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
             payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
             avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
+            #avg52 = infoStock2['fiftyDayAverage']
             max52 = verifKey(infoStock['summaryDetail'],'fiftyTwoWeekHigh')
+            #max52 = infoStock2['fiftyTwoWeekHigh']
             dist52=0
             avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
+            #avg200 = infoStock2['twoHundredDayAverage']
             dist200=0
             divexdate=divexdate[:10]
             print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")

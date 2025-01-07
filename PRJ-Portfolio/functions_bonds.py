@@ -218,7 +218,7 @@ def readEuronextREV2(isin, data):
 
 def getBtpData(isin_val):
   if(isin_val == 'IT0005580003'):#non è piu disponibile..
-    df = ({'isin' : isin_val , 'info' : 'info', 'stor' : 'stor', 'desc':'BOT 14/01/2025 ZC', 'curr' : 'EUR', 'pric' : 1, 'yeld' :'0', 'scad' : '', 'cedo':''})
+    df = ({'isin' : isin_val , 'info' : 'info', 'stor' : 'stor', 'desc':'BOT 14/01/2025 ZC', 'curr' : 'EUR', 'pric' : 100, 'yeld' :'0', 'scad' : '', 'cedo':''})
   else:    
     print(f'Inizio a utilizzare BEAUTIFUL SOUP per isin {isin_val}')
     if isin_val[0:2] == 'IT':  #se è un bond italiano

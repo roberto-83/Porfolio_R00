@@ -187,7 +187,7 @@ def verifKey(dict,val):
   else:
     return '0'
 
-#print(getStockInfo('21BC.DE'))
+#print(getStockInfo('ADB.DE'))
 #print(getStockInfo('^VIX'))
 #g = getStockInfo('^VIX')
 #print(g['previousClose'])
