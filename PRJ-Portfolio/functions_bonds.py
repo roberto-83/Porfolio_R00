@@ -217,40 +217,43 @@ def readEuronextREV2(isin, data):
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
 
 def getBtpData(isin_val):
-  #print('Inizio a utilizzare BEAUTIFUL SOUP')
-  if isin_val[0:2] == 'IT':  #se è un bond italiano
-    URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=italia&yieldtype=G&timescale=DUR" 
-  elif isin_val[0:2] == 'XS': #se è un bond rumeno
-    URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=romania&yieldtype=G&timescale=DUR"
-  else: # se non è come sopra do per scontato che sia europeo..
-    URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=europa&yieldtype=G&timescale=DUR"
-  #print(URL)
+  if(isin_val == 'IT0005580003'):#non è piu disponibile..
+    df = ({'isin' : isin_val , 'info' : 'info', 'stor' : 'stor', 'desc':'BOT 14/01/2025 ZC', 'curr' : 'EUR', 'pric' : 1, 'yeld' :'0', 'scad' : '', 'cedo':''})
+  else:    
+    print(f'Inizio a utilizzare BEAUTIFUL SOUP per isin {isin_val}')
+    if isin_val[0:2] == 'IT':  #se è un bond italiano
+      URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=italia&yieldtype=G&timescale=DUR" 
+    elif isin_val[0:2] == 'XS': #se è un bond rumeno
+      URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=romania&yieldtype=G&timescale=DUR"
+    else: # se non è come sopra do per scontato che sia europeo..
+      URL = "https://www.simpletoolsforinvestors.eu/monitor_info.php?monitor=europa&yieldtype=G&timescale=DUR"
+    print(URL)
+    
+    r = requests.get(URL) 
+    soup = BeautifulSoup(r.content, 'html5lib') 
+    table = soup.find('table', id='YieldTable')
+    #number_of_rows = len(table.findAll(lambda tag: tag.name == 'tr' and tag.findParent('table') == table))
+    #print(number_of_rows)
   
-  r = requests.get(URL) 
-  soup = BeautifulSoup(r.content, 'html5lib') 
-  table = soup.find('table', id='YieldTable')
-  #number_of_rows = len(table.findAll(lambda tag: tag.name == 'tr' and tag.findParent('table') == table))
-  #print(number_of_rows)
- 
-  df = ({'isin' : '' , 'info' : '', 'stor' : '', 'desc':'', 'curr' : '', 'pric' : '', 'yeld' : '', 'scad' : '2999-12-31'})
-  for row in table.tbody.find_all('tr'):    
-      # Find all data for each column
-      columns = row.find_all('td')
-      if(columns != []):
-        isin = columns[0].text.strip()
-        if (isin == isin_val):
-          #info = columns[1].text.strip()
-          info = 'https://www.simpletoolsforinvestors.eu/'+columns[1].find('a').get('href')
-          stor = 'https://www.simpletoolsforinvestors.eu/'+columns[2].find('a').get('href')
-          desc = columns[3].text.strip()
-          curr = columns[4].text.strip()
-          scad = columns[5].text.strip()
-          pric = columns[9].text.strip()
-          pric = pric.replace(',','.')
-          yeld = columns[13].text.strip()
-          dataCedola = getDividBtp(info,scad)
-          df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad, 'cedo':dataCedola})
-          break
+    df = ({'isin' : '' , 'info' : '', 'stor' : '', 'desc':'', 'curr' : '', 'pric' : '', 'yeld' : '', 'scad' : '2999-12-31'})
+    for row in table.tbody.find_all('tr'):    
+        # Find all data for each column
+        columns = row.find_all('td')
+        if(columns != []):
+          isin = columns[0].text.strip()
+          if (isin == isin_val):
+            #info = columns[1].text.strip()
+            info = 'https://www.simpletoolsforinvestors.eu/'+columns[1].find('a').get('href')
+            stor = 'https://www.simpletoolsforinvestors.eu/'+columns[2].find('a').get('href')
+            desc = columns[3].text.strip()
+            curr = columns[4].text.strip()
+            scad = columns[5].text.strip()
+            pric = columns[9].text.strip()
+            pric = pric.replace(',','.')
+            yeld = columns[13].text.strip()
+            dataCedola = getDividBtp(info,scad)
+            df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad, 'cedo':dataCedola})
+            break
   return df
 
 def getDividBtp(URL,scad):

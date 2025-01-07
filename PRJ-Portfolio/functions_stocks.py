@@ -173,7 +173,7 @@ def findRowSpes():
   #leggo il file dell'analisi spese
   allRows = read_range('Tabella!F:G',spese)
   allRows = allRows[allRows['Anno'] == currYear]
-  #print(allRows.index[1])
+  #print(allRows.index[0])
   riga = int(allRows.index[1])
   #print(type(riga))
   return riga

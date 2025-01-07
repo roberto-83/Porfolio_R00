@@ -134,8 +134,8 @@ else:
   #print(day_of_week0)
   port = Portfolio('1')
   #print('##########################')
-  print(port.bankING)
-  print(port.totUsci)
+  #print(port.bankING)
+  #print(port.totUsci)
   #print(port.portafSettori())
   #print(port.writePortfolio())
   #appendRow('tab_performance!A:L',arr,newPrj)
@@ -147,10 +147,11 @@ else:
   #print(readHoldings())
   #print(port.portafPaesi())
   #print(port.whatchlist())
- 
+
   #print(port.getPriceYah('GB00BLD4ZL17.SG'))
   #print(port.getPriceYah('RACE.MI'))
 
+  ##########################
 
 
   #print(port.newsStocks())

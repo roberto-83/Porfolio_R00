@@ -1429,10 +1429,10 @@ def caldRendimento():
   todayMonth = datetime.today().strftime('%m')
   todayYear = datetime.today().strftime('%Y')
   print(f"Mese corrente {todayMonth} e anno corrente {todayYear}")
-  #READ ACTUAL
+  #dopo aver calcolato la data di oggi da confrontare con ultima riga del foglio.
   actualPerf = read_range('tab_performance!A:L',newPrj)
 
- #ultimo anno 
+ #ultimo anno del foglio
   lastYear = actualPerf['Anno'].iloc[-1]
   lastMonth = actualPerf['Mese'].iloc[-1]
   lastDatelastday = actualPerf['Last day month'].iloc[-1]
@@ -1494,6 +1494,10 @@ def caldRendimento():
     print("Aggiornamento non necessario")
   return 'Done'
 
+#def calcRendAnn():
+  #actualPerf = read_range('tab_performance!A:L',newPrj)
+  #return 'ok'
+  
 def readCalTot(anno, mese):
   #Leggo il valore di mercatro del primo e dell'ultimo giorno del mese
   fulldata = read_range('tab_caltot!A:I',newPrj)
