@@ -230,33 +230,33 @@ def analisiPort(stockStartDate,num_port):
       # Drop qualche colonna
       #----------------------------------------------------
       #Trovo il numero di colonna del dato che voglio togliere (parte da zero)
-      tick1='BOT-01G25'
-      col_index01 = df.columns.get_loc(tick1)
+      ##tick1='BOT-01G25'
+      ##col_index01 = df.columns.get_loc(tick1)
       #Tolgo colonna anche da array dei pesi
-      weights_2 = np.delete(weights_1, col_index01)
+      ##weights_2 = np.delete(weights_1, col_index01)
       #tolgo anche da dataframe dei prezzi
-      df.drop([tick1], axis=1,inplace=True)
+      ##df.drop([tick1], axis=1,inplace=True)
       #print(weights_f)
-      tick2='BTP-VALORE'
-      col_index02 = df.columns.get_loc(tick2)
-      weights_3 = np.delete(weights_2, col_index02)
-      df.drop([tick2], axis=1,inplace=True)
+      ##tick2='BTP-VALORE'
+      ##col_index02 = df.columns.get_loc(tick2)
+      ##weights_3 = np.delete(weights_2, col_index02)
+      ##df.drop([tick2], axis=1,inplace=True)
 
-      tick3='BTP-MZ48'
-      col_index03 = df.columns.get_loc(tick3)
-      weights_4 = np.delete(weights_3, col_index03)
-      df.drop([tick3], axis=1,inplace=True)
+      ##tick3='BTP-MZ48'
+      ##col_index03 = df.columns.get_loc(tick3)
+      ##weights_4 = np.delete(weights_3, col_index03)
+      ##df.drop([tick3], axis=1,inplace=True)
 
-      tick4='BTP-OT53'
-      col_index04 = df.columns.get_loc(tick4)
-      weights_5 = np.delete(weights_4, col_index04)
-      df.drop([tick4], axis=1,inplace=True)
+      ##tick4='BTP-OT53'
+      ##col_index04 = df.columns.get_loc(tick4)
+      ##weights_5 = np.delete(weights_4, col_index04)
+      ##df.drop([tick4], axis=1,inplace=True)
 
-      tick5='CRIPTALIA'
-      col_index05 = df.columns.get_loc(tick5)
-      weights_f = np.delete(weights_5, col_index05)
-      df.drop([tick5], axis=1,inplace=True)
-    
+      ##tick5='CRIPTALIA'
+      ##col_index05 = df.columns.get_loc(tick5)
+      ##weights_f = np.delete(weights_5, col_index05)
+      ##df.drop([tick5], axis=1,inplace=True)
+      weights_f=weights_1
 
       #----------------------------------------------------
       # Calcolo la data piu vecchia
@@ -368,7 +368,125 @@ def analisiPort(stockStartDate,num_port):
       return 'Aggiornamento non necessario'
 
 ################################################################################
+def analisiPortWithBTP(stockStartDate,num_port):
+  portfolio_1 = readMyPort(num_port)
+  today = datetime.today().strftime('%Y-%m-%d')
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["LCWD.MI"], "SWDA.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTC-EUR")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+  assets_1 = portfolio_1['Ticker'].tolist()
+  weights_1 = np.array(portfolio_1['%Composizione'].tolist())
+  #----------------------------------------------------
+  # Divido in due parti
+  #----------------------------------------------------
 
+  #divido il dataframe - prendo solo btp, bot
+  subport_1 = portfolio_1[portfolio_1['Asset'].isin(["BOT","BTP"])]
+  subassets_1 = subport_1['Ticker'].tolist()
+
+  #azioni
+  subport_2 = portfolio_1[portfolio_1['Asset'].isin(["AZIONI","ETF-AZIONI","ETC"])]
+  subassets_2 = subport_2['Ticker'].tolist()
+
+  #divido il dataframe - prendo solo p2p
+  subport_3 = portfolio_1[portfolio_1['Asset'].isin(["P2P"])]
+  subassets_3 = subport_3['Ticker'].tolist()
+
+  #----------------------------------------------------
+  # Calcolo i prezzi storici di BTP e altro che non posso trovare in yf
+  #----------------------------------------------------
+  #tutto il calendar
+  calend_tot_0 = read_range('tab_calendar!A:I',newPrj)
+  #solo colonne che mi servono
+  calend_tot_1 = calend_tot_0[['Data','Ticker','Prezzo mercato']]
+  #filtro solo per BTP, BOT e P2P
+  calend_tot_2 = calend_tot_1[calend_tot_1['Ticker'].isin(subassets_1)]
+  #imposto la data come indice
+  calend_tot_2.set_index('Data',inplace=True)
+  #indice in formato datetime
+  calend_tot_2.index = pd.to_datetime(calend_tot_2.index)
+  calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(',', '.', regex=True)
+  calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
+
+  #----------------------------------------------------
+  # Calcolo i prezzi storici di Criptalia
+  #----------------------------------------------------
+  calend_tot_3 = calend_tot_0[['Data','Ticker','Dividendo']]
+  calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
+  calend_tot_3.set_index('Data',inplace=True)
+  calend_tot_3.index = pd.to_datetime(calend_tot_3.index)
+  calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(',', '.', regex=True)
+  calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
+
+  #----------------------------------------------------
+  # Costruisico la matrice
+  #----------------------------------------------------
+  df = pd.DataFrame()
+  #print(assets_1)
+  #print(yf.download('SNOW', start=stockStartDate, end = today,progress=False)['Adj Close'])
+  #print(yf.download('BTCE.SW', start=stockStartDate, end = today,progress=False)['Adj Close'])
+  #print(subassets_2)
+  for stock in assets_1:
+  if stock in subassets_2:   #quindi se è un etf o azione
+    df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
+    #print(stock)
+    #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
+  elif stock in subassets_1:  #quindi se è bot o btp
+    priceItem = calend_tot_2[calend_tot_2['Ticker'] == stock]
+    df[stock] = priceItem.drop('Ticker', axis=1)
+  elif stock in subassets_3: #quindi se è p2p
+    priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
+    df[stock] = priceItem.drop('Ticker', axis=1)
+  else:
+    df[stock] = 0 
+
+  #riempio i missing al massimo a una settimana e sostituisco NaN con 0
+  df.ffill(limit=5, inplace=True)
+  df=df.fillna(0)
+  print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
+  #print(df)
+  #print('Tabella dei prezzi storici')
+  print(df.to_string())
+  weights_f=weights_1
+  #----------------------------------------------------
+  # Calcolo la data piu vecchia
+  #----------------------------------------------------
+  mask = (df != 0).all(axis=1)
+  data = df.index[mask]
+  earliestDate = str(data[0])[0:10]
+  #----------------------------------------------------
+  # Mostro i ritorni giornalieri
+  #----------------------------------------------------
+  log_returns = np.log(1+df.pct_change())
+  returns = log_returns
+  #tolgo i valori "inf" che sta per infinito per divisione con 0
+  returns.replace([np.inf, -np.inf], 0, inplace=True)
+  cov_matrix_annual = returns.cov()*252
+  port_variance = np.dot(weights_f.T, np.dot(cov_matrix_annual,weights_f))
+  port_volatility = np.sqrt(port_variance)
+  portAnnualReturn = np.sum(returns.mean() * weights_f) * 252
+  #----------------------------------------------------
+  # Sharpe Ratio
+  #----------------------------------------------------
+  #qui mancherebbe il risk free rate da aggiungere...
+  risk_free=0.02 #considero risk free 1%
+  print(f"faccio {portAnnualReturn} meno {risk_free} e poi diviso {port_volatility}")
+  sharpe_ratio_calc = (portAnnualReturn - risk_free) / port_volatility
+  #----------------------------------------------------
+  # Risultato
+  #----------------------------------------------------
+  percent_var = str(round(port_variance,2)*100)+'%'
+  percent_vols = str(round(port_volatility,2)*100)+'%'
+  percent_ret = str(round(portAnnualReturn,2)*100)+'%'
+  sharpe_ratio = round(sharpe_ratio_calc,2)
+
+  return [earliestDate,percent_var,percent_vols,percent_ret,sharpe_ratio]
+
+#funzione principale
 def analisiPort2(stockStartDate,num_port):
     #TODO
     #prima faccio sharpe ratio con i pesi iniziali, poi con i pesi attuali e poi duplico considerando anche i btp e p2p
@@ -548,8 +666,16 @@ def analisiPort2(stockStartDate,num_port):
       #----------------------------------------------------
       # Scrivo su Sheet
       #----------------------------------------------------
-      listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,percent_ret_iniz,sharpe_ratio_iniz, risk_free,vix_prev_close,fear_greed_desc,fear_greed_idx,percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi]]
-      appendRow('tab_analysis!A:N',listToPrint,newPrj)
+      #Leggo i dati del portafoglio con anche i btp
+      valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
+
+      listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,
+      percent_ret_iniz,sharpe_ratio_iniz, risk_free,
+      vix_prev_close,fear_greed_desc,fear_greed_idx,
+      percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
+      valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
+
+      appendRow('tab_analysis!A:S',listToPrint,newPrj)
       return 'Done Analisi Portafoglio'
     else:
       return 'Aggiornamento non necessario'
