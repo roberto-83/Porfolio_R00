@@ -431,18 +431,18 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #print(yf.download('BTCE.SW', start=stockStartDate, end = today,progress=False)['Adj Close'])
   #print(subassets_2)
   for stock in assets_1:
-  if stock in subassets_2:   #quindi se è un etf o azione
-    df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
-    #print(stock)
-    #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
-  elif stock in subassets_1:  #quindi se è bot o btp
-    priceItem = calend_tot_2[calend_tot_2['Ticker'] == stock]
-    df[stock] = priceItem.drop('Ticker', axis=1)
-  elif stock in subassets_3: #quindi se è p2p
-    priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
-    df[stock] = priceItem.drop('Ticker', axis=1)
-  else:
-    df[stock] = 0 
+    if stock in subassets_2:   #quindi se è un etf o azione
+      df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
+      #print(stock)
+      #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
+    elif stock in subassets_1:  #quindi se è bot o btp
+      priceItem = calend_tot_2[calend_tot_2['Ticker'] == stock]
+      df[stock] = priceItem.drop('Ticker', axis=1)
+    elif stock in subassets_3: #quindi se è p2p
+      priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
+      df[stock] = priceItem.drop('Ticker', axis=1)
+    else:
+      df[stock] = 0 
 
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
