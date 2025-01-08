@@ -68,6 +68,28 @@ def readMyPort(num_port):
   portfolio_1['%Composizione'] = portfolio_1['%Composizione']/100
   return portfolio_1
 
+def readMyPort2(num_port):
+  portfolio_0 = read_range('tab_portfolio!A:N',newPrj)
+  portfolio_0 = portfolio_0[portfolio_0['Num Port'] == num_port] #solo portafoglio specifico
+  #tolgo colonne che non mi interessano
+  portfolio_1 = portfolio_0[['Asset','Isin','Ticker','Totale Investito','Controvalore Mercato']]
+  #tolgo il simbolo percentuale
+  #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
+  portfolio_1['Totale Investito'].replace('€', '', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'].replace('€', '', regex=True, inplace=True)
+  #cambio virgola con punto
+  portfolio_1['Totale Investito'].replace('\.', '', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'].replace('\.', '', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(',', '.', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'].replace(',', '.', regex=True, inplace=True)
+  #converto in numero la colonna
+  portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
+  portfolio_1['Controvalore Mercato'] = pd.to_numeric(portfolio_1['Controvalore Mercato'])
+
+  #divido 100
+  #portfolio_1['%Composizione'] = portfolio_1['%Composizione']/100
+  return portfolio_1
+
 def getMarketData():
   vix_prev_close = getStockInfo('^VIX')['previousClose']
   fear_greed = fear_and_greed.get()
@@ -345,6 +367,193 @@ def analisiPort(stockStartDate,num_port):
     else:
       return 'Aggiornamento non necessario'
 
+################################################################################
+
+def analisiPort2(stockStartDate,num_port):
+    #TODO
+    #prima faccio sharpe ratio con i pesi iniziali, poi con i pesi attuali e poi duplico considerando anche i btp e p2p
+    readLastDateVar = readLastDate()
+    if readLastDateVar == 'ok':
+      
+      #----------------------------------------------------
+      # Leggo portafoglio
+      #----------------------------------------------------
+      portfolio_1 = readMyPort2(num_port)
+      today = datetime.today().strftime('%Y-%m-%d')
+
+      ##TOLGO BTP e P2P  (~è il negato..)
+      list1 = ['BOT', 'BTP','P2P']
+      portfolio_1=portfolio_1[~portfolio_1['Asset'].isin(list1)]
+
+      #sostituisco valori per avere piu storico..
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["LCWD.MI"], "SWDA.MI")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTC-EUR")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+
+      #calcolo il totale investito    
+      sum_investito = portfolio_1['Totale Investito'].sum()
+      sum_controvalore = portfolio_1['Controvalore Mercato'].sum()
+      print(f"Totale investito {sum_investito} e totale controvalore {sum_controvalore}")
+      #aggiungo i pesi corretti in base al valore investito (da provare anche con valore di mercato.. perchè le pesature cambiano... FASE 2)
+      portfolio_1['Composizione_iniz'] = portfolio_1['Totale Investito']/sum_investito
+      portfolio_1['Composizione_oggi'] = portfolio_1['Controvalore Mercato']/sum_controvalore
+      print(f"Somma pesatura totale inizio {portfolio_1['Composizione_iniz'].sum()}")
+      print(f"Somma pesatura totale fine {portfolio_1['Composizione_oggi'].sum()}")
+      print(portfolio_1)
+      
+      #LISTA DI ASSET
+      assets_1 = portfolio_1['Ticker'].tolist()
+      #LISTA DI PESI
+      weights_iniz = np.array(portfolio_1['Composizione_iniz'].tolist())
+      weights_oggi = np.array(portfolio_1['Composizione_oggi'].tolist())
+      #print(weights_1)
+          
+
+      #----------------------------------------------------
+      # Costruisico la matrice
+      #----------------------------------------------------
+      df = pd.DataFrame()
+      #scarico dati storici
+      for stock in assets_1:
+        df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
+      #print(df)
+      
+      #riempio i missing al massimo a una settimana e sostituisco NaN con 0
+      df.ffill(limit=5, inplace=True)
+      df=df.fillna(0)
+    
+      #cerco la data in cui tutte le colonne sono diverse da zero
+      first_valid_date = df[(df != 0).all(axis=1)].index.min()
+      print(f'Data in cui filtro il dataframne {first_valid_date}')
+      df=df[df.index>first_valid_date]
+      print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
+      print(df.to_string())
+      
+    
+
+      #----------------------------------------------------
+      # Calcolo la data piu vecchia
+      #----------------------------------------------------
+      mask = (df != 0).all(axis=1)
+      data = df.index[mask]
+      earliestDate = str(data[0])[0:10]
+      #print(earliestDate)
+
+     
+
+      #----------------------------------------------------
+      # Salvo Grafico su tmpFiles
+      #----------------------------------------------------
+      #title = 'Portfolio history'
+      #my_stocks = df 
+      #plt.figure(figsize=(18,8), dpi=100)
+
+      #for c in my_stocks.columns.values:
+      #  plt.plot(my_stocks[c], label = c)
+
+      #plt.title(title)
+      #plt.xlabel('Date', fontsize = 6)
+      #plt.ylabel('Price', fontsize = 6)
+      #plt.legend(my_stocks.columns.values, loc='upper left')
+      #plt.legend(my_stocks.columns.values, loc='upper center',ncol=len(my_stocks.columns))
+      #plt.legend(my_stocks.columns.values, loc='upper center',mode = "expand", ncol = 3)
+      #plt.tight_layout()
+      #script_dir = os.path.dirname(__file__)+'/tmpFiles'
+      #plt.savefig(script_dir+'/portfolio2.png',  bbox_inches=0, orientation='landscape', pad_inches=0.1, dpi=100)
+      #plt.show()
+    
+      #----------------------------------------------------
+      # Mostro i ritorni giornalieri
+      #----------------------------------------------------
+      #returns = df.pct_change()
+      log_returns = np.log(1+df.pct_change())
+      returns = log_returns
+      #tolgo i valori "inf" che sta per infinito per divisione con 0
+      returns.replace([np.inf, -np.inf], 0, inplace=True)
+      #print('###################### MATRICE RITORNI ##################')
+      #print(returns.to_string())
+
+      #----------------------------------------------------
+      # Matrice covarianza annualizzata
+      #----------------------------------------------------
+      #252 sono i trading days
+      cov_matrix_annual = returns.cov()*252
+      #print(cov_matrix_annual)
+ 
+      #----------------------------------------------------
+      # Varianza del portafoglio     
+      #----------------------------------------------------
+      #.T serve per transporre weights_iniz
+      port_variance_iniz = np.dot(weights_iniz.T, np.dot(cov_matrix_annual,weights_iniz))
+      port_variance_oggi = np.dot(weights_oggi.T, np.dot(cov_matrix_annual,weights_oggi))
+      print(f"La variaza del portafolgio iniziale è {port_variance_iniz} mentre oggi è {port_variance_oggi}")
+
+      #----------------------------------------------------
+      # Volatilità del portafoglio = deviazione standard - rischio
+      #----------------------------------------------------
+      port_volatility_iniz = np.sqrt(port_variance_iniz)
+      port_volatility_oggi = np.sqrt(port_variance_oggi)
+      #print(f"La volatilità del portafolgio è {port_volatility}")
+
+      #----------------------------------------------------
+      # Ritorno annuale del portafoglio
+      #----------------------------------------------------
+      portAnnualReturn_iniz = np.sum(returns.mean() * weights_iniz) * 252
+      portAnnualReturn_oggi = np.sum(returns.mean() * weights_oggi) * 252
+      #print(f"Il ritorno annualizzato del portafoglio è {portAnnualReturn}")
+
+      #----------------------------------------------------
+      # Sharpe Ratio
+      #----------------------------------------------------
+      #qui mancherebbe il risk free rate da aggiungere...
+      risk_free=0.02 #considero risk free 1%
+      print(f"faccio {portAnnualReturn_iniz} meno {risk_free} e poi diviso {port_volatility_iniz}")
+      print(f"faccio {portAnnualReturn_oggi} meno {risk_free} e poi diviso {port_volatility_oggi}")
+      sharpe_ratio_calc_iniz = (portAnnualReturn_iniz - risk_free) / port_volatility_iniz
+      sharpe_ratio_calc_oggi = (portAnnualReturn_oggi - risk_free) / port_volatility_oggi
+      #----------------------------------------------------
+      # Risultato
+      #----------------------------------------------------
+      percent_var_iniz = str(round(port_variance_iniz,2)*100)+'%'
+      percent_vols_iniz = str(round(port_volatility_iniz,2)*100)+'%'
+      percent_ret_iniz = str(round(portAnnualReturn_iniz,2)*100)+'%'
+      sharpe_ratio_iniz = round(sharpe_ratio_calc_iniz,2)
+
+      percent_var_oggi = str(round(port_variance_oggi,2)*100)+'%'
+      percent_vols_oggi = str(round(port_volatility_oggi,2)*100)+'%'
+      percent_ret_oggi = str(round(portAnnualReturn_oggi,2)*100)+'%'
+      sharpe_ratio_oggi = round(sharpe_ratio_calc_oggi,2)
+      
+
+      print("---- Dati mio portafoglio ----")
+
+      print(f"Ritorno Annuo atteso inizio {percent_ret_iniz} mentre ad oggi {percent_ret_oggi}")
+      print(f"Rischio/Volatilità Annuale inizio {percent_vols_iniz} mentre ad oggi {percent_vols_oggi}")
+      print(f"Varianza Annuale inizio {percent_var_iniz} mentre ad oggi {percent_var_oggi}")
+      print(f"Sharpe Ratio inizio {sharpe_ratio_iniz} mentre ad oggi {sharpe_ratio_oggi}")
+      #CAGR??? (compound annual growth rate)
+      #----------------------------------------------------
+      # Leggo altri indici
+      #----------------------------------------------------
+    
+      datiMercato = getMarketData()
+      vix_prev_close = datiMercato[0]
+      fear_greed_idx = datiMercato[1]
+      fear_greed_desc = datiMercato[2]
+
+      #----------------------------------------------------
+      # Scrivo su Sheet
+      #----------------------------------------------------
+      listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,percent_ret_iniz,sharpe_ratio_iniz, risk_free,vix_prev_close,fear_greed_desc,fear_greed_idx,percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi]]
+      appendRow('tab_analysis!A:N',listToPrint,newPrj)
+      return 'Done Analisi Portafoglio'
+    else:
+      return 'Aggiornamento non necessario'
+###################################################
 ################
 #Analisi con quantstats che sarebbe bello ma solo per singolo ticker, non per portafoglio
 #################
