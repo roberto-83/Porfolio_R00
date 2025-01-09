@@ -378,7 +378,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
   portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
   portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
-  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["1BLK.MI"], "BLK")
   assets_1 = portfolio_1['Ticker'].tolist()
   weights_1 = np.array(portfolio_1['%Composizione'].tolist())
   #----------------------------------------------------
@@ -512,6 +512,7 @@ def analisiPort2(stockStartDate,num_port):
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
       portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+      portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["1BLK.MI"], "BLK")
 
       #calcolo il totale investito    
       sum_investito = portfolio_1['Totale Investito'].sum()
