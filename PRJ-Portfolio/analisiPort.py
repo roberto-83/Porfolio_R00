@@ -523,7 +523,7 @@ def analisiPort2(stockStartDate,num_port):
       portfolio_1['Composizione_oggi'] = portfolio_1['Controvalore Mercato']/sum_controvalore
       print(f"Somma pesatura totale inizio {portfolio_1['Composizione_iniz'].sum()}")
       print(f"Somma pesatura totale fine {portfolio_1['Composizione_oggi'].sum()}")
-      print(portfolio_1)
+      #print(portfolio_1)
       
       #LISTA DI ASSET
       assets_1 = portfolio_1['Ticker'].tolist()
