@@ -451,7 +451,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
   #print(df)
   #print('Tabella dei prezzi storici')
-  print(df.to_string())
+  #print(df.to_string())
   weights_f=weights_1
   #----------------------------------------------------
   # Calcolo la data piu vecchia
