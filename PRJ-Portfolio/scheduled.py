@@ -133,7 +133,7 @@ else:
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
   port = Portfolio('1')
-  #print(analisiPort2('2010-01-01','1'))
+  print(analisiPort2('2010-01-01','1'))
   #print('##########################')
   #print(port.bankING)
   #print(port.totUsci)

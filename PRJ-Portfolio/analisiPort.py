@@ -537,7 +537,21 @@ def analisiPort2(stockStartDate,num_port):
       df = pd.DataFrame()
       #scarico dati storici
       for stock in assets_1:
-        df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
+        #print(f'aggiungo al df la stock {stock}')
+        df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+        #cerco gli split
+        stockSplitsVariable = yf.Ticker(stock).actions #mi da dividend e stock split
+        #tolgo la colonna dei dividendi
+        stockSplitsVariable = stockSplitsVariable.drop(['Dividends'], axis=1)
+        #tolgo i valori a zero
+        stockSplitsVariable=stockSplitsVariable[stockSplitsVariable['Stock Splits'] !=0]
+        #print(f"Lo stock {stock} ha avuto uno stock split:")
+        #print(stockSplitsVariable)
+        if not stockSplitsVariable.empty:
+          print(f"Lo stock {stock} ha avuto uno stock split:")
+          print(stockSplitsVariable)
+        #else:
+         #print(f"Lo stock {stock} non ha avuto stock split nei dati storici disponibili.")
       #print(df)
       
       #riempio i missing al massimo a una settimana e sostituisco NaN con 0
