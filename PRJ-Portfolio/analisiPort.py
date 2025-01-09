@@ -432,7 +432,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #print(subassets_2)
   for stock in assets_1:
     if stock in subassets_2:   #quindi se è un etf o azione
-      df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close']
+      df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
       #print(stock)
       #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
     elif stock in subassets_1:  #quindi se è bot o btp
