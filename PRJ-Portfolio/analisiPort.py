@@ -378,6 +378,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
   portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
   portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
   assets_1 = portfolio_1['Ticker'].tolist()
   weights_1 = np.array(portfolio_1['%Composizione'].tolist())
   #----------------------------------------------------
