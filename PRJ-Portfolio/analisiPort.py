@@ -411,7 +411,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #imposto la data come indice
   calend_tot_2.set_index('Data',inplace=True)
   #indice in formato datetime
-  calend_tot_2.index = pd.to_datetime(calend_tot_2.index+' 00:00:00+00:00', utc=True)
+  calend_tot_2.index = pd.to_datetime(str(calend_tot_2.index)+' 00:00:00+00:00', utc=True)
   calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(to_replace=',', value='.', regex=True)
   calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
 
@@ -419,7 +419,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #leggo dati storici
   storicData= read_range('tab_storici_btp!A:C',newPrj)
   storicData.set_index('Data',inplace=True)
-  storicData.index = pd.to_datetime(storicData.index+' 00:00:00+00:00', utc=True)
+  storicData.index = pd.to_datetime(str(storicData.index)+' 00:00:00+00:00', utc=True)
   storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(to_replace=',',value='.',regex=True)
   storicData['Prezzo mercato'] = pd.to_numeric(storicData['Prezzo mercato'])
   
@@ -427,7 +427,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
 
   #unisco i due dataframe
   result = pd.concat([calend_tot_2, storicData])
-  result.index = pd.to_datetime(str(result.index+' 00:00:00+00:00', utc=True)
+  result.index = pd.to_datetime(str(result.index)+' 00:00:00+00:00', utc=True)
   result=result.sort_index()#riordino indice
   result=result.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
   #result = pd.merge(calend_tot_2, storicData, how="outer", on=["Data","Ticker"])
@@ -441,7 +441,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3 = calend_tot_0[['Data','Ticker','Dividendo']]
   calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
   calend_tot_3.set_index('Data',inplace=True)
-  calend_tot_3.index = pd.to_datetime(calend_tot_3.index+' 00:00:00+00:00', utc=True)
+  calend_tot_3.index = pd.to_datetime(str(calend_tot_3.index)+' 00:00:00+00:00', utc=True)
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
   calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
