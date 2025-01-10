@@ -469,6 +469,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       priceItem = priceItem.drop('Ticker', axis=1)
       print(priceItem)
       print(priceItem.dtypes)
+      print(priceItem.index)
       #df[stock] = priceItem.drop('Ticker', axis=1)
       df[stock] = priceItem
       print('df[stock]')
