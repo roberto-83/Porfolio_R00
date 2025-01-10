@@ -821,7 +821,7 @@ class Portfolio:
           settori['Peso_Tick'] = portShort['peso'].loc[i]
           if len(settori[portShort['Ticker'].loc[i]]) > 1:
             settori['Settore'] = settori['Settore_ETF'].str.upper()
-            settori['Settore'] = settori['Settore'].str.replace('_',' ')
+            settori['Settore'] = settori['Settore'].str.replace(to_replace='_',value=' ')
             settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]       
             settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
             #tolgo la colonna che si chiama come il ticker
@@ -1056,11 +1056,11 @@ class Portfolio:
       finalDF3['Prezzo 30gg'] = finalDF3['Prezzo 30gg'].fillna(0)
       finalDF3['Prezzo 200gg'] = finalDF3['Prezzo 200gg'].fillna(0)
       #conversione colonne
-      finalDF3['Prezzo Oggi'] = finalDF3['Prezzo Oggi'].replace(',','.',regex=True).astype(float)
-      finalDF3['Prezzo YTD'] = finalDF3['Prezzo YTD'].replace(',','.',regex=True).astype(float)
-      finalDF3['Prezzo 15gg'] = finalDF3['Prezzo 15gg'].replace(',','.',regex=True).astype(float)
-      finalDF3['Prezzo 30gg'] = finalDF3['Prezzo 30gg'].replace(',','.',regex=True).astype(float)
-      finalDF3['Prezzo 200gg'] = finalDF3['Prezzo 200gg'].replace(',','.',regex=True).astype(float)
+      finalDF3['Prezzo Oggi'] = finalDF3['Prezzo Oggi'].replace(to_replace=',',value='.',regex=True).astype(float)
+      finalDF3['Prezzo YTD'] = finalDF3['Prezzo YTD'].replace(to_replace=',',value='.',regex=True).astype(float)
+      finalDF3['Prezzo 15gg'] = finalDF3['Prezzo 15gg'].replace(to_replace=',',value='.',regex=True).astype(float)
+      finalDF3['Prezzo 30gg'] = finalDF3['Prezzo 30gg'].replace(to_replace=',',value='.',regex=True).astype(float)
+      finalDF3['Prezzo 200gg'] = finalDF3['Prezzo 200gg'].replace(to_replace=',',value='.',regex=True).astype(float)
 
       #calcolo GAP in percentuale
       finalDF3['Gap YTD']  = (finalDF3['Prezzo Oggi'] - finalDF3['Prezzo YTD'] )*100 / finalDF3['Prezzo Oggi']
@@ -1255,7 +1255,7 @@ class Portfolio:
 
       if str(ordin) != 'None':
       #if ordin is not None or ordin !='' or len(ordin)>1 or not ordin:
-        ordin = ordin.replace(',','.')
+        ordin = ordin.replace(to_replace=',',value='.')
       else:
         ordin = 0
 
@@ -1431,7 +1431,7 @@ class Portfolio:
 
   def beautyString(string):
     #tolgo underscore e metto prima lettera maiuscola
-    newString = string.replace('_',' ').capitalize()
+    newString = string.replace(to_replace='_',value=' ').capitalize()
     if newString == "Realestate" : newString = "Real Estate"
     return newString
   
@@ -1517,7 +1517,7 @@ def caldRendimento():
         rendimY = ((float(valFinYear) - float(valIniYear) - depositY + dividenY + venditeY)/float(valIniYear))*100
 
       #preparo array finale
-      arr = [[newYear,newMonth,firstDayMon,lastDayMon,valInvFirsyM.replace('.',','),valInvLastM.replace('.',','),deposit,dividen,vendite,rendim,rendimY,todayDateHour]]
+      arr = [[newYear,newMonth,firstDayMon,lastDayMon,valInvFirsyM.replace(to_replace='.',value=','),valInvLastM.replace(to_replace='.',value=','),deposit,dividen,vendite,rendim,rendimY,todayDateHour]]
       print(arr)
       #scrivo array
       appendRow('tab_performance!A:L',arr,newPrj)
@@ -1548,8 +1548,8 @@ def readCalTot(anno, mese):
   else:
     partData = fulldata[(fulldata['Year'] == anno) & (fulldata['Month'] == mese)]
 
-  valInvFirsyM = partData['Valore Mercato'].iloc[0].replace(',','.')
-  valInvLastM = partData['Valore Mercato'].iloc[-1].replace(',','.')
+  valInvFirsyM = partData['Valore Mercato'].iloc[0].replace(to_replace=',',value='.')
+  valInvLastM = partData['Valore Mercato'].iloc[-1].replace(to_replace=',',value='.')
   arr=[valInvFirsyM,valInvLastM]
   return arr
 
@@ -1560,9 +1560,9 @@ def readTransTot(anno,mese,num_port):
   transact['Month'] = transact['Data operazione'].dt.month
   transact['Year'] = transact['Data operazione'].dt.year
   transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
-  transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace('\.','',regex=True)
-  transact = transact.replace(',','.', regex=True)
-  transact = transact.replace('€','', regex=True)
+  transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace='\.',value='',regex=True)
+  transact = transact.replace(to_replace=',',value='.', regex=True)
+  transact = transact.replace(to_replace='€',value='', regex=True)
 
   if mese == '0':
     depositDF = transact[(transact['Year'] == anno) & (transact['Tipo'] == 'ACQ')]
@@ -1582,7 +1582,7 @@ def readTransTot(anno,mese,num_port):
 
 def replace_dot_with_comma(x):
   if '.' in str(x):
-      return str(x).replace('.', ',')
+      return str(x).replace(to_replace='.', value=',')
   return x
 
 #print(caldRendimento())
@@ -1590,7 +1590,7 @@ def replace_dot_with_comma(x):
 def changeFormatNumberPrint(numb):
   #per stampare su google sheet serve la virgola
   if(str(numb).find('.') != -1):
-    numb1 = str(numb).replace('.',',')
+    numb1 = str(numb).replace(to_replace='.',value=',')
   else:
     numb1 = numb
   return numb1

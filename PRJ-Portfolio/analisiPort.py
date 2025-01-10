@@ -490,6 +490,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       df[stock] = priceItem
       print('df[stock] P2P')
       print(df[stock])
+      print(df.index)
     else:
       df[stock] = 0 
   dfsfgdsffdg
