@@ -442,7 +442,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3.index = pd.to_datetime(calend_tot_3.index)
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(',', '.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
-
+  print()
   #----------------------------------------------------
   # Costruisico la matrice
   #----------------------------------------------------
@@ -477,7 +477,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   # Calcolo la data piu vecchia
   #----------------------------------------------------
   #axis 0 è riga mentre axis 1 è colonna
-  mask = (df != 0).all(axis=1)
+  mask = (df != '0').all(axis=1)
   print('stampo mask')
   print(mask)
   data = df.index[mask]
