@@ -58,10 +58,12 @@ def readMyPort(num_port):
   portfolio_1 = portfolio_0[['Asset','Isin','Ticker','%Composizione']]
   #tolgo il simbolo percentuale
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
-  portfolio_1['%Composizione'].replace(to_replace='%',value='', regex=True, inplace=True)
+  #portfolio_1['%Composizione'].replace(to_replace='%',value='', regex=True, inplace=True)
+  portfolio_1['%Composizione'].replace(to_replace='%',value='', regex=True)
   #cambio virgola con punto
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace(',', '.', regex=True)
-  portfolio_1['%Composizione'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  #portfolio_1['%Composizione'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  portfolio_1['%Composizione'].replace(to_replace=',', value='.', regex=True)
   #converto in numero la colonna
   portfolio_1['%Composizione'] = pd.to_numeric(portfolio_1['%Composizione'])
   #divido 100
@@ -425,7 +427,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
 
   #unisco i due dataframe
   result = pd.concat([calend_tot_2, storicData])
-  result.index = pd.to_datetime(result.index+' 00:00:00+00:00', utc=True)
+  result.index = pd.to_datetime(str(result.index+' 00:00:00+00:00', utc=True)
   result=result.sort_index()#riordino indice
   result=result.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
   #result = pd.merge(calend_tot_2, storicData, how="outer", on=["Data","Ticker"])
@@ -778,8 +780,8 @@ def gcolabAnalysis():
   #tolgo il simbolo euro
   portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace('€', '', regex=True)
   #cambio virgola con punto
-  portfolio_1['Totale Investito'].replace('\.', '', regex=True, inplace=True)
-  portfolio_1['Totale Investito'].replace(',', '.', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(to_replace='\.',value='', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
   #converto in numero la colonna
   portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
   #tolgo bot, btp e p2p
