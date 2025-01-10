@@ -442,12 +442,14 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3 = calend_tot_0[['Data','Ticker','Dividendo']]
   calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
   calend_tot_3.set_index('Data',inplace=True)
-  calend_tot_3.index = pd.to_datetime(str(calend_tot_3.index)+' 00:00:00+00:00', utc=True)
+  calend_tot_3.index = pd.to_datetime(str(calend_tot_3.index)+' 00:00:00+00:00')
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
   calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
   print('stampo criptalia')
   print(calend_tot_3)
+  print(calend_tot_3.index)
+  tretertretre
   #----------------------------------------------------
   # Costruisico la matrice
   #----------------------------------------------------
@@ -779,7 +781,7 @@ def gcolabAnalysis():
   #tolgo colonne che non mi interessano
   portfolio_1 = portfolio_0[['Asset','Ticker','Totale Investito']]
   #tolgo il simbolo euro
-  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace('€', '', regex=True)
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True)
   #cambio virgola con punto
   portfolio_1['Totale Investito'].replace(to_replace='\.',value='', regex=True, inplace=True)
   portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
