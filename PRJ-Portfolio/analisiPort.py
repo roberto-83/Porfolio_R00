@@ -617,7 +617,7 @@ def analisiPort2(stockStartDate,num_port):
       print(f'Data in cui filtro il dataframne {first_valid_date}')
       df=df[df.index>first_valid_date]
       print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
-      print(df.to_string())
+      #print(df.to_string())
       
     
 
