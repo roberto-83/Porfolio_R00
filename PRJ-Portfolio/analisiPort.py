@@ -475,6 +475,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       print(df.index)
     else:
       df[stock] = 0 
+  print(df)
   dfsfgdsffdg
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
