@@ -1590,7 +1590,7 @@ def replace_dot_with_comma(x):
 def changeFormatNumberPrint(numb):
   #per stampare su google sheet serve la virgola
   if(str(numb).find('.') != -1):
-    numb1 = str(numb).replace(to_replace='.',value=',')
+    numb1 = str(numb).replace('.',',')
   else:
     numb1 = numb
   return numb1
