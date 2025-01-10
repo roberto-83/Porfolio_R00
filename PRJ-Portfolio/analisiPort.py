@@ -75,12 +75,17 @@ def readMyPort2(num_port):
   portfolio_1 = portfolio_0[['Asset','Isin','Ticker','Totale Investito','Controvalore Mercato']]
   #tolgo il simbolo percentuale
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
-  portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True, inplace=True)
-  portfolio_1['Controvalore Mercato'].replace(to_replace='€', value='', regex=True, inplace=True)
+  #portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True, inplace=True)
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True)
+  #portfolio_1['Controvalore Mercato'].replace(to_replace='€', value='', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'] = portfolio_1['Controvalore Mercato'].replace(to_replace='€', value='', regex=True)
   #cambio virgola con punto
-  portfolio_1['Totale Investito'].replace(to_replace='\.', value='', regex=True, inplace=True)
-  portfolio_1['Controvalore Mercato'].replace(to_replace='\.', value='', regex=True, inplace=True)
-  portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  #portfolio_1['Totale Investito'].replace(to_replace='\.', value='', regex=True, inplace=True)
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='\.', value='', regex=True)
+  #portfolio_1['Controvalore Mercato'].replace(to_replace='\.', value='', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'] = portfolio_1['Controvalore Mercato'].replace(to_replace='\.', value='', regex=True, inplace=True)
+  #portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True)
   portfolio_1['Controvalore Mercato'].replace(to_replace=',', value='.', regex=True, inplace=True)
   #converto in numero la colonna
   portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
