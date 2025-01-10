@@ -413,6 +413,26 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(',', '.', regex=True)
   calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
 
+  #INTEGRO i prezzi con i dati storici che mi sono salvato 
+  #leggo dati storici
+  storicData= read_range('tab_storici_btp!A:C',newPrj)
+  storicData.set_index('Data',inplace=True)
+  storicData.index = pd.to_datetime(storicData.index)
+  storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(',','.',regex=True)
+  storicData['Prezzo mercato'] = pd.to_numeric(storicData['Prezzo mercato'])
+  
+  #print(storicData)
+
+  #unisco i due dataframe
+  result = pd.concat([calend_tot_2, storicData])
+  result.index = pd.to_datetime(result.index)
+  result=result.sort_index()#riordino indice
+  result=result.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
+  #result = pd.merge(calend_tot_2, storicData, how="outer", on=["Data","Ticker"])
+  #print(result.to_string())
+
+
+
   #----------------------------------------------------
   # Calcolo i prezzi storici di Criptalia
   #----------------------------------------------------
@@ -437,7 +457,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       #print(stock)
       #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
     elif stock in subassets_1:  #quindi se è bot o btp
-      priceItem = calend_tot_2[calend_tot_2['Ticker'] == stock]
+      priceItem = result[result['Ticker'] == stock]
       df[stock] = priceItem.drop('Ticker', axis=1)
     elif stock in subassets_3: #quindi se è p2p
       priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]

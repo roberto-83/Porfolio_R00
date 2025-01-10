@@ -9,7 +9,7 @@ from classes import Portfolio,caldRendimento
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
-from analisiPort import analisiPort,gcolabAnalysis,analisiPort2
+from analisiPort import analisiPort,gcolabAnalysis,analisiPort2,readMyPort
 import yfinance as yf
 from functions_sheets import read_range,appendRow,delete_range
 from functions_etf import readHoldings,testapiFinnhub
@@ -132,8 +132,8 @@ else:
   #day_of_week0 = datetime.today().weekday()
   #0 lunedi 1 martedi 2 mercoledi 3 giovedi 4 venerdi 5 sabato 6 domenica
   #print(day_of_week0)
-  port = Portfolio('1')
-  print(analisiPort2('2010-01-01','1'))
+  #port = Portfolio('1')
+  #print(analisiPort2('2010-01-01','1'))
   #print('##########################')
   #print(port.bankING)
   #print(port.totUsci)
@@ -148,12 +148,6 @@ else:
   #print(readHoldings())
   #print(port.portafPaesi())
   #print(port.whatchlist())
-
-  #print(port.getPriceYah('GB00BLD4ZL17.SG'))
-  #print(port.getPriceYah('RACE.MI'))
-
-  ##########################
-
 
   #print(port.newsStocks())
 
