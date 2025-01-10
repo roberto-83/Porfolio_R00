@@ -436,6 +436,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #unisco i due dataframe
   result = pd.concat([calend_tot_2, storicData])
   #result.index = pd.to_datetime(str(result.index)+' 00:00:00+00:00', utc=True)
+  result.index = result.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
   result.index = pd.to_datetime(result.index)
   result=result.sort_index()#riordino indice
   result=result.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
