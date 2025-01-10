@@ -479,8 +479,6 @@ def analisiPortWithBTP(stockStartDate,num_port):
       print('############ priceItem di P2P')
       priceItem = priceItem.drop('Ticker', axis=1)
       print(priceItem)
-      print('------------- colonne')
-      print(priceItem.dtypes)
       print('------------- Indice')
       print(priceItem.index)
       #df[stock] = priceItem.drop('Ticker', axis=1)
