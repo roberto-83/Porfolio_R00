@@ -417,7 +417,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #leggo dati storici
   storicData= read_range('tab_storici_btp!A:C',newPrj)
   storicData.set_index('Data',inplace=True)
-  storicData.index = pd.to_datetime(storicData.index+' 00:00:00+00:00', utc=True))
+  storicData.index = pd.to_datetime(storicData.index+' 00:00:00+00:00', utc=True)
   storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(to_replace=',',value='.',regex=True)
   storicData['Prezzo mercato'] = pd.to_numeric(storicData['Prezzo mercato'])
   
@@ -475,8 +475,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       print(df.index)
     else:
       df[stock] = 0 
-  print(df)
-  dfsfgdsffdg
+ 
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
   df=df.fillna(0)
