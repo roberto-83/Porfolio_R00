@@ -468,7 +468,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
   df=df.fillna(0)
-  print('Stampo la matrice del mio portafoglio da usare per le prossime analisi')
+  print('Stampo la matrice del mio portafoglio CON BTP')
   #print(df)
   #print('Tabella dei prezzi storici')
   #print(df.to_string())
@@ -478,6 +478,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #----------------------------------------------------
   mask = (df != 0).all(axis=1)
   data = df.index[mask]
+  earliestDate = str(data[0])[0:10]
   earliestDate = str(data[0])[0:10]
   #----------------------------------------------------
   # Mostro i ritorni giornalieri
