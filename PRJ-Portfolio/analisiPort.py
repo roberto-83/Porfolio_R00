@@ -602,7 +602,7 @@ def analisiPort2(stockStartDate,num_port):
         #print(stockSplitsVariable)
         if not stockSplitsVariable.empty:
           print(f"Lo stock {stock} ha avuto uno stock split:")
-          print(stockSplitsVariable)
+          #print(stockSplitsVariable)
         #else:
          #print(f"Lo stock {stock} non ha avuto stock split nei dati storici disponibili.")
       #print(df)
