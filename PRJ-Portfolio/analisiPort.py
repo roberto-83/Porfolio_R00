@@ -459,6 +459,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
     elif stock in subassets_1:  #quindi se è bot o btp
       priceItem = result[result['Ticker'] == stock]
+      print('priceItem di BTP')
       df[stock] = priceItem.drop('Ticker', axis=1)
     elif stock in subassets_3: #quindi se è p2p
       priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
