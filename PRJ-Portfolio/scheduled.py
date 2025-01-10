@@ -23,7 +23,7 @@ from fred_data import writeMacroData,writeMacroDataHistory
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
-developerMode=1
+developerMode=0
 if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio('1')
