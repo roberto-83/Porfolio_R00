@@ -106,8 +106,8 @@ class Portfolio:
     transact = read_range('Tabella!A:I',spese)
     transact = transact[transact['Anno'] == year] 
     transact['Importo'] = transact['Importo'].replace(to_replace='\.',value='',regex=True)
-    transact = transact.replace(to_replace=',','.', regex=True)
-    transact = transact.replace(to_replace='€','', regex=True)
+    transact = transact.replace(to_replace=',',value='.', regex=True)
+    transact = transact.replace(to_replace='€',velue='', regex=True)
     transact_out = transact[transact['Importo'].astype(float) <0]
     #uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
     totUscite1 = transact_out['Importo'].astype(float).sum()
