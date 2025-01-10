@@ -63,11 +63,11 @@ class Portfolio:
     transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
     #transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','prezzo acquisto','Spesa/incasso previsto'])
     #tolgo il punto su spesa e incasso
-    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace('\.','',regex=True)
+    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace='\.',value='',regex=True)
     #tolgo il punto su qta
-    transact['Quantità (real)'] = transact['Quantità (real)'].replace('\.','',regex=True)
-    transact = transact.replace(',','.', regex=True)
-    transact = transact.replace('€','', regex=True)
+    transact['Quantità (real)'] = transact['Quantità (real)'].replace(to_replace='\.',value='',regex=True)
+    transact = transact.replace(to_replace=',',value='.', regex=True)
+    transact = transact.replace(to_replace='€',value='', regex=True)
     transact = transact.sort_values(by=['Asset'])
     #metto 0 al posto dei valori vuoti nella colonna quantità
     transact['Quantità (real)'] = transact['Quantità (real)'].replace('',0)
@@ -83,10 +83,10 @@ class Portfolio:
     #print(transact[transact['Ticker'] == 'CSNDX.MI'])
     #print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact[transact['Data operazione'] <= date ] 
-    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace('\.','',regex=True)
-    transact['Quantità (real)'] = transact['Quantità (real)'].replace('\.','',regex=True)
-    transact = transact.replace(',','.', regex=True)
-    transact = transact.replace('€','', regex=True)
+    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace='\.',value='',regex=True)
+    transact['Quantità (real)'] = transact['Quantità (real)'].replace(to_replace='\.',value='',regex=True)
+    transact = transact.replace(to_replace=',',value='.', regex=True)
+    transact = transact.replace(to_replace='€',value='', regex=True)
     transactAcq = transact[transact['Tipo'] == 'ACQ']
     transactVen = transact[transact['Tipo'] == 'VEND']
     totAcq=transactAcq['Spesa/incasso effettivo'].astype(float).sum()
@@ -105,9 +105,9 @@ class Portfolio:
     year = date[0:4]
     transact = read_range('Tabella!A:I',spese)
     transact = transact[transact['Anno'] == year] 
-    transact['Importo'] = transact['Importo'].replace('\.','',regex=True)
-    transact = transact.replace(',','.', regex=True)
-    transact = transact.replace('€','', regex=True)
+    transact['Importo'] = transact['Importo'].replace(to_replace='\.',value='',regex=True)
+    transact = transact.replace(to_replace=',','.', regex=True)
+    transact = transact.replace(to_replace='€','', regex=True)
     transact_out = transact[transact['Importo'].astype(float) <0]
     #uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
     totUscite1 = transact_out['Importo'].astype(float).sum()

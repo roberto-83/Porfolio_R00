@@ -459,7 +459,13 @@ def analisiPortWithBTP(stockStartDate,num_port):
       print('df[stock] AZIONI')
       print(df[stock])
       #print(stock)
-      print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Close'])
+      priceItem=yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+      print('############ priceItem di STOCK')
+      print(priceItem)
+      print('------------- colonne')
+      print(priceItem.dtypes)
+      print('------------- Indice')
+      print(priceItem.index)
     elif stock in subassets_1:  #quindi se è bot o btp
       priceItem = result[result['Ticker'] == stock]
       print('############ priceItem di BTP')
