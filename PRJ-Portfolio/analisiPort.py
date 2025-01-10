@@ -456,27 +456,27 @@ def analisiPortWithBTP(stockStartDate,num_port):
   for stock in assets_1:
     if stock in subassets_2:   #quindi se è un etf o azione
       df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
-      print('df[stock] AZIONI')
-      print(df[stock])
+      #print('df[stock] AZIONI')
+      #print(df[stock])
       #print(stock)
-      priceItem=yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
-      print('############ priceItem di STOCK')
-      print(priceItem)
-      print('------------- colonne')
-      print(priceItem.dtypes)
-      print('------------- Indice')
-      print(priceItem.index)
+      #priceItem=yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+      #print('############ priceItem di STOCK')
+      #print(priceItem)
+      #print('------------- colonne')
+      #print(priceItem.dtypes)
+      #print('------------- Indice')
+      #print(priceItem.index)
     elif stock in subassets_1:  #quindi se è bot o btp
       priceItem = result[result['Ticker'] == stock]
-      print('############ priceItem di BTP')
-      print(priceItem)
-      print('------------- colonne')
-      print(priceItem.dtypes)
-      print('------------- Indice')
-      print(priceItem.index)
+      #print('############ priceItem di BTP')
+      #print(priceItem)
+      #print('------------- colonne')
+      #print(priceItem.dtypes)
+      #print('------------- Indice')
+      #print(priceItem.index)
       df[stock] = priceItem.drop('Ticker', axis=1)
-      print('df[stock] BTP')
-      print(df[stock])
+      #print('df[stock] BTP')
+      #print(df[stock])
     elif stock in subassets_3: #quindi se è p2p
       priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
       print('############ priceItem di P2P')
