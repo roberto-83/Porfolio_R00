@@ -476,6 +476,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #----------------------------------------------------
   # Calcolo la data piu vecchia
   #----------------------------------------------------
+  #axis 0 è riga mentre axis 1 è colonna
   mask = (df != 0).all(axis=1)
   print('stampo mask')
   print(mask)
