@@ -462,8 +462,10 @@ def analisiPortWithBTP(stockStartDate,num_port):
       df[stock] = priceItem.drop('Ticker', axis=1)
     elif stock in subassets_3: #quindi se è p2p
       priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
+      print('priceItem')
       print(priceItem)
       df[stock] = priceItem.drop('Ticker', axis=1)
+      print('df[stock]')
       print(df[stock])
     else:
       df[stock] = 0 
