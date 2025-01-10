@@ -434,12 +434,12 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #print(storicData)
 
   #unisco i due dataframe
-  result = pd.concat([calend_tot_2, storicData])
+  result_1 = pd.concat([calend_tot_2, storicData])
   #result.index = pd.to_datetime(str(result.index)+' 00:00:00+00:00', utc=True)
-  result.index = result.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
-  result.index = pd.to_datetime(result.index)
-  result=result.sort_index()#riordino indice
-  result=result.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
+  result_1.index = result_1.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+  result_1.index = pd.to_datetime(result_1.index)
+  result_1=result_1.sort_index()#riordino indice
+  result_1=result_1.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
   #result = pd.merge(calend_tot_2, storicData, how="outer", on=["Data","Ticker"])
   #print(result.to_string())
 
@@ -459,57 +459,108 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
   calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
-  #print('stampo criptalia')
+  print('stampo criptalia')
   #print(calend_tot_3)
   #print(calend_tot_3.index)
+  
+  #unisco i due
+  result = pd.concat([result_1, calend_tot_3])
+  result=result.sort_index()#riordino indice
+  subassets_tot = subassets_1 + subassets_3
+  print(subassets_tot)
+  #print(result)
   
   #----------------------------------------------------
   # Costruisico la matrice
   #----------------------------------------------------
   df = pd.DataFrame()
+  #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
   #print(assets_1)
   #print(yf.download('SNOW', start=stockStartDate, end = today,progress=False)['Adj Close'])
   #print(yf.download('BTCE.SW', start=stockStartDate, end = today,progress=False)['Adj Close'])
   #print(subassets_2)
   for stock in assets_1:
-    if stock in subassets_2:   #quindi se è un etf o azione
-      df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
-    elif stock in subassets_1:  #quindi se è bot o btp
-      priceItem = result[result['Ticker'] == stock]
-      df[stock] = priceItem.drop('Ticker', axis=1)
-    elif stock in subassets_3: #quindi se è p2p
-      priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
-      print('############ priceItem di P2P')
-      priceItem = priceItem.drop('Ticker', axis=1)
-      print(priceItem)
-      print('------------- Indice')
-      print(priceItem.index)
+    df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+  if df.index.tz is None:
+    df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+    df.index = pd.to_datetime(df.index)
+  for stock in subassets_tot:
+    priceItem = result[result['Ticker'] == stock]
+    priceItem = priceItem.drop('Ticker', axis=1)
+    df[stock] = priceItem
+
+    #if stock in subassets_2:   #quindi se è un etf o azione
+      #df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+    #elif stock in subassets_1:  #quindi se è bot o btp
+      #sistemo index del df
+      #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+      #df.index = pd.to_datetime(df.index)
+      #aggiungo i valori
+      #priceItem = result[result['Ticker'] == stock]
+      #print('############ priceItem di BTP')
+      #priceItem = priceItem.drop('Ticker', axis=1)
+      #print(priceItem)
+      #print('------------- Indice')
+      #print(priceItem.index)
+
       #df[stock] = priceItem.drop('Ticker', axis=1)
-      df[stock] = priceItem
-      print('df[stock] P2P')
-      print(df[stock])
-      print(df.index)
-    else:
-      df[stock] = 0 
- 
+      #print('df[stock] BTP')
+      #print(df[stock])
+      #print(df.index)
+    #elif stock in subassets_3: #quindi se è p2p
+      #sistemo index del df
+      #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+      #df.index = pd.to_datetime(df.index)
+      #aggiungo i valori
+      #priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
+      #print('############ priceItem di P2P')
+      #priceItem = priceItem.drop('Ticker', axis=1)
+      #print(priceItem)
+      #print('------------- Indice')
+      #print(priceItem.index)
+      #df[stock] = priceItem.drop('Ticker', axis=1)
+      #df[stock] = priceItem
+      #print('df[stock] P2P')
+      #print(df[stock])
+      #print(df.index)
+    #elif stock in subassets_tot: #quindi se è p2p
+      #sistemo index del df
+      #if df.index.tz is None:
+        #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+        #df.index = pd.to_datetime(df.index)
+      #aggiungo i valori
+      #priceItem = result[result['Ticker'] == stock]
+      #print('############ priceItem di P2P')
+      #priceItem = priceItem.drop('Ticker', axis=1)
+      #print(priceItem)
+      #print('------------- Indice')
+      #print(priceItem.index)
+      #df[stock] = priceItem.drop('Ticker', axis=1)
+      #df[stock] = priceItem
+      #print('df[stock] P2P')
+      #print(df[stock])
+      #print(df.index)
+    #else:
+      #df[stock] = 0 
+  
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
   df=df.fillna(0)
   print('Stampo la matrice del mio portafoglio CON BTP')
-  print(df)
-  #print('Tabella dei prezzi storici')
-  #print(df.to_string())
+  #print(df)
+  print('Tabella dei prezzi storici')
+  print(df.to_string())
   weights_f=weights_1
   #----------------------------------------------------
   # Calcolo la data piu vecchia
   #----------------------------------------------------
   #axis 0 è riga mentre axis 1 è colonna
   mask = (df != 0).all(axis=1)
-  print('stampo mask')
-  print(mask)
+  #print('stampo mask')
+  #print(mask)
   data = df.index[mask]
-  print("controllo questo errore... data[0] è")
-  print(data[0])
+  #print("controllo questo errore... data[0] è")
+  #print(data[0])
   earliestDate = str(data[0])[0:10]
   
   #----------------------------------------------------
