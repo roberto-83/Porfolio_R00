@@ -460,6 +460,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
     elif stock in subassets_1:  #quindi se è bot o btp
       priceItem = result[result['Ticker'] == stock]
       print('priceItem di BTP')
+      print(priceItem)
       df[stock] = priceItem.drop('Ticker', axis=1)
     elif stock in subassets_3: #quindi se è p2p
       priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
@@ -472,7 +473,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
       print(df[stock])
     else:
       df[stock] = 0 
-
+dfsfgdsffdg
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
   df=df.fillna(0)
