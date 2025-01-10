@@ -58,10 +58,10 @@ def readMyPort(num_port):
   portfolio_1 = portfolio_0[['Asset','Isin','Ticker','%Composizione']]
   #tolgo il simbolo percentuale
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
-  portfolio_1['%Composizione'].replace('%', '', regex=True, inplace=True)
+  portfolio_1['%Composizione'].replace(to_replace='%',value='', regex=True, inplace=True)
   #cambio virgola con punto
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace(',', '.', regex=True)
-  portfolio_1['%Composizione'].replace(',', '.', regex=True, inplace=True)
+  portfolio_1['%Composizione'].replace(to_replace=',', value='.', regex=True, inplace=True)
   #converto in numero la colonna
   portfolio_1['%Composizione'] = pd.to_numeric(portfolio_1['%Composizione'])
   #divido 100
@@ -75,13 +75,13 @@ def readMyPort2(num_port):
   portfolio_1 = portfolio_0[['Asset','Isin','Ticker','Totale Investito','Controvalore Mercato']]
   #tolgo il simbolo percentuale
   #portfolio_1['%Composizione'] = portfolio_1['%Composizione'].replace('%', '', regex=True)
-  portfolio_1['Totale Investito'].replace('€', '', regex=True, inplace=True)
-  portfolio_1['Controvalore Mercato'].replace('€', '', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'].replace(to_replace='€', value='', regex=True, inplace=True)
   #cambio virgola con punto
-  portfolio_1['Totale Investito'].replace('\.', '', regex=True, inplace=True)
-  portfolio_1['Controvalore Mercato'].replace('\.', '', regex=True, inplace=True)
-  portfolio_1['Totale Investito'].replace(',', '.', regex=True, inplace=True)
-  portfolio_1['Controvalore Mercato'].replace(',', '.', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(to_replace='\.', value='', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'].replace(to_replace='\.', value='', regex=True, inplace=True)
+  portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  portfolio_1['Controvalore Mercato'].replace(to_replace=',', value='.', regex=True, inplace=True)
   #converto in numero la colonna
   portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
   portfolio_1['Controvalore Mercato'] = pd.to_numeric(portfolio_1['Controvalore Mercato'])
@@ -179,7 +179,7 @@ def analisiPort(stockStartDate,num_port):
       calend_tot_2.set_index('Data',inplace=True)
       #indice in formato datetime
       calend_tot_2.index = pd.to_datetime(calend_tot_2.index)
-      calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(',', '.', regex=True)
+      calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(to_replace=',', value='.', regex=True)
       calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
 
       #per Criptalia devo fare un lavoro diverso
@@ -187,7 +187,7 @@ def analisiPort(stockStartDate,num_port):
       calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
       calend_tot_3.set_index('Data',inplace=True)
       calend_tot_3.index = pd.to_datetime(calend_tot_3.index)
-      calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(',', '.', regex=True)
+      calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
       calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
 
       #print(calend_tot_2)
@@ -410,7 +410,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_2.set_index('Data',inplace=True)
   #indice in formato datetime
   calend_tot_2.index = pd.to_datetime(calend_tot_2.index)
-  calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(',', '.', regex=True)
+  calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(to_replace=',', value='.', regex=True)
   calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
 
   #INTEGRO i prezzi con i dati storici che mi sono salvato 
@@ -418,7 +418,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   storicData= read_range('tab_storici_btp!A:C',newPrj)
   storicData.set_index('Data',inplace=True)
   storicData.index = pd.to_datetime(storicData.index)
-  storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(',','.',regex=True)
+  storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(to_replace=',',value='.',regex=True)
   storicData['Prezzo mercato'] = pd.to_numeric(storicData['Prezzo mercato'])
   
   #print(storicData)
@@ -440,8 +440,6 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
   calend_tot_3.set_index('Data',inplace=True)
   calend_tot_3.index = pd.to_datetime(calend_tot_3.index)
-  print('################# Cambio funzione replace #################')
-  #calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(',', '.', regex=True)
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
   calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
@@ -458,6 +456,8 @@ def analisiPortWithBTP(stockStartDate,num_port):
   for stock in assets_1:
     if stock in subassets_2:   #quindi se è un etf o azione
       df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+      print('df[stock] AZIONI')
+      print(df[stock])
       #print(stock)
       #print(yf.download(stock, start=stockStartDate, end = today,progress=False)['Adj Close'])
     elif stock in subassets_1:  #quindi se è bot o btp
