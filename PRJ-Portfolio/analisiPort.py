@@ -469,7 +469,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   df.ffill(limit=5, inplace=True)
   df=df.fillna(0)
   print('Stampo la matrice del mio portafoglio CON BTP')
-  #print(df)
+  print(df)
   #print('Tabella dei prezzi storici')
   #print(df.to_string())
   weights_f=weights_1
@@ -478,8 +478,10 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #----------------------------------------------------
   mask = (df != 0).all(axis=1)
   data = df.index[mask]
+  print("controllo questo errore... data[0] è")
+  print(data[0])
   earliestDate = str(data[0])[0:10]
-  earliestDate = str(data[0])[0:10]
+  
   #----------------------------------------------------
   # Mostro i ritorni giornalieri
   #----------------------------------------------------
