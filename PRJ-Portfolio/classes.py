@@ -591,7 +591,7 @@ class Portfolio:
 
   def transactActive(self,df):
     #tolgo i valori vuoti e metto 0
-    df["Quantità (real)"] = df["Quantità (real)"].replace('',0)
+    df["Quantità (real)"] = df["Quantità (real)"].replace(to_replace='',value=0)
     df2 = df
     isins = df["ISIN"].drop_duplicates()
     #loop sulla lista degli isin singoli
