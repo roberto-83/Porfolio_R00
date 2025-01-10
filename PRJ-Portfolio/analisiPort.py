@@ -409,7 +409,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #imposto la data come indice
   calend_tot_2.set_index('Data',inplace=True)
   #indice in formato datetime
-  calend_tot_2.index = pd.to_datetime(calend_tot_2.index)
+  calend_tot_2.index = pd.to_datetime(calend_tot_2.index+' 00:00:00+00:00', utc=True)
   calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(to_replace=',', value='.', regex=True)
   calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
 
