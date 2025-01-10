@@ -442,6 +442,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3.index = pd.to_datetime(calend_tot_3.index)
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(',', '.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
+  calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
   print('stampo criptalia')
   print(calend_tot_3)
   #----------------------------------------------------
