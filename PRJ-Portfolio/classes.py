@@ -1255,7 +1255,7 @@ class Portfolio:
 
       if str(ordin) != 'None':
       #if ordin is not None or ordin !='' or len(ordin)>1 or not ordin:
-        ordin = ordin.replace(to_replace=',',value='.')
+        ordin = ordin.replace(',','.')
       else:
         ordin = 0
 
