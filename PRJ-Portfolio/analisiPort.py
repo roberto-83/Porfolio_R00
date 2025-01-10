@@ -457,7 +457,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   print('stampo criptalia')
   print(calend_tot_3)
   print(calend_tot_3.index)
-  tretertretre
+  
   #----------------------------------------------------
   # Costruisico la matrice
   #----------------------------------------------------
