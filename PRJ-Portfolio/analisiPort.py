@@ -439,7 +439,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3 = calend_tot_0[['Data','Ticker','Dividendo']]
   calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
   calend_tot_3.set_index('Data',inplace=True)
-  calend_tot_3.index = pd.to_datetime(calend_tot_3.index)
+  calend_tot_3.index = pd.to_datetime(calend_tot_3.index, utc=True)
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
   calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
