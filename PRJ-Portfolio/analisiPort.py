@@ -417,7 +417,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   #leggo dati storici
   storicData= read_range('tab_storici_btp!A:C',newPrj)
   storicData.set_index('Data',inplace=True)
-  storicData.index = pd.to_datetime(storicData.index)
+  storicData.index = pd.to_datetime(storicData.index+' 00:00:00+00:00', utc=True))
   storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(to_replace=',',value='.',regex=True)
   storicData['Prezzo mercato'] = pd.to_numeric(storicData['Prezzo mercato'])
   
@@ -425,7 +425,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
 
   #unisco i due dataframe
   result = pd.concat([calend_tot_2, storicData])
-  result.index = pd.to_datetime(result.index)
+  result.index = pd.to_datetime(result.index+' 00:00:00+00:00', utc=True))
   result=result.sort_index()#riordino indice
   result=result.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
   #result = pd.merge(calend_tot_2, storicData, how="outer", on=["Data","Ticker"])
@@ -439,7 +439,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   calend_tot_3 = calend_tot_0[['Data','Ticker','Dividendo']]
   calend_tot_3 = calend_tot_3[calend_tot_1['Ticker'].isin(subassets_3)]
   calend_tot_3.set_index('Data',inplace=True)
-  calend_tot_3.index = pd.to_datetime(calend_tot_3.index, utc=True)
+  calend_tot_3.index = pd.to_datetime(calend_tot_3.index+' 00:00:00+00:00', utc=True)
   calend_tot_3['Dividendo'] = calend_tot_3['Dividendo'].replace(to_replace=',', value='.', regex=True)
   calend_tot_3['Dividendo'] = pd.to_numeric(calend_tot_3['Dividendo'])
   calend_tot_3=calend_tot_3.rename(columns={"Dividendo": "Prezzo mercato"})
@@ -456,27 +456,9 @@ def analisiPortWithBTP(stockStartDate,num_port):
   for stock in assets_1:
     if stock in subassets_2:   #quindi se è un etf o azione
       df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
-      #print('df[stock] AZIONI')
-      #print(df[stock])
-      #print(stock)
-      #priceItem=yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
-      #print('############ priceItem di STOCK')
-      #print(priceItem)
-      #print('------------- colonne')
-      #print(priceItem.dtypes)
-      #print('------------- Indice')
-      #print(priceItem.index)
     elif stock in subassets_1:  #quindi se è bot o btp
       priceItem = result[result['Ticker'] == stock]
-      #print('############ priceItem di BTP')
-      #print(priceItem)
-      #print('------------- colonne')
-      #print(priceItem.dtypes)
-      #print('------------- Indice')
-      #print(priceItem.index)
       df[stock] = priceItem.drop('Ticker', axis=1)
-      #print('df[stock] BTP')
-      #print(df[stock])
     elif stock in subassets_3: #quindi se è p2p
       priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
       print('############ priceItem di P2P')
