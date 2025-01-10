@@ -795,4 +795,4 @@ def gcolabAnalysis():
   print('Lista valori')
   print(portfolio_2['Totale Investito'].to_list())
 
-print(gcolabAnalysis())
+#print(gcolabAnalysis())
