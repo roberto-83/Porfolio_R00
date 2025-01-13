@@ -821,7 +821,7 @@ class Portfolio:
           settori['Peso_Tick'] = portShort['peso'].loc[i]
           if len(settori[portShort['Ticker'].loc[i]]) > 1:
             settori['Settore'] = settori['Settore_ETF'].str.upper()
-            settori['Settore'] = settori['Settore'].str.replace(to_replace='_',value=' ')
+            settori['Settore'] = settori['Settore'].str.replace('_',' ')
             settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]       
             settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
             #tolgo la colonna che si chiama come il ticker

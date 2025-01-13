@@ -474,11 +474,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
   # Costruisico la matrice
   #----------------------------------------------------
   df = pd.DataFrame()
-  #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
-  #print(assets_1)
-  #print(yf.download('SNOW', start=stockStartDate, end = today,progress=False)['Adj Close'])
-  #print(yf.download('BTCE.SW', start=stockStartDate, end = today,progress=False)['Adj Close'])
-  #print(subassets_2)
+
   for stock in assets_1:
     df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
   if df.index.tz is None:
@@ -489,59 +485,7 @@ def analisiPortWithBTP(stockStartDate,num_port):
     priceItem = priceItem.drop('Ticker', axis=1)
     df[stock] = priceItem
 
-    #if stock in subassets_2:   #quindi se è un etf o azione
-      #df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
-    #elif stock in subassets_1:  #quindi se è bot o btp
-      #sistemo index del df
-      #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
-      #df.index = pd.to_datetime(df.index)
-      #aggiungo i valori
-      #priceItem = result[result['Ticker'] == stock]
-      #print('############ priceItem di BTP')
-      #priceItem = priceItem.drop('Ticker', axis=1)
-      #print(priceItem)
-      #print('------------- Indice')
-      #print(priceItem.index)
-
-      #df[stock] = priceItem.drop('Ticker', axis=1)
-      #print('df[stock] BTP')
-      #print(df[stock])
-      #print(df.index)
-    #elif stock in subassets_3: #quindi se è p2p
-      #sistemo index del df
-      #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
-      #df.index = pd.to_datetime(df.index)
-      #aggiungo i valori
-      #priceItem = calend_tot_3[calend_tot_3['Ticker'] == stock]
-      #print('############ priceItem di P2P')
-      #priceItem = priceItem.drop('Ticker', axis=1)
-      #print(priceItem)
-      #print('------------- Indice')
-      #print(priceItem.index)
-      #df[stock] = priceItem.drop('Ticker', axis=1)
-      #df[stock] = priceItem
-      #print('df[stock] P2P')
-      #print(df[stock])
-      #print(df.index)
-    #elif stock in subassets_tot: #quindi se è p2p
-      #sistemo index del df
-      #if df.index.tz is None:
-        #df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
-        #df.index = pd.to_datetime(df.index)
-      #aggiungo i valori
-      #priceItem = result[result['Ticker'] == stock]
-      #print('############ priceItem di P2P')
-      #priceItem = priceItem.drop('Ticker', axis=1)
-      #print(priceItem)
-      #print('------------- Indice')
-      #print(priceItem.index)
-      #df[stock] = priceItem.drop('Ticker', axis=1)
-      #df[stock] = priceItem
-      #print('df[stock] P2P')
-      #print(df[stock])
-      #print(df.index)
-    #else:
-      #df[stock] = 0 
+    
   
   #riempio i missing al massimo a una settimana e sostituisco NaN con 0
   df.ffill(limit=5, inplace=True)
@@ -858,3 +802,259 @@ def gcolabAnalysis():
   print(portfolio_2['Totale Investito'].to_list())
 
 #print(gcolabAnalysis())
+
+
+
+###############################################################################
+###############################################################################
+# Calcolo sharpe ratio del portafoglio sia con i pesi iniziali che attuali, sia con che senza i btp
+#
+#procedimento
+#funzione prezzi storici btp, p2p
+#funzione 1 costruisce il dataframe completo, parametro specifica se mettere o meno i btp e p2p
+#funzione 2 legge portafoglio e calcola i pesi -> parametro btp si o no e parametro inizio o fine
+#funzione 3 calcola sharpe ratio e altri valori
+#funzione 4 calcola vix e altro..
+#funzione 5 princiaple che mette insieme il tutto
+
+def storicPriceBtpP2P(list_ticker):
+  calend_tot_0 = read_range('tab_calendar!A:I',newPrj)
+  calend_tot_1 = calend_tot_0[['Data','Ticker','Prezzo mercato','Dividendo']]
+  calend_tot_2 = calend_tot_1[calend_tot_1['Ticker'].isin(list_ticker)]
+  calend_tot_2.set_index('Data',inplace=True)
+  calend_tot_2.index = pd.to_datetime(calend_tot_2.index)
+  calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(to_replace=',', value='.', regex=True)
+  calend_tot_2['Prezzo mercato'] = pd.to_numeric(calend_tot_2['Prezzo mercato'])
+  calend_tot_2['Dividendo'] = calend_tot_2['Dividendo'].replace(to_replace=',', value='.', regex=True)
+  calend_tot_2['Dividendo'] = pd.to_numeric(calend_tot_2['Dividendo'])
+  #prendo solo p2p
+  calp2p = calend_tot_2[calend_tot_2['Ticker'] == 'CRIPTALIA'] 
+  calp2p = calp2p.drop('Prezzo mercato', axis=1)
+  calp2p = calp2p.rename(columns={"Dividendo": "Prezzo mercato"})
+  #prendo solo btp
+  calbtp = calend_tot_2[calend_tot_2['Ticker'] != 'CRIPTALIA'] 
+  calbtp = calbtp.drop('Dividendo', axis=1)
+  #riunisco i due df
+  calend_tot = pd.concat([calbtp, calp2p])
+  
+  #recupero storici
+  storicData= read_range('tab_storici_btp!A:C',newPrj)
+  storicData.set_index('Data',inplace=True)
+  #storicData.index = pd.to_datetime(str(storicData.index)+' 00:00:00+00:00', utc=True)
+  storicData.index = pd.to_datetime(storicData.index)
+  storicData['Prezzo mercato'] = storicData['Prezzo mercato'].replace(to_replace=',',value='.',regex=True)
+  storicData['Prezzo mercato'] = pd.to_numeric(storicData['Prezzo mercato'])
+  #print(storicData)
+
+  #unisco i due dataframe
+  result_1 = pd.concat([calend_tot, storicData])
+  result_1.index = result_1.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+  result_1.index = pd.to_datetime(result_1.index)
+  result_1=result_1.sort_index()#riordino indice
+  result_1=result_1.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
+  #print(result_1.to_string())
+  return result_1
+
+def calcSharpe(df, weights):
+  #----------------------------------------------------
+  # Mostro i ritorni giornalieri
+  #----------------------------------------------------
+  log_returns = np.log(1+df.pct_change())
+  returns = log_returns
+  #tolgo i valori "inf" che sta per infinito per divisione con 0
+  returns.replace([np.inf, -np.inf], 0, inplace=True)
+  cov_matrix_annual = returns.cov()*252
+  port_variance = np.dot(weights.T, np.dot(cov_matrix_annual,weights))
+  port_volatility = np.sqrt(port_variance)
+  portAnnualReturn = np.sum(returns.mean() * weights) * 252
+  #----------------------------------------------------
+  # Sharpe Ratio
+  #----------------------------------------------------
+  #qui mancherebbe il risk free rate da aggiungere...
+  risk_free=0.02 #considero risk free 1%
+  #print(f"faccio {portAnnualReturn} meno {risk_free} e poi diviso {port_volatility}")
+  sharpe_ratio_calc = (portAnnualReturn - risk_free) / port_volatility
+  #----------------------------------------------------
+  # Risultato
+  #----------------------------------------------------
+  percent_var = str(round(port_variance,2)*100)+'%'
+  percent_vols = str(round(port_volatility,2)*100)+'%'
+  percent_ret = str(round(portAnnualReturn,2)*100)+'%'
+  sharpe_ratio = round(sharpe_ratio_calc,2)
+
+  print("---- Dati del portafoglio ----")
+
+  print(f"Ritorno Annuo atteso {percent_ret}")
+  print(f"Rischio/Volatilità Annuale {percent_vols}")
+  print(f"Varianza Annuale {percent_var}")
+  print(f"Sharpe Ratio {sharpe_ratio}")
+
+  return [percent_var,percent_vols,percent_ret,sharpe_ratio]
+
+def dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin):
+  if btp_y_n == 'N' and weight_ini_fin == 'INI': print('Analisi portafoglio senza BTP con pesi iniziali')
+  if btp_y_n == 'N' and weight_ini_fin == '': print('Analisi portafoglio senza BTP con pesi attuali')
+  if btp_y_n == 'S' and weight_ini_fin == 'INI': print('Analisi portafoglio con BTP con pesi iniziali')
+  if btp_y_n == 'S' and weight_ini_fin == '': print('Analisi portafoglio con BTP con pesi attuali')
+
+  #1 - Leggo portafoglio
+  portfolio_0 = read_range('tab_portfolio!A:N',newPrj)
+  #Filtro portafoglio in base al parametro
+  portfolio_0 = portfolio_0[portfolio_0['Num Port'] == num_port] 
+  #tolgo colonne che non mi interessano
+  portfolio_1 = portfolio_0[['Asset','Isin','Ticker','Totale Investito','Controvalore Mercato']] 
+  # - Sostituisco i ticker
+  today = datetime.today().strftime('%Y-%m-%d')
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["LCWD.MI"], "SWDA.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTC-EUR")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["1BLK.MI"], "BLK")
+
+  #se non voglio i btp allora li filtro e poi mi tengo la lista delle sole azioni altrimenti mi separo le due liste per dopo
+  assetList = ['BOT','BTP','P2P']
+  if btp_y_n == 'N':
+    portfolio_1=portfolio_1[~portfolio_0["Asset"].isin(assetList)]
+    assetAzioni = portfolio_1['Ticker'].tolist()
+    assetBtp = []
+  else:
+    port2 = portfolio_1[~portfolio_0["Asset"].isin(assetList)]
+    assetAzioni = port2['Ticker'].tolist()
+    port3 = portfolio_1[portfolio_0["Asset"].isin(assetList)]
+    assetBtp = port3['Ticker'].tolist()
+
+  #pulisco i dati
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True)
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='\.', value='', regex=True)
+  portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True)
+  portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
+  portfolio_1['Controvalore Mercato'] = portfolio_1['Controvalore Mercato'].replace(to_replace='€', value='', regex=True)
+  portfolio_1['Controvalore Mercato'] = portfolio_1['Controvalore Mercato'].replace(to_replace='\.', value='', regex=True)
+  portfolio_1['Controvalore Mercato'] = portfolio_1['Controvalore Mercato'].replace(to_replace=',', value='.', regex=True)
+  portfolio_1['Controvalore Mercato'] = pd.to_numeric(portfolio_1['Controvalore Mercato'])
+
+  
+
+  #3 - calcolo il totale investito   
+  if weight_ini_fin == 'INI': 
+    sum_investito = portfolio_1['Totale Investito'].sum()
+    print(f"Totale investito {sum_investito}") 
+    portfolio_1['Composizione'] = portfolio_1['Totale Investito']/sum_investito
+  else:
+    sum_controvalore = portfolio_1['Controvalore Mercato'].sum()
+    print(f"Totale investito {sum_controvalore}")
+    portfolio_1['Composizione'] = portfolio_1['Controvalore Mercato']/sum_controvalore
+  
+  #4 - preparo le liste
+  assets_1 = portfolio_1['Ticker'].tolist() #-> può avere come no i btp..
+  weights = np.array(portfolio_1['Composizione'].tolist())
+
+  #5 - prendo i prezzi delle azioni
+  df = pd.DataFrame()
+
+  for stock in assetAzioni:
+    df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+  if df.index.tz is None:
+    df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+    df.index = pd.to_datetime(df.index)
+
+  #6 - se ho btp aggiungo altrimenti no
+  if btp_y_n == 'S':
+    storicPrice = storicPriceBtpP2P(assetBtp)
+    for stock in assetBtp:
+      priceItem = storicPrice[storicPrice['Ticker'] == stock]
+      priceItem = priceItem.drop('Ticker', axis=1)
+      df[stock] = priceItem
+
+  #7 - ho il dataframe completo, metto i riempimenti
+  #print(df.to_string())
+  df.ffill(limit=5, inplace=True)
+  df=df.fillna(0)
+  #mask = (df != 0).all(axis=1)
+  #data = df.index[mask]
+  #earliestDate = str(data[0])[0:10]
+  #print(f'Data in cui filtro il dataframne {earliestDate}')
+  #prendo la prima data non vuota
+  first_valid_date = df[(df != 0).all(axis=1)].index.min()
+  print(f'Data in cui filtro il dataframne {first_valid_date}')
+  df=df[df.index>first_valid_date]
+
+  #8 - calcolo sharpe
+
+  sharpeValues = calcSharpe(df, weights)
+  output = [str(first_valid_date)[0:10]]+sharpeValues
+
+  return output
+
+def finalAnalysys(stockStartDate,num_port):
+  today = datetime.today().strftime('%Y-%m-%d')
+  readLastDateVar = readLastDate()
+    if readLastDateVar == 'ok':
+        port1 = dfPortfolio(stockStartDate,num_port,'N', 'INI')
+        port2 = dfPortfolio(stockStartDate,num_port,'N', '')
+        port3 = dfPortfolio(stockStartDate,num_port,'S', 'INI')    
+        port4 = dfPortfolio(stockStartDate,num_port,'S', '') 
+        
+        datiMercato = getMarketData()
+        vix_prev_close = datiMercato[0]
+        fear_greed_idx = datiMercato[1]
+        fear_greed_desc = datiMercato[2]
+
+        #----------------------------------------------------
+        # Scrivo su Sheet   --#####################################SISTEMA DA QUI!!!!!!!!!!!!!!!!!!
+        #----------------------------------------------------
+
+        #valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
+        #deove la trovo la earliest date??
+
+        #listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,
+        #percent_ret_iniz,sharpe_ratio_iniz, risk_free,
+        #vix_prev_close,fear_greed_desc,fear_greed_idx,
+        #percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
+        #valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
+
+        #output = [str(first_valid_date)[0:10]]+sharpeValue
+        #return [percent_var,percent_vols,percent_ret,sharpe_ratio]
+
+        listToPrint=[[today,
+        earliestDate,percent_ret_iniz,percent_vols_iniz,
+        percent_ret_iniz,sharpe_ratio_iniz, risk_free,
+        vix_prev_close,fear_greed_desc,fear_greed_idx,
+        percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
+        valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
+
+        appendRow('tab_analysis!A:S',listToPrint,newPrj)
+      return 'Done Analisi Portafoglio'
+    else:
+      return 'Aggiornamento non necessario'
+
+
+  #Leggo i dati del portafoglio con anche i btp
+  valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
+
+  #listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,
+  #percent_ret_iniz,sharpe_ratio_iniz, risk_free,
+  #vix_prev_close,fear_greed_desc,fear_greed_idx,
+  #percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
+  #valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
+
+  #appendRow('tab_analysis!A:S',listToPrint,newPrj)
+  #return 'Done Analisi Portafoglio'
+  
+  return 'ok'
+
+#print(dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin))   
+print(dfPortfolio('2010-01-01','1','N', 'INI'))   #senza btp dovrei avere 130, con i btp 164
+print(dfPortfolio('2010-01-01','1','N', '')) 
+print(dfPortfolio('2010-01-01','1','S', 'INI'))    
+print(dfPortfolio('2010-01-01','1','S', ''))    
+  
+
+
+
+
+
+
