@@ -1582,7 +1582,7 @@ def readTransTot(anno,mese,num_port):
 
 def replace_dot_with_comma(x):
   if '.' in str(x):
-      return str(x).replace(to_replace='.', value=',')
+      return str(x).replace('.', ',')
   return x
 
 #print(caldRendimento())
