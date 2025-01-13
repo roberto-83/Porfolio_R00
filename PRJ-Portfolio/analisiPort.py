@@ -1018,20 +1018,24 @@ def finalAnalysys(stockStartDate,num_port):
 
         #output = [str(first_valid_date)[0:10]]+sharpeValue
         #return [percent_var,percent_vols,percent_ret,sharpe_ratio]
-
+      print(port1)
+      print(port2)
+      print(port3)
+      print(port4)
       listToPrint=[[today,
-      earliestDate,percent_ret_iniz,percent_vols_iniz,
-      percent_ret_iniz,sharpe_ratio_iniz, risk_free,
-      vix_prev_close,fear_greed_desc,fear_greed_idx,
-      percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
-      valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
+      port1[0],port1[1],port1[2],port1[3],port1[4],
+      port2[0],port2[1],port2[2],port2[3],port2[4],
+      port3[0],port3[1],port3[2],port3[3],port3[4],
+      port4[0],port4[1],port4[2],port4[3],port4[4],
+      vix_prev_close,fear_greed_desc,fear_greed_idx]]
+      
 
-      appendRow('tab_analysis!A:S',listToPrint,newPrj)
+      appendRow('tab_analysis!A:X',listToPrint,newPrj)
       return 'Done Analisi Portafoglio'
   else:
       return 'Aggiornamento non necessario'
 
-
+print(finalAnalysys('2010-01-01','1'))
     #Leggo i dati del portafoglio con anche i btp
   #valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
 

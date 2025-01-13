@@ -9,7 +9,7 @@ from classes import Portfolio,caldRendimento
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
-from analisiPort import analisiPort,gcolabAnalysis,analisiPort2,readMyPort
+from analisiPort import analisiPort,gcolabAnalysis,finalAnalysys,readMyPort
 import yfinance as yf
 from functions_sheets import read_range,appendRow,delete_range
 from functions_etf import readHoldings,testapiFinnhub
@@ -105,7 +105,7 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Inizio - Analisi Portafoglio")
   #log_insert1("Analisi Portafoglio","Inizio","","")
   time9s = time.time()
-  print(analisiPort2('2010-01-01','1'))
+  print(finalAnalysys('2010-01-01','1'))
   delta9 = time.time() - time9s
   log_insert1("Analisi Portafoglio","Fine",delta9,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Fine -  Analisi Portafoglio")
