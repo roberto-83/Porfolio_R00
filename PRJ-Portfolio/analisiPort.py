@@ -992,16 +992,16 @@ def dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin):
 def finalAnalysys(stockStartDate,num_port):
   today = datetime.today().strftime('%Y-%m-%d')
   readLastDateVar = readLastDate()
-    if readLastDateVar == 'ok':
-        port1 = dfPortfolio(stockStartDate,num_port,'N', 'INI')
-        port2 = dfPortfolio(stockStartDate,num_port,'N', '')
-        port3 = dfPortfolio(stockStartDate,num_port,'S', 'INI')    
-        port4 = dfPortfolio(stockStartDate,num_port,'S', '') 
-        
-        datiMercato = getMarketData()
-        vix_prev_close = datiMercato[0]
-        fear_greed_idx = datiMercato[1]
-        fear_greed_desc = datiMercato[2]
+  if readLastDateVar == 'ok':
+      port1 = dfPortfolio(stockStartDate,num_port,'N', 'INI')
+      port2 = dfPortfolio(stockStartDate,num_port,'N', '')
+      port3 = dfPortfolio(stockStartDate,num_port,'S', 'INI')    
+      port4 = dfPortfolio(stockStartDate,num_port,'S', '') 
+      
+      datiMercato = getMarketData()
+      vix_prev_close = datiMercato[0]
+      fear_greed_idx = datiMercato[1]
+      fear_greed_desc = datiMercato[2]
 
         #----------------------------------------------------
         # Scrivo su Sheet   --#####################################SISTEMA DA QUI!!!!!!!!!!!!!!!!!!
@@ -1019,21 +1019,21 @@ def finalAnalysys(stockStartDate,num_port):
         #output = [str(first_valid_date)[0:10]]+sharpeValue
         #return [percent_var,percent_vols,percent_ret,sharpe_ratio]
 
-        listToPrint=[[today,
-        earliestDate,percent_ret_iniz,percent_vols_iniz,
-        percent_ret_iniz,sharpe_ratio_iniz, risk_free,
-        vix_prev_close,fear_greed_desc,fear_greed_idx,
-        percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
-        valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
+      listToPrint=[[today,
+      earliestDate,percent_ret_iniz,percent_vols_iniz,
+      percent_ret_iniz,sharpe_ratio_iniz, risk_free,
+      vix_prev_close,fear_greed_desc,fear_greed_idx,
+      percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
+      valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
 
-        appendRow('tab_analysis!A:S',listToPrint,newPrj)
+      appendRow('tab_analysis!A:S',listToPrint,newPrj)
       return 'Done Analisi Portafoglio'
-    else:
+  else:
       return 'Aggiornamento non necessario'
 
 
-  #Leggo i dati del portafoglio con anche i btp
-  valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
+    #Leggo i dati del portafoglio con anche i btp
+    valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
 
   #listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,
   #percent_ret_iniz,sharpe_ratio_iniz, risk_free,
@@ -1044,13 +1044,13 @@ def finalAnalysys(stockStartDate,num_port):
   #appendRow('tab_analysis!A:S',listToPrint,newPrj)
   #return 'Done Analisi Portafoglio'
   
-  return 'ok'
+  #return 'ok'
 
-#print(dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin))   
-print(dfPortfolio('2010-01-01','1','N', 'INI'))   #senza btp dovrei avere 130, con i btp 164
-print(dfPortfolio('2010-01-01','1','N', '')) 
-print(dfPortfolio('2010-01-01','1','S', 'INI'))    
-print(dfPortfolio('2010-01-01','1','S', ''))    
+  #print(dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin))   
+  #print(dfPortfolio('2010-01-01','1','N', 'INI'))   #senza btp dovrei avere 130, con i btp 164
+  #print(dfPortfolio('2010-01-01','1','N', '')) 
+  #print(dfPortfolio('2010-01-01','1','S', 'INI'))    
+  #print(dfPortfolio('2010-01-01','1','S', ''))    
   
 
 
