@@ -1033,7 +1033,7 @@ def finalAnalysys(stockStartDate,num_port):
 
 
     #Leggo i dati del portafoglio con anche i btp
-    valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
+  #valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
 
   #listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,
   #percent_ret_iniz,sharpe_ratio_iniz, risk_free,
