@@ -42,7 +42,7 @@ def readLastDate():
         fear_greed_desc = datiMercato[2]
         listToPrint=[[vix_prev_close,fear_greed_desc,fear_greed_idx]]
         #write_range('tab_portfolio!A2:AS'+numLastRow,listToPrint,newPrj)
-        write_range('tab_analysis!H'+str(numLastRow)+':J'+str(numLastRow),listToPrint,newPrj)
+        write_range('tab_analysis!V'+str(numLastRow)+':X'+str(numLastRow),listToPrint,newPrj)
         return 'Aggiornamento non Necessario'
         #return 'ok'
       else:
@@ -820,7 +820,8 @@ def gcolabAnalysis():
 def storicPriceBtpP2P(list_ticker):
   calend_tot_0 = read_range('tab_calendar!A:I',newPrj)
   calend_tot_1 = calend_tot_0[['Data','Ticker','Prezzo mercato','Dividendo']]
-  calend_tot_2 = calend_tot_1[calend_tot_1['Ticker'].isin(list_ticker)]
+  calend_tot_3 = calend_tot_1[calend_tot_1['Ticker'].isin(list_ticker)]
+  calend_tot_2=calend_tot_3.copy()
   calend_tot_2.set_index('Data',inplace=True)
   calend_tot_2.index = pd.to_datetime(calend_tot_2.index)
   calend_tot_2['Prezzo mercato'] = calend_tot_2['Prezzo mercato'].replace(to_replace=',', value='.', regex=True)
@@ -856,6 +857,9 @@ def storicPriceBtpP2P(list_ticker):
   return result_1
 
 def calcSharpe(df, weights):
+  print(df.to_string())
+  #print(weights)
+  #print(weights.sum())
   #----------------------------------------------------
   # Mostro i ritorni giornalieri
   #----------------------------------------------------
@@ -867,6 +871,8 @@ def calcSharpe(df, weights):
   port_variance = np.dot(weights.T, np.dot(cov_matrix_annual,weights))
   port_volatility = np.sqrt(port_variance)
   portAnnualReturn = np.sum(returns.mean() * weights) * 252
+  print('varianza')
+  print(port_variance)
   #----------------------------------------------------
   # Sharpe Ratio
   #----------------------------------------------------
@@ -971,7 +977,8 @@ def dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin):
 
   #7 - ho il dataframe completo, metto i riempimenti
   #print(df.to_string())
-  df.ffill(limit=5, inplace=True)
+  #df.ffill(limit=5, inplace=True)
+  df=df.ffill(limit=5)
   df=df.fillna(0)
   #mask = (df != 0).all(axis=1)
   #data = df.index[mask]
@@ -991,7 +998,7 @@ def dfPortfolio(stockStartDate,num_port,btp_y_n, weight_ini_fin):
 
 def finalAnalysys(stockStartDate,num_port):
   today = datetime.today().strftime('%Y-%m-%d')
-  readLastDateVar = readLastDate()
+  readLastDateVar = readLastDate()#occhio che questa scrive anche il vix e fear index ogni volta che gira!
   if readLastDateVar == 'ok':
       port1 = dfPortfolio(stockStartDate,num_port,'N', 'INI')
       port2 = dfPortfolio(stockStartDate,num_port,'N', '')
@@ -1003,21 +1010,6 @@ def finalAnalysys(stockStartDate,num_port):
       fear_greed_idx = datiMercato[1]
       fear_greed_desc = datiMercato[2]
 
-        #----------------------------------------------------
-        # Scrivo su Sheet   --#####################################SISTEMA DA QUI!!!!!!!!!!!!!!!!!!
-        #----------------------------------------------------
-
-        #valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
-        #deove la trovo la earliest date??
-
-        #listToPrint=[[today,earliestDate,percent_ret_iniz,percent_vols_iniz,
-        #percent_ret_iniz,sharpe_ratio_iniz, risk_free,
-        #vix_prev_close,fear_greed_desc,fear_greed_idx,
-        #percent_ret_oggi,percent_vols_oggi,percent_ret_oggi,sharpe_ratio_oggi,
-        #valueFullPort[0],valueFullPort[1],valueFullPort[2],valueFullPort[3],valueFullPort[4]]]
-
-        #output = [str(first_valid_date)[0:10]]+sharpeValue
-        #return [percent_var,percent_vols,percent_ret,sharpe_ratio]
       print(port1)
       print(port2)
       print(port3)
@@ -1028,14 +1020,16 @@ def finalAnalysys(stockStartDate,num_port):
       port3[0],port3[1],port3[2],port3[3],port3[4],
       port4[0],port4[1],port4[2],port4[3],port4[4],
       vix_prev_close,fear_greed_desc,fear_greed_idx]]
-      
+      print(listToPrint)
 
       appendRow('tab_analysis!A:X',listToPrint,newPrj)
       return 'Done Analisi Portafoglio'
   else:
       return 'Aggiornamento non necessario'
 
-print(finalAnalysys('2010-01-01','1'))
+#print(finalAnalysys('2010-01-01','1'))
+
+
     #Leggo i dati del portafoglio con anche i btp
   #valueFullPort = analisiPortWithBTP(stockStartDate,num_port)
 
@@ -1058,7 +1052,67 @@ print(finalAnalysys('2010-01-01','1'))
   
 
 
+def dfPortfolio_full(stockStartDate,num_port):
+  #1 - Leggo portafoglio
+  portfolio_0 = read_range('tab_portfolio!A:N',newPrj)
+  #Filtro portafoglio in base al parametro
+  portfolio_0 = portfolio_0[portfolio_0['Num Port'] == num_port] 
+  #tolgo colonne che non mi interessano
+  portfolio_2 = portfolio_0[['Asset','Isin','Ticker','Totale Investito','Controvalore Mercato']] 
+  # - Sostituisco i ticker
+  today = datetime.today().strftime('%Y-%m-%d')
+  portfolio_1=portfolio_2.copy()
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["RCPL.XC"], "RCP.L")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["LCWD.MI"], "SWDA.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BITC.SW"], "BTC-EUR")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["5Q5.DE"], "SNOW")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["BOOK.VI"], "BKNG")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["GOOA.VI"], "GOOG")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["EMAE.MI"], "CSEMAS.MI")
+  portfolio_1["Ticker"] = portfolio_1["Ticker"].replace(["1BLK.MI"], "BLK")
 
+  #se non voglio i btp allora li filtro e poi mi tengo la lista delle sole azioni altrimenti mi separo le due liste per dopo
+  assetList = ['BOT','BTP','P2P']
+  port2 = portfolio_1[~portfolio_0["Asset"].isin(assetList)]
+  assetAzioni = port2['Ticker'].tolist()
+  port3 = portfolio_1[portfolio_0["Asset"].isin(assetList)]
+  assetBtp = port3['Ticker'].tolist()
+  
+  #4 - preparo le liste
+  assets_1 = portfolio_1['Ticker'].tolist() #-> può avere come no i btp..
 
+  #5 - prendo i prezzi delle azioni
+  df = pd.DataFrame()
 
+  for stock in assetAzioni:
+    df[stock] = yf.download(stock, start=stockStartDate, end = today,progress=False)['Close']
+  if df.index.tz is None:
+    df.index = df.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
+    df.index = pd.to_datetime(df.index)
+
+  #6 - se ho btp aggiungo altrimenti no
+  storicPrice = storicPriceBtpP2P(assetBtp)
+  for stock in assetBtp:
+    priceItem = storicPrice[storicPrice['Ticker'] == stock]
+    priceItem = priceItem.drop('Ticker', axis=1)
+    df[stock] = priceItem
+
+  #7 - ho il dataframe completo, metto i riempimenti
+  #print(df.to_string())
+  #df.ffill(limit=5, inplace=True)
+  df=df.ffill(limit=5)
+  df=df.fillna(0)
+  #mask = (df != 0).all(axis=1)
+  #data = df.index[mask]
+  #earliestDate = str(data[0])[0:10]
+  #print(f'Data in cui filtro il dataframne {earliestDate}')
+  #prendo la prima data non vuota
+  first_valid_date = df[(df != 0).all(axis=1)].index.min()
+  #print(f'Data in cui filtro il dataframne {first_valid_date}')
+  df=df[df.index>first_valid_date]
+
+  return df
+
+#df=dfPortfolio_full('2010-01-01','1')
+#print(df)
 
