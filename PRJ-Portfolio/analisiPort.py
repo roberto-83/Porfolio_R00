@@ -872,8 +872,8 @@ def storicPriceBtpP2P(list_ticker):
   result_1.index = pd.to_datetime(result_1.index)
   #result_1=result_1.sort_index()#riordino indice
   #result_1=result_1.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
-  print('BTP storici')
-  print(result_1.to_string())
+  #print('BTP storici')
+  #print(result_1.to_string())
   return result_1
 
 def calcSharpe(df, weights):
