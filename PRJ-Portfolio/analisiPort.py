@@ -892,7 +892,7 @@ def calcSharpe(df, weights):
   port_volatility = np.sqrt(port_variance)
   portAnnualReturn = np.sum(returns.mean() * weights) * 252
   print('varianza')
-  print(port_variance)
+  print(port_variance*100)
   #----------------------------------------------------
   # Sharpe Ratio
   #----------------------------------------------------
@@ -1134,6 +1134,9 @@ def dfPortfolio_full(stockStartDate,num_port):
 
   return df
 
-df=dfPortfolio_full('2010-01-01','1')
-print(df)
+#df=dfPortfolio_full('2010-01-01','1')
+#print(df)
+
+#539 def analisiPort2(stockStartDate,num_port):
+print(analisiPort2('2010-01-01','1'))
 
