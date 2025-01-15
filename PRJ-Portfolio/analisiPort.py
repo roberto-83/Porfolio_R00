@@ -1140,3 +1140,5 @@ def dfPortfolio_full(stockStartDate,num_port):
 #539 def analisiPort2(stockStartDate,num_port):
 #print(analisiPort2('2010-01-01','1'))
 
+
+
