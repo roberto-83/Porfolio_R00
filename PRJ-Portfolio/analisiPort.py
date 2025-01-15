@@ -832,11 +832,18 @@ def storicPriceBtpP2P(list_ticker):
   calp2p = calend_tot_2[calend_tot_2['Ticker'] == 'CRIPTALIA'] 
   calp2p = calp2p.drop('Prezzo mercato', axis=1)
   calp2p = calp2p.rename(columns={"Dividendo": "Prezzo mercato"})
+  #print('Solo criptalia')
+  #print(calp2p)
   #prendo solo btp
   calbtp = calend_tot_2[calend_tot_2['Ticker'] != 'CRIPTALIA'] 
   calbtp = calbtp.drop('Dividendo', axis=1)
+  #print('Solo btp')
+  #print(calbtp)
   #riunisco i due df
   calend_tot = pd.concat([calbtp, calp2p])
+  calend_tot = calend_tot.sort_index()
+  #print('Entrambi')
+  #print(calend_tot.to_string())
   
   #recupero storici
   storicData= read_range('tab_storici_btp!A:C',newPrj)
@@ -849,11 +856,25 @@ def storicPriceBtpP2P(list_ticker):
 
   #unisco i due dataframe
   result_1 = pd.concat([calend_tot, storicData])
+  #drop duplicates mi toglie i valori duplicati senza considerare indice
+  #quindi metto una colonna uguale all'indice e poi la cancello
+  result_1['Data Temp'] = result_1.index
+  result_1=result_1.sort_index()#riordino indice  Cancello?
+  #print('COntrolla qui')
+  #a=result_1[result_1.index>'2025-01-09']
+  #print(a.to_string())
+  result_1=result_1.drop_duplicates()#cancello?
+  #subset=['Ticker', 'Prezzo mercato'], keep='last'
+  result_1=result_1.drop(['Data Temp'], axis=1)#cancello colonna aggiuntiva temporanea
+  #print('COntrolla qui')
+  #print(result_1[result_1.index>'2025-01-09'])
   result_1.index = result_1.index.tz_localize('UTC').strftime('%Y-%m-%d 00:00:00+00:00')
   result_1.index = pd.to_datetime(result_1.index)
-  result_1=result_1.sort_index()#riordino indice
-  result_1=result_1.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
-  #print(result_1.to_string())
+  #result_1=result_1.sort_index()#riordino indice
+  #result_1=result_1.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
+  print('BTP storici')
+  print(result_1.to_string())
+  trreterterte
   return result_1
 
 def calcSharpe(df, weights):
@@ -1098,6 +1119,7 @@ def dfPortfolio_full(stockStartDate,num_port):
     df[stock] = priceItem
 
   #7 - ho il dataframe completo, metto i riempimenti
+  #print('stampo df finale')
   #print(df.to_string())
   #df.ffill(limit=5, inplace=True)
   df=df.ffill(limit=5)
@@ -1113,6 +1135,6 @@ def dfPortfolio_full(stockStartDate,num_port):
 
   return df
 
-#df=dfPortfolio_full('2010-01-01','1')
-#print(df)
+df=dfPortfolio_full('2010-01-01','1')
+print(df)
 
