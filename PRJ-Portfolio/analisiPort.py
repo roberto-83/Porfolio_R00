@@ -874,7 +874,6 @@ def storicPriceBtpP2P(list_ticker):
   #result_1=result_1.drop_duplicates(subset=['Ticker', 'Prezzo mercato'], keep='last')
   print('BTP storici')
   print(result_1.to_string())
-  trreterterte
   return result_1
 
 def calcSharpe(df, weights):
