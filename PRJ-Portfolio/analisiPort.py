@@ -784,6 +784,7 @@ def testQuantStat():
 def gcolabAnalysis():
   #voglio i ticker e il valore comprato  
   portfolio_0 = read_range('tab_portfolio!A:M',newPrj)
+  portfolio_0 = portfolio_0[portfolio_0['Num Port'] == 1] 
   #tolgo colonne che non mi interessano
   portfolio_1 = portfolio_0[['Asset','Ticker','Totale Investito']]
   #tolgo il simbolo euro
@@ -801,7 +802,7 @@ def gcolabAnalysis():
   print('Lista valori')
   print(portfolio_2['Totale Investito'].to_list())
 
-#print(gcolabAnalysis())
+print(gcolabAnalysis())
 
 
 
