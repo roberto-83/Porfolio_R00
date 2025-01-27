@@ -143,6 +143,7 @@ class Portfolio:
       #print(price)
       liveprice=price[1]
     elif row['Asset'] == 'AZIONI':
+      print(f"prezzo di {row['Ticker']}")
       infoStock = getStockInfo(row['Ticker'])
       liveprice=infoStock['currentPrice']
     else:
@@ -216,8 +217,8 @@ class Portfolio:
   def financialsPartPort(self):
     #prendo la prima parte già creata
     portaf = Portfolio.dFPortf(self)
-    #print("stampo pre portafoglio")
-    #print(portaf.head())
+    #print("##### stampo pre portafoglio")
+    #print(portaf.to_string())
     #creo una lista con i dati finanziari
     list2d=[]
     for i in portaf['Isin']:
@@ -797,9 +798,11 @@ class Portfolio:
           settori1 = allSectorsEtf[portShort['Ticker'].loc[i]]
           #print(settori)
           settori = settori1.to_frame()
-          #print(sectors)
-          #print('---------------')
-          #print(type(settori))
+
+          print(settori)
+          print('---------------')
+          print(type(settori))
+
           #print(settori.index)
           #print('stampo columns')
           #print(settori.columns)
@@ -1071,6 +1074,8 @@ class Portfolio:
       #stampo dataframe su foglio
       numRows = len(finalDF3)+1
       arr = finalDF3.values.tolist()
+      print('STAMPO ARRAY')
+      print(finalDF3)
       delete_range('tab_and_port!A2:M100',newPrj)
       write_range('tab_and_port!A2:M'+str(numRows),arr,newPrj) 
     else:
