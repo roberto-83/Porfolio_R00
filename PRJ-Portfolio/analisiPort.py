@@ -787,21 +787,30 @@ def gcolabAnalysis():
   portfolio_2 = portfolio_0[portfolio_0['Num Port'] == '1'] 
   #tolgo colonne che non mi interessano
   portfolio_1 = portfolio_2[['Asset','Ticker','Totale Investito']]
+  #copia per estrarre importi investiti
+  portfolio_3 = portfolio_2[['Asset','Ticker','Controvalore Mercato']]
   #tolgo il simbolo euro
   portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True)
+  portfolio_3['Controvalore Mercato'] = portfolio_3['Controvalore Mercato'].replace(to_replace='€', value='', regex=True)
   #cambio virgola con punto
   portfolio_1['Totale Investito'].replace(to_replace='\.',value='', regex=True, inplace=True)
   portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  portfolio_3['Controvalore Mercato'].replace(to_replace='\.',value='', regex=True, inplace=True)
+  portfolio_3['Controvalore Mercato'].replace(to_replace=',', value='.', regex=True, inplace=True)
   #converto in numero la colonna
   portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
+  portfolio_3['Controvalore Mercato'] = pd.to_numeric(portfolio_3['Controvalore Mercato'])
   #tolgo bot, btp e p2p
-  portfolio_2=portfolio_1.loc[portfolio_1['Asset'].isin(['AZIONI','ETF-AZIONI'])]
+  portfolio_2=portfolio_1.loc[portfolio_1['Asset'].isin(['AZIONI','ETF-AZIONI','ETC'])]
+  portfolio_4=portfolio_3.loc[portfolio_1['Asset'].isin(['AZIONI','ETF-AZIONI','ETC'])]
   #print(portfolio_2)
   print('Lista ticker')
   print(portfolio_2['Ticker'].to_list())
-  print('Lista valori')
+  print('Lista importi investiti')
   print(portfolio_2['Totale Investito'].to_list())
-
+  print('Lista importi attuali')
+  print(portfolio_4['Controvalore Mercato'].to_list())
+  
 print(gcolabAnalysis())
 
 

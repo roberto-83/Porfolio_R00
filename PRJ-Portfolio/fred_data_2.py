@@ -20,8 +20,11 @@ def get_fred_data(series_id):
 def get_gdp():
   #legge valore trimestrale
     gdp_data = get_fred_data('GDPC1')  # Id per il PIL reale USA
+    gdp_data['perc_change']=gdp_data['value'].pct_change().fillna(0)
     print('GDP_DATA')
-    print(gdp_data)
+    #print(gdp_data.to_string())
+    print(gdp_data.to_string())
+
     return gdp_data
 
 #link investing https://it.investing.com/economic-calendar/unemployment-rate-300
@@ -34,14 +37,18 @@ def get_unemployee_rate():#tasso disoccupazione
 
 def get_inflation():#inflazione
     inflation = get_fred_data('CPIAUCSL')  # Id per il PIL reale USA
+    inflation['perc_change']=inflation['value'].pct_change().fillna(0)
     print('INFLATION')
     print(inflation)
+    #print(inflation.to_string())
     return inflation
 
 def get_tassi():#tassi
     tassi = get_fred_data('FEDFUNDS')  # Id per il PIL reale USA
+    tassi['perc_change']=tassi['value'].pct_change().fillna(0)
     print('TASSI')
-    print(tassi)
+    #print(tassi)
+    print(tassi.to_string())
     return tassi
 
 def get_ind_produz():#indice della produzione indistriale
@@ -58,16 +65,21 @@ def get_fiducia_consumatori():#indice di fiducia dei consumatori
 
 def get_borsa():#borsa S&P500
     borsa = get_fred_data('SP500')  # Id per il PIL reale USA
+    borsa['perc_change']=borsa['value'].pct_change().fillna(0)
     print('BORSA')
-    print(borsa)
+    #print(borsa)
+    print(borsa.to_string())
     return borsa
 
 # Esempio di analisi
 def analyze_economy():
     gdp = get_gdp()
-    unemp_get=get_unemployee_rate()
-    inflation=get_inflation()
-    tassi=get_tassi()
+    #unemp_get=get_unemployee_rate()
+    #inflation=get_inflation()
+    #tassi=get_tassi()
+    #ind_produz = get_ind_produz()
+    #fiducia_cons = get_fiducia_consumatori()
+    #borsa = get_borsa()
     gdp_growth = gdp['value'].pct_change().mean()  # Crescita media del PIL
 
     if gdp_growth > 0.02:
@@ -80,3 +92,6 @@ def analyze_economy():
 # Esegui l'analisi
 economic_regime = analyze_economy()
 print(f"Attuale regime economico degli Stati Uniti: {economic_regime}")
+
+
+
