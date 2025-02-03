@@ -1553,8 +1553,10 @@ def readCalTot(anno, mese):
   else:
     partData = fulldata[(fulldata['Year'] == anno) & (fulldata['Month'] == mese)]
 
-  valInvFirsyM = partData['Valore Mercato'].iloc[0].replace(to_replace=',',value='.')
-  valInvLastM = partData['Valore Mercato'].iloc[-1].replace(to_replace=',',value='.')
+  # valInvFirsyM = partData['Valore Mercato'].iloc[0].replace(to_replace=',',value='.')
+  # valInvLastM = partData['Valore Mercato'].iloc[-1].replace(to_replace=',',value='.')
+  valInvFirsyM = partData['Valore Mercato'].iloc[0].replace(',','.')
+  valInvLastM = partData['Valore Mercato'].iloc[-1].replace(',','.')
   arr=[valInvFirsyM,valInvLastM]
   return arr
 
