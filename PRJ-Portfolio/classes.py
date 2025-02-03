@@ -1522,7 +1522,9 @@ def caldRendimento():
         rendimY = ((float(valFinYear) - float(valIniYear) - depositY + dividenY + venditeY)/float(valIniYear))*100
 
       #preparo array finale
-      arr = [[newYear,newMonth,firstDayMon,lastDayMon,valInvFirsyM.replace(to_replace='.',value=','),valInvLastM.replace(to_replace='.',value=','),deposit,dividen,vendite,rendim,rendimY,todayDateHour]]
+      #arr = [[newYear,newMonth,firstDayMon,lastDayMon,valInvFirsyM.replace(to_replace='.',value=','),valInvLastM.replace(to_replace='.',value=','),deposit,dividen,vendite,rendim,rendimY,todayDateHour]]
+      arr = [[newYear,newMonth,firstDayMon,lastDayMon,valInvFirsyM.replace('.',','),valInvLastM.replace('.',','),deposit,dividen,vendite,rendim,rendimY,todayDateHour]]
+
       print(arr)
       #scrivo array
       appendRow('tab_performance!A:L',arr,newPrj)
