@@ -793,10 +793,10 @@ def gcolabAnalysis():
   portfolio_1['Totale Investito'] = portfolio_1['Totale Investito'].replace(to_replace='€', value='', regex=True)
   portfolio_3['Controvalore Mercato'] = portfolio_3['Controvalore Mercato'].replace(to_replace='€', value='', regex=True)
   #cambio virgola con punto
-  portfolio_1['Totale Investito'].replace(to_replace='\.',value='', regex=True, inplace=True)
-  portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True, inplace=True)
-  portfolio_3['Controvalore Mercato'].replace(to_replace='\.',value='', regex=True, inplace=True)
-  portfolio_3['Controvalore Mercato'].replace(to_replace=',', value='.', regex=True, inplace=True)
+  portfolio_1['Totale Investito']=portfolio_1['Totale Investito'].replace(to_replace='\.',value='', regex=True)
+  portfolio_1['Totale Investito']= portfolio_1['Totale Investito'].replace(to_replace=',', value='.', regex=True)
+  portfolio_3['Controvalore Mercato']=portfolio_3['Controvalore Mercato'].replace(to_replace='\.',value='', regex=True)
+  portfolio_3['Controvalore Mercato']=portfolio_3['Controvalore Mercato'].replace(to_replace=',', value='.', regex=True)
   #converto in numero la colonna
   portfolio_1['Totale Investito'] = pd.to_numeric(portfolio_1['Totale Investito'])
   portfolio_3['Controvalore Mercato'] = pd.to_numeric(portfolio_3['Controvalore Mercato'])

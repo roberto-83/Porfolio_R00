@@ -102,6 +102,7 @@ class Portfolio:
     return netValPortBanca
   
   def countUsciteSpese(self,date):
+    print("Calcolo le sepse")
     year = date[0:4]
     transact = read_range('Tabella!A:I',spese)
     transact = transact[transact['Anno'] == year] 
@@ -115,6 +116,7 @@ class Portfolio:
     totUscite = round(totUscite2,2)
     #ora scrivo il dato
     rowWrit=findRowSpes()
+    print(f"scrivo sulla riga {rowWrit}")
     write_range('Tabella!M'+str(rowWrit),[[totUscite]],spese)
     ######SOMMO LE ENTRATE
     transact_in = transact[transact['Importo'].astype(float) >=0]
