@@ -1259,8 +1259,8 @@ class Portfolio:
       #print(f"Lunghezza dell'ordine {len(str(ordin))}")
       #print(f"Tipo dell'ordine {type(ordin)}")
       #print(f"Ordine è {ordin}")
-
-      if str(ordin) != 'None':
+      
+      if str(ordin) != 'None' and str(ordin) != "":
       #if ordin is not None or ordin !='' or len(ordin)>1 or not ordin:
         ordin = ordin.replace(',','.')
       else:
