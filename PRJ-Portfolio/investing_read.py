@@ -59,6 +59,7 @@ def get_econ_data(url,item):
       df = pd.DataFrame(rows, columns=headers)
       #df['Item'] = item
       df = df.drop(columns='Ora')
+      df = df.drop(columns='Precedente')
       df['Data']=df['Data di rilascio'].str[0:10]
       df['Data']=df['Data'].replace(to_replace='\.',value='-',regex=True)
       df['Data']=pd.to_datetime(df['Data'],dayfirst=True) 
@@ -68,11 +69,12 @@ def get_econ_data(url,item):
       df.rename(columns={
           "Data di rilascio": "Rilascio "+item,
           "Attuale": "Attuale "+item,
-          "Previsto": "Previsto "+item,
-          "Precedente": "Precedente "+item
+          "Previsto": "Previsto "+item
+          #"Precedente": "Precedente "+item
           }, inplace=True)
       #print(item)
       #print(df)
+      print(f"Item {item} letto")
   return df
 
 ################################################################################
@@ -102,7 +104,6 @@ def investing_Selenium(url, item):
   dfs = pd.read_html(driver.page_source)
   output=dfs[0]
   output = output.drop(columns=['Ora','Unnamed: 5'])
-
   output['Data']=output['Data di rilascio'].str[0:10]
   output['Data']=output['Data'].replace(to_replace='\.',value='-',regex=True)
   output['Data']=pd.to_datetime(output['Data'],dayfirst=True) 
@@ -115,7 +116,7 @@ def investing_Selenium(url, item):
           "Previsto": "Previsto "+item,
           "Precedente": "Precedente "+item
           }, inplace=True)
-
+  print(f"Item {item} letto")
   return output
 #print(investing_Selenium(url_tassi_interesse,'TASSI'))
 
@@ -170,27 +171,35 @@ def merge_dataframe():
 ################################################################################
 
 def write_economin_data():
+  #carico i dati che dovrei scrivere
   alldataframe = merge_dataframe()
   alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
-  #print(alldataframe)
+  print("DATI NUOVI")
+  print(alldataframe.columns)
+  print(alldataframe.index)
+  #leggo dati esistenti
+  actualdata = read_range('tab_investing!A:V',newPrj)
+  #Ora come faccio a confrontare i due?
+  print("DATI SALVATI")
+  actualdata.set_index('Data', inplace=True)
+  actualdata.insert(0, "Data", actualdata.index)
+  #actualdata['Data']=actualdata.index
+  print(actualdata.columns)
+  print(actualdata.index)
+
+  #confronto i df
+  #print(alldataframe == actualdata)
+  #vedo le righe uguali
+  #print((alldataframe == actualdata).all(axis=1))
+  #solo righe diverse
+  #print(actualdata[(alldataframe == actualdata).all(axis=1) == False])
   #print(alldataframe.dtypes)
   listToPrint = alldataframe.values.tolist()
   lastRowSt=str(len(listToPrint)+1)
-  write_range('tab_investing!A2:AB'+lastRowSt,listToPrint,newPrj)
+  write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
 
-  #last_dates= read_range('tab_investing!A:AA')
-  #print(last_dates['Data'])
-  #print(tabIsinsNew.head())
-  # if len(tabIsinsNew) != 0: #xaso in cui tabella sia vuota
-  #   lastDate = tabIsinsNew['UPDATE'].iloc[0]
-  #   #print(f" Ultima data folgio {lastDate} e data oggi {Portfolio.todayDate}")
-  #   if lastDate == Portfolio.todayDate:
-  #     return 'Aggiornamento non Necessario'
-  #   else:
-  #     return 'ok'
-  # else:
-  #   return 'ok'
-print(write_economin_data())
+
+#print(write_economin_data())
 
 def print_df(df,col_start):
   #voglio leggere l'ultima data della colonna passata
