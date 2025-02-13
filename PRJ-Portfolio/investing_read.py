@@ -101,12 +101,10 @@ def investing_Selenium(url, item):
     # Inizializza il driver di Chrome
     driver = webdriver.Chrome( options=chrome_options)
     driver.set_page_load_timeout(page_load_timeout)
-    driver.maximize_window()
-    #page_load_timeout = 60
-    #driver.set_page_load_timeout(page_load_timeout)
-    print('qui')
+    #driver.maximize_window()
     #Get URL
     driver.get(url)
+ 
     print('Inizio secondo try')
     # Aspetta che l'elemento si carichi (modifica il timeout a seconda del caso)
     try:
@@ -119,7 +117,7 @@ def investing_Selenium(url, item):
         print("Timeout: il bottone non è stato trovato in tempo.")
         driver.quit()
         return pd.DataFrame()  # Restituisci un DataFrame vuoto in caso di errore
-
+    print('fine secondo try')
     time.sleep(5)
     #faccio click per espandere tabella
     #buttonLoad = driver.find_element(By.XPATH,'/html/body/div[7]/section/div[12]/div[1]')
@@ -148,11 +146,9 @@ def investing_Selenium(url, item):
     output_1= {'Rilascio TASSI': [0], 'Attuale TASSI': [0],'Previsto TASSI': [0]}
     output = pd.DataFrame.from_dict(output_1)
     output['Data']=todayDate_f
-    output.set_index('Data', inplace=True)
+    output.set_index('2000-01-01', inplace=True)
+    #output['Data']=todayDate_f
     print("Errore di Timeout")
-    print(todayDate_f)
-    #output.set_index('2024-05-01', inplace=True)
-    print('OUTPUT FALLITO')
     print(output)
   return output
 #print(investing_Selenium(url_tassi_interesse,'TASSI'))
@@ -170,6 +166,7 @@ def merge_dataframe():
   inflaz = get_econ_data(url_PCI_inflazione,'PCI')
   #print('Tassi Interesse')
   tassi = investing_Selenium(url_tassi_interesse,'TASSI')
+  print(len(tassi))
   #print('Fiducia Consumatori')
   consuma = get_econ_data(url_fiducia_consumatori,'FIDUC_CONS')
   #print('Produzione industriale')
@@ -177,29 +174,31 @@ def merge_dataframe():
   #print('Vendite dettaglio')
   vendite = get_econ_data(url_vendite_dettaglio,'VENDITE')
   #unisco i df
-  df_finale = pil.merge(disoccup, left_index=True, right_index=True, how='outer')
-  df_finale = df_finale.drop(columns='_x')
-  df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
-  df_finale = df_finale.merge(inflaz, left_index=True, right_index=True, how='outer')
-  df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
-  df_finale = df_finale.merge(tassi, left_index=True, right_index=True, how='outer') 
-  df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
-  df_finale = df_finale.merge(consuma, left_index=True, right_index=True, how='outer')
-  df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
-  df_finale = df_finale.merge(produz, left_index=True, right_index=True, how='outer')
-  df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
-  df_finale = df_finale.merge(vendite, left_index=True, right_index=True, how='outer')
-  df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
-  #fill NaN values
-  df_finale = df_finale.fillna(method='ffill')
-  # Trova  la prima riga che non contiene NaN
-  df_finale = df_finale[df_finale.notna().all(axis=1)]#.reset_index(drop=True)
-  #df_finale['Data'] = df_finale.index
-  df_finale.insert(0, "Data", df_finale.index)
-  print('primo check')
-  print(df_finale.columns)
-  print(df_finale.to_string())
-  return df_finale
+  if len(tassi) > 1:
+    df_finale = pil.merge(disoccup, left_index=True, right_index=True, how='outer')
+    df_finale = df_finale.drop(columns='_x')
+    df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
+    df_finale = df_finale.merge(inflaz, left_index=True, right_index=True, how='outer')
+    df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
+    df_finale = df_finale.merge(tassi, left_index=True, right_index=True, how='outer') 
+    df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
+    df_finale = df_finale.merge(consuma, left_index=True, right_index=True, how='outer')
+    df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
+    df_finale = df_finale.merge(produz, left_index=True, right_index=True, how='outer')
+    df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
+    df_finale = df_finale.merge(vendite, left_index=True, right_index=True, how='outer')
+    df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
+    #fill NaN values
+    df_finale = df_finale.fillna(method='ffill')
+    # Trova  la prima riga che non contiene NaN
+    df_finale = df_finale[df_finale.notna().all(axis=1)]#.reset_index(drop=True)
+    #df_finale['Data'] = df_finale.index
+    df_finale.insert(0, "Data", df_finale.index)
+    print('primo check')
+    print(df_finale.columns)
+    print(df_finale.to_string())
+    return df_finale
+  return 'ko'
 
 #print(merge_dataframe())
 
@@ -210,42 +209,54 @@ def merge_dataframe():
 def write_economin_data():
   #carico i dati che dovrei scrivere
   alldataframe = merge_dataframe()
-  alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
-  print("DATI NUOVI")
-  print(alldataframe)
-  #leggo dati esistenti
-  actualdata = read_range('tab_investing!A:V',newPrj)
-  #Ora come faccio a confrontare i due?
-  print("DATI SALVATI")
-  actualdata.set_index('Data', inplace=True)
-  actualdata.insert(0, "Data", actualdata.index)
-  print(actualdata)
+  if alldataframe == 'ko':
+    print(alldataframe.dtypes)
+    alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
 
-  #CONFRONTO
-  #prendo la data piu vecchia del nuovo DF
-  #filtro l'attuale a quella data in modo da salvare i vecchi dati
-  #unisco i due dataframe e poi stampo
-  print(alldataframe.iloc[0])
-  print(alldataframe.first_valid_index())
+    print("DATI NUOVI")
+    print(alldataframe)
+    #leggo dati esistenti
+    actualdata = read_range('tab_investing!A:V',newPrj)
+    #Ora come faccio a confrontare i due?
+    print("DATI SALVATI")
+    actualdata.set_index('Data', inplace=True)
+    actualdata.insert(0, "Data", actualdata.index)
+    print(actualdata)
 
-  #confronto i df
-  #print(alldataframe == actualdata)
-  #vedo le righe uguali
-  #print((alldataframe == actualdata).all(axis=1))
-  #solo righe diverse
-  #print(actualdata[(alldataframe == actualdata).all(axis=1) == False])
-  #print(alldataframe.dtypes)
-  listToPrint = alldataframe.values.tolist()
-  lastRowSt=str(len(listToPrint)+1)
-  #write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+    #CONFRONTO
+    #prendo la data piu vecchia del nuovo DF
+    #filtro l'attuale a quella data in modo da salvare i vecchi dati
+    #unisco i due dataframe e poi stampo
+    oldDateNewData = alldataframe.first_valid_index()
+    oldDateOldData = actualdata.first_valid_index()
+    print('prima valid index di alldataframe')
+    print(oldDateNewData)
+    print('prima valid index di actualdata')
+    print(oldDateOldData)
 
+    delta_Df = actualdata[actualdata['Data'] < oldDateNewData]  #voglio salvare i dati attuali vecchi..
+    print(delta_Df)
+    #ora mi trovo che la prima data del db è 2024-01-01 mentre quella dei dati che arrivano è 2024-09-26 00:00:00
+
+    #confronto i df
+    #print(alldataframe == actualdata)
+    #vedo le righe uguali
+    #print((alldataframe == actualdata).all(axis=1))
+    #solo righe diverse
+    #print(actualdata[(alldataframe == actualdata).all(axis=1) == False])
+    #print(alldataframe.dtypes)
+    listToPrint = alldataframe.values.tolist()
+    lastRowSt=str(len(listToPrint)+1)
+    #write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+  else:
+    print('Non ho i tassi')
 
 print(write_economin_data())
 
-def print_df(df,col_start):
+#def print_df(df,col_start):
   #voglio leggere l'ultima data della colonna passata
   #diffirenza con dataframe, se ci sono nuovo dati scrivo solo quelli
-  return 'ok'
+#  return 'ok'
 
 
 ################################################################################
