@@ -143,13 +143,14 @@ def investing_Selenium(url, item):
             }, inplace=True)
     print(f"Item {item} letto") 
   except TimeoutException:
-    output_1= {'Rilascio TASSI': [0], 'Attuale TASSI': [0],'Previsto TASSI': [0]}
-    output = pd.DataFrame.from_dict(output_1)
-    output['Data']=todayDate_f
-    output.set_index('2000-01-01', inplace=True)
-    #output['Data']=todayDate_f
     print("Errore di Timeout")
-    print(output)
+    output = pd.DataFrame()
+    # output_1= {'Rilascio TASSI': [0], 'Attuale TASSI': [0],'Previsto TASSI': [0]}
+    # output = pd.DataFrame.from_dict(output_1)
+    # output['Data']=todayDate_f
+    # output.set_index('2024-01-01', inplace=True)
+    # #output['Data']=todayDate_f
+    #print(output)
   return output
 #print(investing_Selenium(url_tassi_interesse,'TASSI'))
 
@@ -166,7 +167,6 @@ def merge_dataframe():
   inflaz = get_econ_data(url_PCI_inflazione,'PCI')
   #print('Tassi Interesse')
   tassi = investing_Selenium(url_tassi_interesse,'TASSI')
-  print(len(tassi))
   #print('Fiducia Consumatori')
   consuma = get_econ_data(url_fiducia_consumatori,'FIDUC_CONS')
   #print('Produzione industriale')
@@ -174,7 +174,7 @@ def merge_dataframe():
   #print('Vendite dettaglio')
   vendite = get_econ_data(url_vendite_dettaglio,'VENDITE')
   #unisco i df
-  if len(tassi) > 1:
+  if not tassi.empty:
     df_finale = pil.merge(disoccup, left_index=True, right_index=True, how='outer')
     df_finale = df_finale.drop(columns='_x')
     df_finale = df_finale.drop(df_finale.columns[-1], axis=1)
@@ -198,7 +198,8 @@ def merge_dataframe():
     print(df_finale.columns)
     print(df_finale.to_string())
     return df_finale
-  return 'ko'
+  df_finale = pd.DataFrame()
+  return df_finale
 
 #print(merge_dataframe())
 
@@ -209,7 +210,7 @@ def merge_dataframe():
 def write_economin_data():
   #carico i dati che dovrei scrivere
   alldataframe = merge_dataframe()
-  if alldataframe == 'ko':
+  if not alldataframe.empty:
     print(alldataframe.dtypes)
     alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
 
