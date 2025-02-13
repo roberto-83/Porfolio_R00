@@ -194,9 +194,9 @@ def merge_dataframe():
     df_finale = df_finale[df_finale.notna().all(axis=1)]#.reset_index(drop=True)
     #df_finale['Data'] = df_finale.index
     df_finale.insert(0, "Data", df_finale.index)
-    print('primo check')
-    print(df_finale.columns)
-    print(df_finale.to_string())
+    #print('primo check')
+    #print(df_finale.columns)
+    #print(df_finale.to_string())
     return df_finale
   df_finale = pd.DataFrame()
   return df_finale
