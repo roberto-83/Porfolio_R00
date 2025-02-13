@@ -12,6 +12,9 @@ from functions_sheets import read_range,write_range,appendRow
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import time
 
 #LINK interessanti
@@ -82,6 +85,7 @@ def get_econ_data(url,item):
 ################################################################################
 
 def investing_Selenium(url, item):
+  print(f"Inizio lettura sito investing per item {item}")
   #url="https://it.investing.com/economic-calendar/interest-rate-decision-168"
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
@@ -89,34 +93,67 @@ def investing_Selenium(url, item):
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
+  
+  page_load_timeout = 60  # Timeout per il caricamento della pagina
+  element_timeout = 10    # Timeout per l'attesa di un elemento
+  print('Inizio primo try')
+  try:
+    # Inizializza il driver di Chrome
+    driver = webdriver.Chrome( options=chrome_options)
+    driver.set_page_load_timeout(page_load_timeout)
+    driver.maximize_window()
+    #page_load_timeout = 60
+    #driver.set_page_load_timeout(page_load_timeout)
+    print('qui')
+    #Get URL
+    driver.get(url)
+    print('Inizio secondo try')
+    # Aspetta che l'elemento si carichi (modifica il timeout a seconda del caso)
+    try:
+        buttonLoad = WebDriverWait(driver, element_timeout).until(
+            EC.presence_of_element_located((By.XPATH, '/html/body/div[7]/section/div[12]/div[1]/a'))
+        )
+        driver.execute_script("arguments[0].click();", buttonLoad)
+        print('Bottone premuto')
+    except TimeoutException:
+        print("Timeout: il bottone non è stato trovato in tempo.")
+        driver.quit()
+        return pd.DataFrame()  # Restituisci un DataFrame vuoto in caso di errore
 
-  # Inizializza il driver di Chrome
-  driver = webdriver.Chrome( options=chrome_options)
-  #Get URL
-  driver.get(url)
-  time.sleep(5)
-  #faccio click per espandere tabella
-  buttonLoad = driver.find_element(By.XPATH,'/html/body/div[7]/section/div[12]/div[1]')
-  driver.execute_script("arguments[0].click();", buttonLoad)
-  time.sleep(5)
+    time.sleep(5)
+    #faccio click per espandere tabella
+    #buttonLoad = driver.find_element(By.XPATH,'/html/body/div[7]/section/div[12]/div[1]')
+    #driver.execute_script("arguments[0].click();", buttonLoad)
+    #time.sleep(5)
 
-  #Esporto tutte le tabelle della pagina web
-  dfs = pd.read_html(driver.page_source)
-  output=dfs[0]
-  output = output.drop(columns=['Ora','Unnamed: 5'])
-  output['Data']=output['Data di rilascio'].str[0:10]
-  output['Data']=output['Data'].replace(to_replace='\.',value='-',regex=True)
-  output['Data']=pd.to_datetime(output['Data'],dayfirst=True) 
-  output.set_index('Data', inplace=True)
-  output = output[output.index <= todayDate_f]
-  output = output.sort_index()
-  output.rename(columns={
-          "Data di rilascio": "Rilascio "+item,
-          "Attuale": "Attuale "+item,
-          "Previsto": "Previsto "+item,
-          "Precedente": "Precedente "+item
-          }, inplace=True)
-  print(f"Item {item} letto")
+    #Esporto tutte le tabelle della pagina web
+    dfs = pd.read_html(driver.page_source)
+    driver.quit() 
+    output=dfs[0]
+    output = output.drop(columns=['Ora','Unnamed: 5'])
+    output['Data']=output['Data di rilascio'].str[0:10]
+    output['Data']=output['Data'].replace(to_replace='\.',value='-',regex=True)
+    output['Data']=pd.to_datetime(output['Data'],dayfirst=True) 
+    output.set_index('Data', inplace=True)
+    output = output[output.index <= todayDate_f]
+    output = output.sort_index()
+    output.rename(columns={
+            "Data di rilascio": "Rilascio "+item,
+            "Attuale": "Attuale "+item,
+            "Previsto": "Previsto "+item,
+            "Precedente": "Precedente "+item
+            }, inplace=True)
+    print(f"Item {item} letto") 
+  except TimeoutException:
+    output_1= {'Rilascio TASSI': [0], 'Attuale TASSI': [0],'Previsto TASSI': [0]}
+    output = pd.DataFrame.from_dict(output_1)
+    output['Data']=todayDate_f
+    output.set_index('Data', inplace=True)
+    print("Errore di Timeout")
+    print(todayDate_f)
+    #output.set_index('2024-05-01', inplace=True)
+    print('OUTPUT FALLITO')
+    print(output)
   return output
 #print(investing_Selenium(url_tassi_interesse,'TASSI'))
 
@@ -175,17 +212,21 @@ def write_economin_data():
   alldataframe = merge_dataframe()
   alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
   print("DATI NUOVI")
-  print(alldataframe.columns)
-  print(alldataframe.index)
+  print(alldataframe)
   #leggo dati esistenti
   actualdata = read_range('tab_investing!A:V',newPrj)
   #Ora come faccio a confrontare i due?
   print("DATI SALVATI")
   actualdata.set_index('Data', inplace=True)
   actualdata.insert(0, "Data", actualdata.index)
-  #actualdata['Data']=actualdata.index
-  print(actualdata.columns)
-  print(actualdata.index)
+  print(actualdata)
+
+  #CONFRONTO
+  #prendo la data piu vecchia del nuovo DF
+  #filtro l'attuale a quella data in modo da salvare i vecchi dati
+  #unisco i due dataframe e poi stampo
+  print(alldataframe.iloc[0])
+  print(alldataframe.first_valid_index())
 
   #confronto i df
   #print(alldataframe == actualdata)
@@ -196,10 +237,10 @@ def write_economin_data():
   #print(alldataframe.dtypes)
   listToPrint = alldataframe.values.tolist()
   lastRowSt=str(len(listToPrint)+1)
-  write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+  #write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
 
 
-#print(write_economin_data())
+print(write_economin_data())
 
 def print_df(df,col_start):
   #voglio leggere l'ultima data della colonna passata
