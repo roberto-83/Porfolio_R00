@@ -256,7 +256,7 @@ def write_economin_data():
     return 'UNNECESSARY'
     
 
-print(write_economin_data())
+#print(write_economin_data())
 
 #def print_df(df,col_start):
   #voglio leggere l'ultima data della colonna passata
