@@ -211,15 +211,15 @@ def write_economin_data():
   #carico i dati che dovrei scrivere
   alldataframe = merge_dataframe()
   if not alldataframe.empty:
-    print(alldataframe.dtypes)
+    #print(alldataframe.dtypes)
     alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
 
     print("DATI NUOVI")
     print(alldataframe)
     #leggo dati esistenti
-    actualdata = read_range('tab_investing!A:V',newPrj)
-    #Ora come faccio a confrontare i due?
+
     print("DATI SALVATI")
+    actualdata = read_range('tab_investing!A:V',newPrj)
     actualdata.set_index('Data', inplace=True)
     actualdata.insert(0, "Data", actualdata.index)
     print(actualdata)
@@ -230,25 +230,21 @@ def write_economin_data():
     #unisco i due dataframe e poi stampo
     oldDateNewData = alldataframe.first_valid_index()
     oldDateOldData = actualdata.first_valid_index()
-    print('prima valid index di alldataframe')
-    print(oldDateNewData)
-    print('prima valid index di actualdata')
-    print(oldDateOldData)
+    print(f'Nei dati che sto scrivendo la data piu vecchia è {oldDateNewData}')
+    print(f'Nel mio database ho come data piu vecchia {oldDateOldData}')
+ 
+    #Dataframe con il delta dei dati
+    actualdata.index = pd.to_datetime(actualdata.index)
+    delta_Df = actualdata[actualdata.index < pd.to_datetime(oldDateNewData)]  #voglio salvare i dati attuali vecchi..
 
-    delta_Df = actualdata[actualdata['Data'] < oldDateNewData]  #voglio salvare i dati attuali vecchi..
-    print(delta_Df)
-    #ora mi trovo che la prima data del db è 2024-01-01 mentre quella dei dati che arrivano è 2024-09-26 00:00:00
-
-    #confronto i df
-    #print(alldataframe == actualdata)
-    #vedo le righe uguali
-    #print((alldataframe == actualdata).all(axis=1))
-    #solo righe diverse
-    #print(actualdata[(alldataframe == actualdata).all(axis=1) == False])
-    #print(alldataframe.dtypes)
-    listToPrint = alldataframe.values.tolist()
-    lastRowSt=str(len(listToPrint)+1)
-    #write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+    #Ora voglio unire i nuovi dati 
+    df_to_print = pd.concat([delta_Df, alldataframe], axis=0)
+    print('Dataframe da stampare')
+    print(df_to_print)
+    
+    listToPrint = df_to_print.values.tolist()
+    lastRowSt=str(len(df_to_print)+1)
+    write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
   else:
     print('Non ho i tassi')
 
