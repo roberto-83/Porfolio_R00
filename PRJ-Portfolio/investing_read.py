@@ -245,8 +245,10 @@ def write_economin_data():
     listToPrint = df_to_print.values.tolist()
     lastRowSt=str(len(df_to_print)+1)
     write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+    return 'OK'
   else:
     print('Non ho i tassi')
+    return 'KO'
 
 #print(write_economin_data())
 

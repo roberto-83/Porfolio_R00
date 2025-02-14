@@ -119,13 +119,14 @@ if developerMode == 0:
   log_insert1("Aggiornamento Tab Watchlist","Fine",delta6,initialTime) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
   #dati fed
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Dati Fed")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Dati Economici")
   time7s = time.time()
   #print(writeMacroDataHistory())
-  print(write_economin_data())
+  output_econ = write_economin_data()
+  #print(write_economin_data())
   delta7 = time.time() - time7s
-  log_insert1("Aggiornamento Tab US","Fine",delta6,initialTime) 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Dati Fed")
+  log_insert1("Aggiornamento Tab Macro","Fine",delta6,initialTime) 
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Dati Economici")
 else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
