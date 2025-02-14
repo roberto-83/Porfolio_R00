@@ -214,15 +214,15 @@ def write_economin_data():
     #print(alldataframe.dtypes)
     alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
 
-    print("DATI NUOVI")
-    print(alldataframe)
+    #print("DATI NUOVI")
+    #print(alldataframe)
     #leggo dati esistenti
 
-    print("DATI SALVATI")
+    #print("DATI SALVATI")
     actualdata = read_range('tab_investing!A:V',newPrj)
     actualdata.set_index('Data', inplace=True)
     actualdata.insert(0, "Data", actualdata.index)
-    print(actualdata)
+    #print(actualdata)
 
     #CONFRONTO
     #prendo la data piu vecchia del nuovo DF
