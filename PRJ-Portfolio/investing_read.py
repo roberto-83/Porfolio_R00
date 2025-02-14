@@ -208,9 +208,15 @@ def merge_dataframe():
 ################################################################################
 
 def write_economin_data():
+  #fase 1, controllo che non abbia già eseguito
+  lastDateWrite = read_range('tab_investing!W2',newPrj)
+  lastDateWrite1 = lastDateWrite.columns[0]
+  delta_dates = pd.to_datetime(todayDate_f) - pd.to_datetime(lastDateWrite1)
+  print(f"Dalta date {delta_dates.days}")
+
   #carico i dati che dovrei scrivere
   alldataframe = merge_dataframe()
-  if not alldataframe.empty:
+  if not alldataframe.empty and delta_dates.days !=0:
     #print(alldataframe.dtypes)
     alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
 
@@ -245,12 +251,18 @@ def write_economin_data():
     listToPrint = df_to_print.values.tolist()
     lastRowSt=str(len(df_to_print)+1)
     write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+    write_range('tab_investing!W2',[[todayDate_f]],newPrj)
     return 'OK'
   else:
-    print('Non ho i tassi')
-    return 'KO'
+    if alldataframe.empty:
+      print('Non sono riuscito a leggere i dati da investing')
+      return 'KO'
+    else:
+      print('Funzione già eseguita oggi')
+      return 'Unece'
+    
 
-#print(write_economin_data())
+print(write_economin_data())
 
 #def print_df(df,col_start):
   #voglio leggere l'ultima data della colonna passata
