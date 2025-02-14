@@ -259,7 +259,7 @@ def write_economin_data():
       return 'KO'
     else:
       print('Funzione già eseguita oggi')
-      return 'Unece'
+      return 'UNNECESSARY'
     
 
 print(write_economin_data())
