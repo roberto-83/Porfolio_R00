@@ -213,56 +213,50 @@ def write_economin_data():
   lastDateWrite1 = lastDateWrite.columns[0]
   delta_dates = pd.to_datetime(todayDate_f) - pd.to_datetime(lastDateWrite1)
   print(f"Dalta date {delta_dates.days}")
+  numdays = delta_dates.days
+  if numdays != 0:
+    #carico i dati che dovrei scrivere
+    alldataframe = merge_dataframe()
+    if not alldataframe.empty:
+      #print(alldataframe.dtypes)
+      alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
 
-  #carico i dati che dovrei scrivere
-  alldataframe = merge_dataframe()
-  if not alldataframe.empty and delta_dates.days !=0:
-    #print(alldataframe.dtypes)
-    alldataframe['Data'] = alldataframe['Data'].dt.strftime('%Y-%m-%d')
+      actualdata = read_range('tab_investing!A:V',newPrj)
+      actualdata.set_index('Data', inplace=True)
+      actualdata.insert(0, "Data", actualdata.index)
 
-    #print("DATI NUOVI")
-    #print(alldataframe)
-    #leggo dati esistenti
+      #CONFRONTO
+      #prendo la data piu vecchia del nuovo DF
+      #filtro l'attuale a quella data in modo da salvare i vecchi dati
+      #unisco i due dataframe e poi stampo
+      oldDateNewData = alldataframe.first_valid_index()
+      oldDateOldData = actualdata.first_valid_index()
+      print(f'Nei dati che sto scrivendo la data piu vecchia è {oldDateNewData}')
+      print(f'Nel mio database ho come data piu vecchia {oldDateOldData}')
+  
+      #Dataframe con il delta dei dati
+      actualdata.index = pd.to_datetime(actualdata.index)
+      delta_Df = actualdata[actualdata.index < pd.to_datetime(oldDateNewData)]  #voglio salvare i dati attuali vecchi..
 
-    #print("DATI SALVATI")
-    actualdata = read_range('tab_investing!A:V',newPrj)
-    actualdata.set_index('Data', inplace=True)
-    actualdata.insert(0, "Data", actualdata.index)
-    #print(actualdata)
-
-    #CONFRONTO
-    #prendo la data piu vecchia del nuovo DF
-    #filtro l'attuale a quella data in modo da salvare i vecchi dati
-    #unisco i due dataframe e poi stampo
-    oldDateNewData = alldataframe.first_valid_index()
-    oldDateOldData = actualdata.first_valid_index()
-    print(f'Nei dati che sto scrivendo la data piu vecchia è {oldDateNewData}')
-    print(f'Nel mio database ho come data piu vecchia {oldDateOldData}')
- 
-    #Dataframe con il delta dei dati
-    actualdata.index = pd.to_datetime(actualdata.index)
-    delta_Df = actualdata[actualdata.index < pd.to_datetime(oldDateNewData)]  #voglio salvare i dati attuali vecchi..
-
-    #Ora voglio unire i nuovi dati 
-    df_to_print = pd.concat([delta_Df, alldataframe], axis=0)
-    print('Dataframe da stampare')
-    print(df_to_print)
-    
-    listToPrint = df_to_print.values.tolist()
-    lastRowSt=str(len(df_to_print)+1)
-    write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
-    write_range('tab_investing!W2',[[todayDate_f]],newPrj)
-    return 'OK'
-  else:
-    if alldataframe.empty:
+      #Ora voglio unire i nuovi dati 
+      df_to_print = pd.concat([delta_Df, alldataframe], axis=0)
+      print('Dataframe da stampare')
+      print(df_to_print)
+      
+      listToPrint = df_to_print.values.tolist()
+      lastRowSt=str(len(df_to_print)+1)
+      write_range('tab_investing!A2:V'+lastRowSt,listToPrint,newPrj)
+      write_range('tab_investing!W2',[[todayDate_f]],newPrj)
+      return 'OK'
+    else:
       print('Non sono riuscito a leggere i dati da investing')
       return 'KO'
-    else:
-      print('Funzione già eseguita oggi')
-      return 'UNNECESSARY'
+  else:
+    print('Funzione già eseguita oggi')
+    return 'UNNECESSARY'
     
 
-#print(write_economin_data())
+print(write_economin_data())
 
 #def print_df(df,col_start):
   #voglio leggere l'ultima data della colonna passata
