@@ -559,7 +559,9 @@ class Portfolio:
         i += 1
     else:
       print('aggiornamento non necessario')
-    return 'Terminato aggiornamento calendar'
+      return 'UNNECESSARY'
+    print('Terminato aggiornamento calendar')
+    return 'ok'
 
   def totalhistory(self,histDf,i):
     histDf.loc['total']= histDf.sum()
@@ -749,7 +751,8 @@ class Portfolio:
       write_range('tab_aziende!A2:G'+lastRowSt,listPrint,newPrj)
     else:
       print("Aggiornamento non necessario")
-    return 'Done'
+      return 'UNNECESSARY'
+    return 'ok'
 
 ################################################################################
 ##### TABELLA COMPOSIZIONE - SETTORI
@@ -884,9 +887,11 @@ class Portfolio:
       write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
       write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
       
-      return 'Done writing sectors'
+      return 'ok'
     else:
-      return 'Aggiornamento non necessario'
+      print('Aggiornamento non necessario')
+      return 'UNNECESSARY'
+    
 
 ################################################################################
 ##### TABELLA COMPOSIZIONE - PAESI
@@ -983,9 +988,10 @@ class Portfolio:
       write_range('tab_country!J2:J2',[[totalWeight]],newPrj)
       write_range('tab_country!L2:M'+lastRowWeights,listPrintWeights,newPrj)
 
-      return 'Done writing countries'
+      return 'ok'
     else:
-      return 'Aggiornamento non necessario'
+      print('Aggiornamento non necessario')
+      return 'UNNECESSARY'
 ################################################################################
 ##### TABELLA ANDAMENTO
 ################################################################################
@@ -1082,7 +1088,8 @@ class Portfolio:
       write_range('tab_and_port!A2:M'+str(numRows),arr,newPrj) 
     else:
       print("Aggiornamento non necessario")
-    return 'Done'
+      return 'UNNECESSARY'
+    return 'ok'
 
     
 ################################################################################
@@ -1536,7 +1543,8 @@ def caldRendimento():
       i += 1
   else:
     print("Aggiornamento non necessario")
-  return 'Done'
+    return 'UNNECESSARY'
+  return 'ok'
 
 #def calcRendAnn():
   #actualPerf = read_range('tab_performance!A:L',newPrj)
