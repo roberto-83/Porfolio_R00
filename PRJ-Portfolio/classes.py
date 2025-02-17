@@ -564,17 +564,23 @@ class Portfolio:
     return 'ok'
 
   def totalhistory(self,histDf,i):
+    print('Stampo histdataframe')
+    print(histDf)
     histDf.loc['total']= histDf.sum()
     histDf.loc[histDf.index[-1], 'dataHist'] = ''
     histDf.loc[histDf.index[-1], 'Ticker'] = ''
     #mercato
     dataDelta = (datetime.strptime(histDf['dataHist'].iloc[0], '%Y-%m-%d')+timedelta(days=5)).strftime('%Y-%m-%d')
     prezzoMerc1 = yf.download('CSSPX.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
+    print(f'Verifico se ci sono dati pre bonifica per ticker {histDf["dataHist"].iloc[0]}')
+    print(prezzoMerc1)
     prezzoMerc2 = prezzoMerc1.asfreq('D')
     #prezzoMerc = prezzoMerc2.fillna(method='ffill')
     prezzoMerc = prezzoMerc2.ffill()
     rendim=histDf.loc['total']['ctvMerc'] - histDf.loc['total']['TotInvest']
     rendimperc= (rendim * 100) / histDf.loc['total']['TotInvest']
+    print(f'Verifico se ci sono dati dopo bonifica per ticker {histDf["dataHist"].iloc[0]}')
+    print(prezzoMerc['Close'])
     mercato_df = prezzoMerc['Close'].iloc[0]
     mercato = mercato_df['CSSPX.MI']
     rendimMerc=100*(float(mercato)-257.01)/257.01
