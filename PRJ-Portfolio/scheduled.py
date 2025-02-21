@@ -29,6 +29,7 @@ if developerMode == 0:
   print('Sono in modalità Normale')
   port = Portfolio('1')
   port2 = Portfolio('2')
+  port3 = Portfolio('3')
   #scrivo il dato sul file analisi spese
   print(port.bankING)
   print(port.totUsci)
@@ -42,23 +43,32 @@ if developerMode == 0:
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Fine - Aggiornamento Tab Isin")
   #Crea la tabella del portafoglio
   #time.sleep(5) #aspetto tempo perchè la tabella sopra sia scritta
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio 1")
   #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
   time2s = time.time()
   initialTime=time2s   #START
   print(port.writePortfolio())
   delta2 = time.time() - time2s
   log_insert1("Aggiornamento Tab Portafoglio","Fine",delta2,initialTime)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio 1")
 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio2")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio 2")
   #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
   time2s_b = time.time()
   #initialTime=time2s   #START
   print(port2.writePortfolio())
   delta2_b = time.time() - time2s_b
   log_insert1("Aggiornamento Tab Portafoglio 2","Fine",delta2_b,initialTime)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio2")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio 2")
+
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio 3")
+  #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
+  time2s_c = time.time()
+  #initialTime=time2s   #START
+  print(port3.writePortfolio())
+  delta2_c = time.time() - time2s_c
+  log_insert1("Aggiornamento Tab Portafoglio 3","Fine",delta2_c,initialTime)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio 3")
 
   #creo calendar
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
