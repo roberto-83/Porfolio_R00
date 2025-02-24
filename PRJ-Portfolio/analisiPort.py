@@ -811,7 +811,7 @@ def gcolabAnalysis():
   print('Lista importi attuali')
   print(portfolio_4['Controvalore Mercato'].to_list())
   
-print(gcolabAnalysis())
+#print(gcolabAnalysis())
 
 
 
@@ -887,7 +887,7 @@ def storicPriceBtpP2P(list_ticker):
   return result_1
 
 def calcSharpe(df, weights):
-  print(df.to_string())
+  #print(df.to_string())
   #print(weights)
   #print(weights.sum())
   #----------------------------------------------------
