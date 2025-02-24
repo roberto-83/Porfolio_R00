@@ -241,7 +241,7 @@ def write_economin_data():
       #Ora voglio unire i nuovi dati 
       df_to_print = pd.concat([delta_Df, alldataframe], axis=0)
       print('Dataframe da stampare')
-      print(df_to_print)
+      #print(df_to_print)
       
       listToPrint = df_to_print.values.tolist()
       lastRowSt=str(len(df_to_print)+1)
