@@ -48,6 +48,7 @@ class Portfolio:
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
     self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
+    self.portSenzaFinan = Portfolio.dFPortf(self)
    
 
   def readActiveIsinByDate(self,date):
@@ -193,6 +194,7 @@ class Portfolio:
     #print(portIsinCalc.to_string())
     #cancello colonne che non mi servono 
     portIsinCalc = portIsinCalc.drop(columns=['COUNTRY','DESCRIZIONE BREVE','TICKER DATI','TICKER YAHOO','ISIN','ASSET','SITO UFFICIALE'])
+    
     #aggiungo prezzo live
     portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
     #aggiungo controvalore mercato
@@ -737,7 +739,8 @@ class Portfolio:
     if Portfolio.readlastDate(self,'tab_aziende') == 1:
       print('Continuo')
       #prima mi prendo i dati del portafoglio ad oggi
-      port = Portfolio.dFPortf(self)
+      #port = Portfolio.dFPortf(self)
+      port = self.portSenzaFinan
       #print(port.keys())
       portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso']].copy()
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
@@ -786,7 +789,8 @@ class Portfolio:
 
   def portafSettori(self):
     if Portfolio.readDateTabSettori(self) == 'ok':
-      port = Portfolio.dFPortf(self)
+      #port = Portfolio.dFPortf(self)
+      port = self.portSenzaFinan
       portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso','SETTORE']].copy()
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
       #for i in portShort.iterrows():
@@ -919,7 +923,8 @@ class Portfolio:
 
   def portafPaesi(self):
     if Portfolio.readDateTabPaesi(self) == 'ok':
-      port = Portfolio.dFPortf(self)
+      #port = Portfolio.dFPortf(self)
+      port = self.portSenzaFinan
       portShort = port[['Asset','Isin','Ticker','DESCRIZIONE LUNGA','peso']].copy()
       #print(portShort.to_string)
       allCountries = pd.DataFrame()
@@ -1034,7 +1039,8 @@ class Portfolio:
     #########################
     if Portfolio.readlastDate(self,'tab_and_port') == 1:
       #prima mi prendo i dati del portafoglio ad oggi
-      port = Portfolio.dFPortf(self)
+      #port = Portfolio.dFPortf(self)
+      port = self.portSenzaFinan
       #prendo solo le colonne che mi interessano
       portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','LivePrice']].copy()
       #inserisco come prima colonna la data
