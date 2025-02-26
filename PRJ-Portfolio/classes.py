@@ -1090,8 +1090,14 @@ class Portfolio:
       arr = finalDF3.values.tolist()
       print('STAMPO ARRAY')
       print(finalDF3)
-      delete_range('tab_and_port!A2:M100',newPrj)
-      write_range('tab_and_port!A2:M'+str(numRows),arr,newPrj) 
+      #controllo se ci sono NaN o -inf
+      has_nan = finalDF3.isna().any().any()  # Verifica la presenza di NaN
+      has_neg_inf = (finalDF3 == -np.inf).any().any()  # Verifica la presenza di -inf
+      if has_nan or has_neg_inf:
+        retur  
+      else:
+        delete_range('tab_and_port!A2:M100',newPrj)
+        write_range('tab_and_port!A2:M'+str(numRows),arr,newPrj) 
     else:
       print("Aggiornamento non necessario")
       return 'UNNECESSARY'
