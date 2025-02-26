@@ -5,7 +5,7 @@ import os
 # print output to the console
 #print(current_working_directory)
 
-from classes import Portfolio,caldRendimento
+from classes import Portfolio,caldRendimento,get_chrome_version,get_chromedriver_version
 from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
@@ -27,6 +27,11 @@ from investing_read import write_economin_data
 developerMode=0
 if developerMode == 0:
   print('Sono in modalità Normale')
+  # Ottieni e stampa le versioni
+  chrome_version = get_chrome_version()
+  chromedriver_version = get_chromedriver_version()
+  print(f"Versione di Chrome: {chrome_version}")
+  print(f"Versione di ChromeDriver: {chromedriver_version}")
   port = Portfolio('1')
   port2 = Portfolio('2')
   port3 = Portfolio('3')

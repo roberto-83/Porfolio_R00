@@ -22,6 +22,7 @@ import yfinance as yf
 import calendar
 from yahooquery import Ticker
 from yahooread import readYahooSite
+import subprocess
 
 #from IPython.display import display
 
@@ -1628,3 +1629,20 @@ def changeFormatNumberPrint(numb):
   else:
     numb1 = numb
   return numb1
+
+#versioni chrome e chrome driver
+def get_chrome_version():
+    try:
+        # Esegui il comando per ottenere la versione di Chrome
+        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT)
+        return chrome_version.decode('utf-8').strip()
+    except subprocess.CalledProcessError as e:
+        return f"Errore nell'ottenere la versione di Chrome: {e.output.decode('utf-8')}"
+
+def get_chromedriver_version():
+    try:
+        # Esegui il comando per ottenere la versione di ChromeDriver
+        chromedriver_version = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT)
+        return chromedriver_version.decode('utf-8').strip()
+    except subprocess.CalledProcessError as e:
+        return f"Errore nell'ottenere la versione di ChromeDriver: {e.output.decode('utf-8')}"
