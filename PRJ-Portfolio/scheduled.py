@@ -28,10 +28,10 @@ developerMode=0
 if developerMode == 0:
   print('Sono in modalità Normale')
   # Ottieni e stampa le versioni
-  chrome_version = get_chrome_version()
-  chromedriver_version = get_chromedriver_version()
-  print(f"Versione di Chrome: {chrome_version}")
-  print(f"Versione di ChromeDriver: {chromedriver_version}")
+  #chrome_version = get_chrome_version()
+  #chromedriver_version = get_chromedriver_version()
+  #print(f"Versione di Chrome: {chrome_version}")
+  #print(f"Versione di ChromeDriver: {chromedriver_version}")
   port = Portfolio('1')
   port2 = Portfolio('2')
   port3 = Portfolio('3')
