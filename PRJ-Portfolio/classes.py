@@ -1632,12 +1632,12 @@ def changeFormatNumberPrint(numb):
 
 #versioni chrome e chrome driver
 def get_chrome_version():
-    try:
-        # Esegui il comando per ottenere la versione di Chrome
-        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT)
-        return chrome_version.decode('utf-8').strip()
-    except subprocess.CalledProcessError as e:
-        return f"Errore nell'ottenere la versione di Chrome: {e.output.decode('utf-8')}"
+   try:
+        # Comando per Linux/macOS
+        version = subprocess.check_output(["chromium-browser", "--version"]).decode("utf-8").strip()
+    except FileNotFoundError:
+            version = "Chromium non trovato"
+    return version
 
 def get_chromedriver_version():
     try:
