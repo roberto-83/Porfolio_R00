@@ -221,7 +221,8 @@ class Portfolio:
 
   def financialsPartPort(self):
     #prendo la prima parte già creata
-    portaf = Portfolio.dFPortf(self)
+    #portaf = Portfolio.dFPortf(self)
+    portaf = self.portSenzaFinan
     #print("##### stampo pre portafoglio")
     #print(portaf.to_string())
     #creo una lista con i dati finanziari
