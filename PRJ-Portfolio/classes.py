@@ -42,17 +42,18 @@ class Portfolio:
   def __init__(self,num_port):
     self.num_port = num_port #specifico il numero del portafolgio
     #tutte le transazioni fino ad oggi
-    self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f)
-    self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
+    self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f,num_port)
+    if num_port == 1:
+      self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
+      self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
     #prima parte portafoglio con gli isin validi ad oggi
-    self.actPort = Portfolio.calcDataPortREV2(self, self.transact)
+    self.actPort = Portfolio.calcDataPortREV2(self, self.transact,num_port)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
-    self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
     self.portSenzaFinan = Portfolio.dFPortf(self)
    
 
-  def readActiveIsinByDate(self,date):
-    num_port = self.num_port #numero portafoglio
+  def readActiveIsinByDate(self,date,num_port):
+    #num_port = self.num_port #numero portafoglio
     #Prendo gli isin attivi ad oggi, poi bisognerà ragionare sulla quantità
     transact = read_range('tab_transazioni!A:Q',newPrj)
     transact = transact[transact['Num Portfolio'] == num_port] #solo portafoglio passato
@@ -642,9 +643,10 @@ class Portfolio:
     else:
       return importo
 
-  def calcDataPortREV2(self, df):
+  def calcDataPortREV2(self, df,num_port):
+    df_filt = df[df['Num Portfolio'] == num_port]
     #prendo solo gli isin
-    dfUnique = df['ISIN'] 
+    dfUnique = df_filt['ISIN'] 
     #cancello duplicati
     dfUnique.drop_duplicates(inplace=True)
     listAll=[[]]
