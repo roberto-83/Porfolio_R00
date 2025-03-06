@@ -43,9 +43,9 @@ class Portfolio:
     self.num_port = num_port #specifico il numero del portafolgio
     #tutte le transazioni fino ad oggi
     self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f,num_port)
-    if num_port == 1:
-      self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
-      self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
+    #if num_port == 1:
+    self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
+    self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact,num_port)
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
