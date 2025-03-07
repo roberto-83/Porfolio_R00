@@ -575,7 +575,7 @@ class Portfolio:
     histDf.loc[histDf.index[-1], 'dataHist'] = ''
     histDf.loc[histDf.index[-1], 'Ticker'] = ''
     #mercato e vwce
-    print(f"Trovo delto alla data {'%Y-%m-%d}")
+    print(f"Trovo delto alla data {histDf['dataHist'].iloc[0]}")
     dataDelta = (datetime.strptime(histDf['dataHist'].iloc[0], '%Y-%m-%d')+timedelta(days=5)).strftime('%Y-%m-%d')
     prezzoMerc1 = yf.download('CSSPX.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
     prezzoMerc1_vwce = yf.download('VWCE.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
