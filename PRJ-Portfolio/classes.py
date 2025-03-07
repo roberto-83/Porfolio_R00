@@ -74,7 +74,6 @@ class Portfolio:
     transact = transact.sort_values(by=['Asset'])
     #metto 0 al posto dei valori vuoti nella colonna quantità
     transact['Quantità (real)'] = transact['Quantità (real)'].replace('',0)
-
     return transact
 
   def readValueBanks(self,date,bank):##################TESTARE
@@ -500,9 +499,9 @@ class Portfolio:
  #Tabella tab_calendar
   def histDf(self, histdate):
     #mi prendo gli isin attivi alla data interessata
-    isins = Portfolio.readActiveIsinByDate(self,histdate,1)
+    isins = Portfolio.readActiveIsinByDate(self,histdate,'1')
     #prendo i dati calcolati
-    portHist = Portfolio.calcDataPortREV2(self, isins,1)
+    portHist = Portfolio.calcDataPortREV2(self, isins,'1')
     #print(histdate)
     #print(portHist)
     #aggiungo la data
