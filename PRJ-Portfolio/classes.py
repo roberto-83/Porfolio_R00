@@ -571,7 +571,7 @@ class Portfolio:
   def totalhistory(self,histDf,i):
     print('Stampo histdataframe')
     print(histDf)
-    if histDf is not None:
+    if histDf.empty == False:
       histDf.loc['total']= histDf.sum()
       histDf.loc[histDf.index[-1], 'dataHist'] = ''
       histDf.loc[histDf.index[-1], 'Ticker'] = ''
