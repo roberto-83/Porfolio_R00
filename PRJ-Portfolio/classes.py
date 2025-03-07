@@ -502,7 +502,7 @@ class Portfolio:
     #mi prendo gli isin attivi alla data interessata
     isins = Portfolio.readActiveIsinByDate(self,histdate)
     #prendo i dati calcolati
-    portHist = Portfolio.calcDataPortREV2(self, isins)
+    portHist = Portfolio.calcDataPortREV2(self, isins,1)
     #print(histdate)
     #print(portHist)
     #aggiungo la data
