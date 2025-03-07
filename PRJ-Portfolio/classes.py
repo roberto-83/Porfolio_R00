@@ -500,7 +500,7 @@ class Portfolio:
  #Tabella tab_calendar
   def histDf(self, histdate):
     #mi prendo gli isin attivi alla data interessata
-    isins = Portfolio.readActiveIsinByDate(self,histdate)
+    isins = Portfolio.readActiveIsinByDate(self,histdate,1)
     #prendo i dati calcolati
     portHist = Portfolio.calcDataPortREV2(self, isins,1)
     #print(histdate)
