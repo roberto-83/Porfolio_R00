@@ -179,7 +179,9 @@ def testapi():
 
 def listEtfCountries(isin):
   
-  
+  # Chiamata alla funzione
+  sessions = count_chromium_sessions()
+  print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
   URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
   print(URL)
   chrome_options = Options()
