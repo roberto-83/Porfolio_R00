@@ -211,6 +211,7 @@ def listEtfCountries(isin):
       weight = weight.replace('%','').strip()
       weight = weight.replace(',','.')
       print(f"Stato: '{country}' con il peso di {weight}")
+      driverExt.quit()
       if(len(country) > 0):
         listCountry.append([isin,country,weight])
       else:
@@ -219,6 +220,7 @@ def listEtfCountries(isin):
       #end loop
       break
     i+=1
+  driverExt.quit()
   #converto in dataframe
   #print(len(listCountry))
   countries = pd.DataFrame(listCountry, columns=['isin','Country','Peso_country'])
