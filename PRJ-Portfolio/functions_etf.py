@@ -15,11 +15,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.wait import WebDriverWait
 from pathlib import Path
 import os
 import shutil
 from io import StringIO
 import subprocess
+
 
 
 #import openpyxl
@@ -176,9 +179,7 @@ def testapi():
 
 def listEtfCountries(isin):
   
-  # Chiamata alla funzione
-  sessions = count_chromium_sessions()
-  print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
+  
   URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
   print(URL)
   chrome_options = Options()
@@ -223,12 +224,7 @@ def listEtfCountries(isin):
   #print(countries.to_string())
   return countries
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.wait import WebDriverWait
 
 
 #print(listEtfCountries('IE00B466KX20'))
@@ -240,6 +236,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 def listStocksCountries(isin):
   if(isin =='US29355A1079_1'):
     isin = 'US29355A1079'
+# Chiamata alla funzione
+  sessions = count_chromium_sessions()
+  print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
 
   URL="https://extraetf.com/it/stock-profile/"+isin
   #print(URL)
