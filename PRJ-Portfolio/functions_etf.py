@@ -314,7 +314,8 @@ def count_chromium_sessions():
     
     # Verifica ogni riga per trovare processi Chromium in modalità headless
     for line in result.stdout.splitlines():
-        prin
+        print('Scrivo la prima linea')
+        print(line)
         if 'chromium' in line.lower() or 'chrome' in line.lower():
             if '--headless' in line:
                 chromium_processes += 1
