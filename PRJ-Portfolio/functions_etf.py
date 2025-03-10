@@ -179,9 +179,7 @@ def testapi():
 
 def listEtfCountries(isin):
   print("inizio lettura dati per listEtfCountries")
-  if(isin == 'GB0007366395'):
-    return [isin, 'REGNO UNITO', 100]
-  elif isin == 'IE00B579F325':#gold
+  if isin == 'IE00B579F325':#gold
     return pd.DataFrame([isin,'GOLD REGION',100], columns=['isin','Country','Peso_country']) 
   elif isin == 'GB00BLD4ZL17':#bitcoin
     return pd.DataFrame([isin,'BITCOIN REGION',100], columns=['isin','Country','Peso_country'])  
