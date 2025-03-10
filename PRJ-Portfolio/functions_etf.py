@@ -271,7 +271,7 @@ def listStocksCountries(isin):
       print(f'Test lettura da pagina: {testvalue}')
       #country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-stock-profile/div[1]/div[1]/div[2]/span[1]/img').get_attribute("title")
       country = WebDriverWait(driverExt, 20).until(EC.presence_of_element_located((By.XPATH,'/html/body/app-root/app-page-template/main/app-stock-profile/div[1]/div[1]/div[2]/span[1]/img'))).get_attribute("title")
-      #print(country)
+      print(f"{country}")
       driverExt.quit()
       return [isin, country, 100]
     #except TimeoutException:
