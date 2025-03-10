@@ -178,7 +178,7 @@ def testapi():
 #########################################
 
 def listEtfCountries(isin):
-  
+  print("inizio lettura dati per listEtfCountries")
   # Chiamata alla funzione
   #sessions = count_chromium_sessions()
   #print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
