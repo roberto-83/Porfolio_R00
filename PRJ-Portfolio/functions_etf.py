@@ -179,54 +179,61 @@ def testapi():
 
 def listEtfCountries(isin):
   print("inizio lettura dati per listEtfCountries")
-  # Chiamata alla funzione
-  #sessions = count_chromium_sessions()
-  #print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
-  URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
-  print(URL)
-  chrome_options = Options()
-  chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
-  chrome_options.add_argument('--no-sandbox')
-  chrome_options.add_argument("--enable-javascript")
-  chrome_options.add_argument('--disable-dev-shm-usage')
-  chrome_options.add_argument("enable-automation")
-  chrome_options.add_argument("--disable-extensions")
-  chrome_options.add_argument("--dns-prefetch-disable")
-  chrome_options.add_argument("--disable-gpu")
+  if(isin == 'GB0007366395'):
+    return [isin, 'REGNO UNITO', 100]
+  elif isin == 'IE00B579F325':#gold
+    return pd.DataFrame([isin,'GOLD REGION',100], columns=['isin','Country','Peso_country']) 
+  elif isin == 'GB00BLD4ZL17':#bitcoin
+    return pd.DataFrame([isin,'BITCOIN REGION',100], columns=['isin','Country','Peso_country'])  
+  else:
+    # Chiamata alla funzione
+    #sessions = count_chromium_sessions()
+    #print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
+    URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
+    print(URL)
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument("--enable-javascript")
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument("enable-automation")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--dns-prefetch-disable")
+    chrome_options.add_argument("--disable-gpu")
 
-  driverExt = webdriver.Chrome( options=chrome_options)
-  driverExt.get(URL)
-  #print("5 sec wait")
-  time.sleep(5)
-  listCountry=[]
-  i = 1
-  while i < 30:
-    try:
-      #print('inizia')
-      #country_old = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
-      country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
-      #print(country)                             
-      #weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")
-      weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")     
-      weight = weight.replace('%','').strip()
-      weight = weight.replace(',','.')
-      print(f"Stato: '{country}' con il peso di {weight}")
-      driverExt.quit()
-      if(len(country) > 0):
-        listCountry.append([isin,country,weight])
-      else:
+    driverExt = webdriver.Chrome( options=chrome_options)
+    driverExt.get(URL)
+    #print("5 sec wait")
+    time.sleep(5)
+    listCountry=[]
+    i = 1
+    while i < 30:
+      try:
+        #print('inizia')
+        #country_old = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
+        country = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[2]/div[1]/div/div/span').get_attribute("innerText")
+        #print(country)                             
+        #weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")
+        weight = driverExt.find_element(By.XPATH,'/html/body/app-root/app-page-template/main/app-etf-profile/div[2]/div/app-blur-wrapper/div/div/div/app-tab-components/div/div[2]/app-top-data-table[2]/div/div[2]/div/div[2]/div/div['+str(i)+']/div[3]').get_attribute("innerText")     
+        weight = weight.replace('%','').strip()
+        weight = weight.replace(',','.')
+        print(f"Stato: '{country}' con il peso di {weight}")
+        driverExt.quit()
+        if(len(country) > 0):
+          listCountry.append([isin,country,weight])
+        else:
+          break
+      except:
+        #end loop
         break
-    except:
-      #end loop
-      break
-    i+=1
-  driverExt.quit()
-  #converto in dataframe
-  #print(len(listCountry))
-  countries = pd.DataFrame(listCountry, columns=['isin','Country','Peso_country'])
-  #print(len(countries))
-  #print(countries.to_string())
-  return countries
+      i+=1
+    driverExt.quit()
+    #converto in dataframe
+    #print(len(listCountry))
+    countries = pd.DataFrame(listCountry, columns=['isin','Country','Peso_country'])
+    #print(len(countries))
+    #print(countries.to_string())
+    return countries
 
 
 
@@ -259,6 +266,10 @@ def listStocksCountries(isin):
 
   if(isin == 'GB0007366395'):
     return [isin, 'REGNO UNITO', 100]
+  elif isin == 'IE00B579F325':#gold
+    return [isin, 'GOLD REGION', 100]
+  elif isin == 'GB00BLD4ZL17':#bitcoin
+    return [isin, 'BITCOIN REGION', 100]
   else:
     driverExt = webdriver.Chrome( options=chrome_options)
     # Impostazione del timeout di connessione globale
