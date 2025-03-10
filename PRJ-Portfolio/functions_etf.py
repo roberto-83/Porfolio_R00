@@ -238,6 +238,7 @@ def listEtfCountries(isin):
 #############################################
 
 def listStocksCountries(isin):
+  print("inizio lettura dati per listStocksCountries")
   if(isin =='US29355A1079_1'):
     isin = 'US29355A1079'
 # Chiamata alla funzione
