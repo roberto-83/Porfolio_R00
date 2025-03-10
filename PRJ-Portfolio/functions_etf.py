@@ -175,6 +175,10 @@ def testapi():
 #########################################
 
 def listEtfCountries(isin):
+  
+  # Chiamata alla funzione
+  sessions = count_chromium_sessions()
+  print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
   URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
   print(URL)
   chrome_options = Options()
@@ -303,12 +307,14 @@ def listStocksCountries(isin):
 #print(sectorsEtf('RACE.MI'))#risulta 0
 
 def count_chromium_sessions():
+    print("----------------Conto le sessioni aperte:")
     # Esegui il comando ps per ottenere i processi Chromium (o Chrome)
     result = subprocess.run(['ps', 'aux'], stdout=subprocess.PIPE, text=True)
     chromium_processes = 0
     
     # Verifica ogni riga per trovare processi Chromium in modalità headless
     for line in result.stdout.splitlines():
+        prin
         if 'chromium' in line.lower() or 'chrome' in line.lower():
             if '--headless' in line:
                 chromium_processes += 1
