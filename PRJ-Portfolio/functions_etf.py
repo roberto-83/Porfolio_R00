@@ -251,6 +251,8 @@ def listStocksCountries(isin):
     return [isin, 'REGNO UNITO', 100]
   else:
     driverExt = webdriver.Chrome( options=chrome_options)
+    # Impostazione del timeout di connessione globale
+    driverExt.set_page_load_timeout(30)  # Timeout per il caricamento della pagina
     driverExt.get(URL)
     time.sleep(5)
     print('Inizio il test di lettura:')
@@ -266,6 +268,11 @@ def listStocksCountries(isin):
       print("Errore timeout")
       driverExt.quit()
       return[isin,'',100]
+    except urllib3.exceptions.ReadTimeoutError as e:
+      print("Errore timeout di lettura (ReadTimeoutError): La richiesta è scaduta a causa di problemi di rete")
+      driverExt.quit()
+      return[isin,'',100]
+   
 
 #print(listStocksCountries('GB0007366395'))
       ##########################################
