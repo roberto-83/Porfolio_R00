@@ -260,7 +260,7 @@ def listStocksCountries(isin):
     # Impostazione del timeout di connessione globale
     driverExt.set_page_load_timeout(30)  # Timeout per il caricamento della pagina
     driverExt.get(URL)
-    time.sleep(5)
+    time.sleep(10)
     print('Inizio il test di lettura:')
     try:
       testvalue = WebDriverWait(driverExt, 20).until(EC.presence_of_element_located((By.XPATH,'/html/body/app-root/app-page-template/main/app-stock-profile/div[1]/div[1]/div[1]/div/div[1]/h1'))).get_attribute("innerText")
