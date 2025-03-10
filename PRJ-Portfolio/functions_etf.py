@@ -273,14 +273,15 @@ def listStocksCountries(isin):
       #print(country)
       driverExt.quit()
       return [isin, country, 100]
-    except TimeoutException:
+    #except TimeoutException:
+    except:
       print("Errore timeout")
       driverExt.quit()
       return[isin,'',100]
-    except urllib3.exceptions.ReadTimeoutError as e:
-      print("Errore timeout di lettura (ReadTimeoutError): La richiesta è scaduta a causa di problemi di rete")
-      driverExt.quit()
-      return[isin,'',100]
+    # except urllib3.exceptions.ReadTimeoutError as e:
+    #   print("Errore timeout di lettura (ReadTimeoutError): La richiesta è scaduta a causa di problemi di rete")
+    #   driverExt.quit()
+    #   return[isin,'',100]
    
 
 #print(listStocksCountries('GB0007366395'))
