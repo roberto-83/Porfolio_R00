@@ -9,7 +9,7 @@ from functions_stocks import getStockInfo
 from functions_stocks import verifKey,findRowSpes
 from functions_etf import sectorsEtf,sectorsMultipEtf
 from functions_etf import getPriceETF
-from functions_etf import getSummary,listEtfCountries,listStocksCountries
+from functions_etf import getSummary,listEtfCountries,listStocksCountries,stockCountr
 from settings import * #importa variabili globali
 from currency_converter import CurrencyConverter, currency_converter
 import pandas as pd
@@ -962,6 +962,7 @@ class Portfolio:
 
         elif(portShort['Asset'].loc[i] == "AZIONI"): #e è azione
           paese = listStocksCountries(portShort['Isin'].loc[i])
+          paese = stockCountr(portShort['Isin'].loc[i])
           d = {'Data' :Portfolio.todayDate_f,
               'Asset':portShort['Asset'].loc[i],
               'Ticker':portShort['Ticker'].loc[i],

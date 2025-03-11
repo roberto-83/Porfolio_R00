@@ -5,6 +5,8 @@
 from yahooquery import Ticker
 import yfinance as yf
 from functions_stocks import verifKey
+import requests 
+from bs4 import BeautifulSoup 
 import pandas as pd
 import datetime
 from datetime import datetime,timedelta
@@ -296,7 +298,18 @@ def listStocksCountries(isin):
     #   driverExt.quit()
     #   return[isin,'',100]
    
-
+#####Con selenium ho problemi, provo con beautiful soup
+def stockCountr(isin):
+  URL="https://extraetf.com/it/stock-profile/"+isin
+  r = requests.get(URL) 
+  soup = BeautifulSoup(r.content, 'html5lib')
+  
+  card=soup.find('div', class_='card-body')
+  country_0=card.find_all('img')
+  #print(country_0[0])
+  country = country_0[1]['title']
+  return country
+#print(stockCountr('US79466L3024'))
 #print(listStocksCountries('GB0007366395'))
       ##########################################
   #lista di settori di un etf
