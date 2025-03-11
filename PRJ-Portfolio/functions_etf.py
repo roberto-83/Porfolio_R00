@@ -300,7 +300,7 @@ def listStocksCountries(isin):
    
 #####Con selenium ho problemi, provo con beautiful soup
 def stockCountr(isin):
-  if(isin ='US29355A1079_1'): 
+  if(isin =='US29355A1079_1'): 
     isin='US29355A1079'
   URL="https://extraetf.com/it/stock-profile/"+isin
   r = requests.get(URL) 
