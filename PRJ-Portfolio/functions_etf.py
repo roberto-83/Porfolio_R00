@@ -261,6 +261,8 @@ def listStocksCountries(isin):
   chrome_options.add_argument("--disable-extensions")
   chrome_options.add_argument("--dns-prefetch-disable")
   chrome_options.add_argument("--disable-gpu")
+  chrome_options.add_argument("--remote-debugging-pipe")
+
 
   if(isin == 'GB0007366395'):
     return [isin, 'REGNO UNITO', 100]
