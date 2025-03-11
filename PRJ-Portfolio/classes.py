@@ -967,7 +967,8 @@ class Portfolio:
               'Asset':portShort['Asset'].loc[i],
               'Ticker':portShort['Ticker'].loc[i],
               'Descrizione':portShort['DESCRIZIONE LUNGA'].loc[i],
-              'Paese':paese[1].upper(),
+              #'Paese':paese[1].upper(),
+              'Paese':paese.upper(),
               'Peso_Tick':portShort['peso'].loc[i],
               'Peso_singolo':100,
               'Peso':portShort['peso'].loc[i].astype(float)*100}
