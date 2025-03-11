@@ -243,7 +243,7 @@ def listEtfCountries(isin):
 #############################################
 
 def listStocksCountries(isin):
-  print("inizio lettura dati per listStocksCountries")
+  print("inizio lettura dati per listStocksCountries per isin {isin}")
   if(isin =='US29355A1079_1'):
     isin = 'US29355A1079'
 # Chiamata alla funzione
@@ -251,6 +251,7 @@ def listStocksCountries(isin):
   #print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
 
   URL="https://extraetf.com/it/stock-profile/"+isin
+  print("Link partenza {URL}")
   #print(URL)
   chrome_options = Options()
   chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
