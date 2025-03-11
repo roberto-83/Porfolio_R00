@@ -961,7 +961,7 @@ class Portfolio:
           paesidF = paesidF.drop(['isin','Country','Peso_country'], axis =1)
 
         elif(portShort['Asset'].loc[i] == "AZIONI"): #e è azione
-          paese = listStocksCountries(portShort['Isin'].loc[i])
+          #paese = listStocksCountries(portShort['Isin'].loc[i])
           paese = stockCountr(portShort['Isin'].loc[i])
           d = {'Data' :Portfolio.todayDate_f,
               'Asset':portShort['Asset'].loc[i],
