@@ -183,8 +183,10 @@ def listEtfCountries(isin):
   print("inizio lettura dati per listEtfCountries")
   if isin == 'IE00B579F325':#gold
     return pd.DataFrame([isin,'GOLD REGION',100], columns=['isin','Country','Peso_country']) 
+    index=[0]
   elif isin == 'GB00BLD4ZL17':#bitcoin
-    return pd.DataFrame([isin,'BITCOIN REGION',100], columns=['isin','Country','Peso_country'])  
+    #return pd.DataFrame([isin,'BITCOIN REGION',100], columns=['isin','Country','Peso_country'])
+    return pd.DataFrame({'isin': isin,'Country':'BITCOIN REGION','Peso_country':'100'},index=[0])
   else:
     # Chiamata alla funzione
     #sessions = count_chromium_sessions()
@@ -238,7 +240,7 @@ def listEtfCountries(isin):
 
 
 
-#print(listEtfCountries('IE00B466KX20'))
+print(listEtfCountries('GB00BLD4ZL17'))
 
 #############################################
 #Sempre da extraEtf prendo il paese delle azioni
