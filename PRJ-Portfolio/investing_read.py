@@ -15,6 +15,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from urllib3.exceptions import ReadTimeoutError
 import time
 
 #LINK interessanti
@@ -117,6 +118,11 @@ def investing_Selenium(url, item):
         print("Timeout: il bottone non è stato trovato in tempo.")
         driver.quit()
         return pd.DataFrame()  # Restituisci un DataFrame vuoto in caso di errore
+
+    except ReadTimeoutError as e:
+        print("Timeout: il bottone non è stato trovato in tempo.")
+        driver.quit()
+        return pd.DataFrame()  # Restituisci un DataFrame vuoto in caso di errore
     print('fine secondo try')
     time.sleep(5)
     #faccio click per espandere tabella
@@ -143,6 +149,9 @@ def investing_Selenium(url, item):
             }, inplace=True)
     print(f"Item {item} letto") 
   except TimeoutException:
+    print("Errore di Timeout")
+    output = pd.DataFrame()
+  except ReadTimeoutError as e:
     print("Errore di Timeout")
     output = pd.DataFrame()
     # output_1= {'Rilascio TASSI': [0], 'Attuale TASSI': [0],'Previsto TASSI': [0]}
