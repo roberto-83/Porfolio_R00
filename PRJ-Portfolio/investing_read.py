@@ -94,8 +94,8 @@ def investing_Selenium(url, item):
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
   
-  page_load_timeout = 60  # Timeout per il caricamento della pagina
-  element_timeout = 10    # Timeout per l'attesa di un elemento
+  page_load_timeout = 120  # Timeout per il caricamento della pagina
+  element_timeout = 30    # Timeout per l'attesa di un elemento
   print('Inizio primo try')
   try:
     # Inizializza il driver di Chrome
