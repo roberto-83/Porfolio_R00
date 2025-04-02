@@ -672,10 +672,23 @@ class Portfolio:
       dfAcq = tab[tab['Tipo'] == 'ACQ'] 
       spesAcq = sum(pd.to_numeric(dfAcq['Spesa/incasso effettivo']))
       qtaAcq = sum(pd.to_numeric(dfAcq['Quantità (real)']))
+      #mi creo un prezzo medio che poi dividerò per la quantità totae
+      #dato che nel dataframe dfAcq non ho il prezzo pagato prendo l'effettivo pagato e ci tolgo i costi
+      #print(dfAcq.to_string())
+      #dfAcq['Prz_medio'] = pd.to_numeric(dfAcq['Quantità (real)'])*(pd.to_numeric(dfAcq['Spesa/incasso effettivo'])-pd.to_numeric(dfAcq['Costi']))
+      dfAcq['Prz_medio'] = pd.to_numeric(dfAcq['Spesa/incasso effettivo'])-pd.to_numeric(dfAcq['Costi'])
+      prezz_medio_pt1 = sum(pd.to_numeric(dfAcq['Prz_medio']))
       print(f"calcolo valori per {i} che ha qta: {qta} acquisti: {spesAcq} e qta acq:{qtaAcq}")
       #calcolo prezzo ponderatp e totale investito
-      prezPond = spesAcq/qtaAcq
-      totInv = qta*prezPond 
+      #per le azioni e etf va bene la formula del valore medio perchè non hanno cedole..
+      #per i btp devo fare somma(qta*prezzo acq)/somma(qta)
+      if dfAcq['Asset'].iloc[0] == 'BTP':
+        prezPond = (prezz_medio_pt1/qtaAcq)*100
+        totInv = qta*prezPond / 100
+        print(f'PREZZO PONDERATO DEL BTP {prezPond} uguale a {prezz_medio_pt1} diviso {qtaAcq}')
+      else:
+        prezPond = spesAcq/qtaAcq
+        totInv = qta*prezPond 
       #recupero ticker e asset type che mi servirà per il prezzo 
       #aggiungo nella lista solo se la quantità è diversa da zero
       if qta > 0.01:
