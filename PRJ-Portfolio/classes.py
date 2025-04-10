@@ -565,7 +565,7 @@ class Portfolio:
       print('aggiornamento non necessario')
       return 'UNNECESSARY'
     print('Terminato aggiornamento calendar')
-    return 'ok'
+    return 'OK'
 
   def totalhistory(self,histDf,i):
     print('Stampo histdataframe')
@@ -612,8 +612,8 @@ class Portfolio:
       print(f'Array totale del giorno {arrTot}')
       appendRow('tab_caltot!A:L',arrTot,newPrj)
       #write_range('tab_caltot!A'+str(i)+':I'+str(i),arrTot,newPrj)
-      return 'ok'
-    return 'ko'
+      return 'OK'
+    return 'KO'
 
   def transactActive(self,df):
     #tolgo i valori vuoti e metto 0
@@ -788,7 +788,7 @@ class Portfolio:
     else:
       print("Aggiornamento non necessario")
       return 'UNNECESSARY'
-    return 'ok'
+    return 'OK'
 
 ################################################################################
 ##### TABELLA COMPOSIZIONE - SETTORI
@@ -924,7 +924,7 @@ class Portfolio:
       write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
       write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
       
-      return 'ok'
+      return 'OK'
     else:
       print('Aggiornamento non necessario')
       return 'UNNECESSARY'
@@ -1028,7 +1028,7 @@ class Portfolio:
       write_range('tab_country!J2:J2',[[totalWeight]],newPrj)
       write_range('tab_country!L2:M'+lastRowWeights,listPrintWeights,newPrj)
 
-      return 'ok'
+      return 'OK'
     else:
       print('Aggiornamento non necessario')
       return 'UNNECESSARY'
@@ -1139,7 +1139,7 @@ class Portfolio:
     else:
       print("Aggiornamento non necessario")
       return 'UNNECESSARY'
-    return 'ok'
+    return 'OK'
 
     
 ################################################################################
@@ -1362,7 +1362,7 @@ class Portfolio:
     deleteOldRowsWat = delete_range('tab_watchlist!A2:AS250',newPrj)
     #scrivo le nuove
     write_range('tab_watchlist!A2:AS'+str(numRow),listPrin,newPrj)
-    return 'ok'
+    return 'OK'
 
 ################################################################################
 ##### NEWS VARIE
