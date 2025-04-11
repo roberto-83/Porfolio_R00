@@ -566,11 +566,13 @@ class Portfolio:
       return 'UNNECESSARY'
     print('Terminato aggiornamento calendar')
     return 'OK'
-
+  
   def totalhistory(self,histDf,i):
     print('Stampo histdataframe')
     print(histDf)
+    histDf_no_Btp_1 = histDf
     if histDf.empty == False:
+      #DATI PORTAFOLGIO COMPLETO
       histDf.loc['total']= histDf.sum()
       histDf.loc[histDf.index[-1], 'dataHist'] = ''
       histDf.loc[histDf.index[-1], 'Ticker'] = ''
@@ -598,7 +600,30 @@ class Portfolio:
       rendimMerc_vwce=100*(float(mercato_vwce)-78.620003)/78.620003
       delta = rendimMerc - rendimperc
       delta_vwce = rendimMerc_vwce - rendimperc
+      print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      print(histDf_no_Btp_1)
+      #DATI PORTAFOLGIO SENZA BTP
+      #la tilde è per negare il filtro
+      histDf_no_Btp = histDf_no_Btp_1[~histDf_no_Btp_1['Ticker'].str.contains('BTP')]
+      histDf_no_Btp = histDf_no_Btp[~histDf_no_Btp['Ticker'].str.contains('CRIPTALIA')]
+      #tolgo il vecchio totale e ricalcolo il nuovo
+      histDf_no_Btp=histDf_no_Btp.drop('total', axis=0)
+      histDf_no_Btp.loc['total']= histDf_no_Btp.sum()
 
+      histDf_no_Btp.loc[histDf_no_Btp.index[-1], 'dataHist'] = ''
+      histDf_no_Btp.loc[histDf_no_Btp.index[-1], 'Ticker'] = ''
+      
+      print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      print(histDf_no_Btp)
+      tot_val_merc = histDf_no_Btp.loc['total']['ctvMerc']
+      tot_val_invest = histDf_no_Btp.loc['total']['TotInvest']
+      rendim_no_btp = tot_val_merc-tot_val_invest
+      if rendim_no_btp ==0:
+        rendim_perc_no_btp = 0
+      else:
+        rendim_perc_no_btp = rendim_no_btp*100/tot_val_invest
+
+      #SCRIVO I DATI
       arrTot = [[histDf['dataHist'].iloc[0],
         histDf.loc['total']['TotInvest'],
         histDf.loc['total']['ctvMerc'],
@@ -607,10 +632,11 @@ class Portfolio:
         histDf.loc['total']['Divid'],
         rendimMerc,
         mercato,
-        delta,mercato_vwce,rendimMerc_vwce,delta_vwce]]
+        delta,mercato_vwce,rendimMerc_vwce,delta_vwce,
+        tot_val_merc,tot_val_invest,rendim_no_btp,rendim_perc_no_btp]]
 
       print(f'Array totale del giorno {arrTot}')
-      appendRow('tab_caltot!A:L',arrTot,newPrj)
+      appendRow('tab_caltot!A:P',arrTot,newPrj)
       #write_range('tab_caltot!A'+str(i)+':I'+str(i),arrTot,newPrj)
       return 'OK'
     return 'KO'
