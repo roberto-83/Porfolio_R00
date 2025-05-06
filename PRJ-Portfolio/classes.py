@@ -362,6 +362,9 @@ class Portfolio:
             divyield = infoStock2["dividYield"]
             divlastval = infoStock2["lastDividendValue"]
             divlastdate = infoStock2["lastDividendDate"]
+            if int(divlastdate) >0:
+              data_unix = datetime.utcfromtimestamp(divlastdate)
+              divlastdate = data_unix.strftime("%d/%m/%Y")
             divexdate = infoStock2["exdividDate"]
             payout = infoStock2["payoutratio"]
             avg52 = infoStock2["fiftyDayAverage"]
