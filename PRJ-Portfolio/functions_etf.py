@@ -103,8 +103,11 @@ def getSummary(ticker):
   #asset_prof = fund.asset_profile[ticker]
   #calendar = fund.calendar_events[ticker]
   #summary_detail = fund.summary_detail[ticker]
-  all_modules = fund.all_modules[ticker]
-  return all_modules
+  try:
+    all_modules = fund.all_modules[ticker]
+    return all_modules
+  except:
+    return 'KO'
 
 def sectorsEtf(ticker):
   #lista di settori di un etf

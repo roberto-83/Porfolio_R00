@@ -250,97 +250,126 @@ class Portfolio:
           #VAI COI FINANCIALS
           #print(tick)
           #try:
+                   
+          #test se funziona yahooquery
           infoStock = getSummary(tick)
-          #infoStock2 = getStockInfo(tick)
-          #sector = verifKey(infoStock['assetProfile'],'sector')
-          #industry = verifKey(infoStock['assetProfile'],'industry')
-          #print(f"Controllo se ci sono i dati {len(infoStock['summaryDetail'])}")
-          try: marketCap = verifKey(infoStock['summaryDetail'],'marketCap')
-          except: marketCap = 0
-          try: volume = verifKey(infoStock['summaryDetail'],'volume') 
-          except: volume = 0
-          try: epstrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingEps')
-          except: epstrailing = 0
-          try: epsforward = verifKey(infoStock['defaultKeyStatistics'], 'forwardEps')
-          except: epsforward = 0
-          try: petrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingPE')
-          except: petrailing = 0
-          try: peforward = verifKey(infoStock['defaultKeyStatistics'],'forwardPE')
-          except: peforward = 0
-          try: pegratio = verifKey(infoStock['defaultKeyStatistics'],'pegRatio')
-          except: pegratio = 0
-          try: beta = verifKey(infoStock['defaultKeyStatistics'],'beta')
-          except: beta = 0
-          try: earnings = verifKey(infoStock['financialData'],'earningsGrowth')
-          except: earnings = 0
-          try: ptb = verifKey(infoStock['defaultKeyStatistics'],'priceToBook')
-          except: ptb = 0
-          try: book = verifKey(infoStock['defaultKeyStatistics'],'bookValue')
-          except: book = 0
-          try: shares = verifKey(infoStock['defaultKeyStatistics'],'sharesOutstanding')
-          except: shares = 0
-          try: divrate = verifKey(infoStock['summaryDetail'],'dividendRate')
-          except: divrate = 0
-          try: divyield = verifKey(infoStock['summaryDetail'],'dividendYield')
-          except: divyield = 0
-          try: divlastval = verifKey(infoStock['defaultKeyStatistics'],'lastDividendValue')
-          except: divlastval = 0
-          try: divlastdate = verifKey(infoStock['defaultKeyStatistics'],'lastDividendDate')
-          except: divlastdate = 0
-          try: divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
-          except: divexdate = 0
-          try: payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
-          except: payout = 0
-          try: avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
-          except: avg52 = 0
-          #avg52 = infoStock2['fiftyDayAverage']
-          try: max52 = verifKey(infoStock['summaryDetail'],'fiftyTwoWeekHigh')
-          except: max52 = 0
-          #max52 = infoStock2['fiftyTwoWeekHigh']
-          dist52=0
-          try: avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
-          except: avg200 = 0
-          #avg200 = infoStock2['twoHundredDayAverage']
-          dist200=0
-          #if len(divexdate) > 2:
-            #divexdate=divexdate[:10]
-          ###testing
-          #data_chatpgpt = yf.download(tick, period="2y", interval="1d")
-          #data_last_52_weeks = data_chatpgpt.tail(252)
-          #max52= data_last_52_weeks['High'].max()
-          #print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
-          #if len(divexdate) > 2: #quindi se non è 0
-           # divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
-          #except:
-          #  marketCap = 0
-          #  volume = 0
-          #  epstrailing = 0
-          #  epsforward =0
-          #  petrailing = 0
-          #  peforward =0
-          #  pegratio = 0
-          #  beta = 0
-          #  earnings = 0
-          #  ptb = 0
-          #  book = 0
-          #  shares = 0
-          #  divrate = 0
-          #  divyield = 0
-          #  divlastval = 0
-          #  divlastdate = 0
-          #  divexdate = 0
-          #  payout = 0
-          #  avg52 = 0
-          #  dist52=0
-          #  max52=0
-          #  avg200 = 0
-          #  dist200=0
-          #  divexdate=0
-          #  list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
-        #divlastdate=
-        #appendo Settore, industria
-        #print(f'lavoro con TICK {tick}')
-        #print(tabIsinData['ASSET'].iloc[0])
+          if infoStock != "KO":                 
+            #sector = verifKey(infoStock['assetProfile'],'sector')
+            #industry = verifKey(infoStock['assetProfile'],'industry')
+            #print(f"Controllo se ci sono i dati {len(infoStock['summaryDetail'])}")
+            try: marketCap = verifKey(infoStock['summaryDetail'],'marketCap')
+            except: marketCap = 0
+            try: volume = verifKey(infoStock['summaryDetail'],'volume') 
+            except: volume = 0
+            try: epstrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingEps')
+            except: epstrailing = 0
+            try: epsforward = verifKey(infoStock['defaultKeyStatistics'], 'forwardEps')
+            except: epsforward = 0
+            try: petrailing = verifKey(infoStock['defaultKeyStatistics'],'trailingPE')
+            except: petrailing = 0
+            try: peforward = verifKey(infoStock['defaultKeyStatistics'],'forwardPE')
+            except: peforward = 0
+            try: pegratio = verifKey(infoStock['defaultKeyStatistics'],'pegRatio')
+            except: pegratio = 0
+            try: beta = verifKey(infoStock['defaultKeyStatistics'],'beta')
+            except: beta = 0
+            try: earnings = verifKey(infoStock['financialData'],'earningsGrowth')
+            except: earnings = 0
+            try: ptb = verifKey(infoStock['defaultKeyStatistics'],'priceToBook')
+            except: ptb = 0
+            try: book = verifKey(infoStock['defaultKeyStatistics'],'bookValue')
+            except: book = 0
+            try: shares = verifKey(infoStock['defaultKeyStatistics'],'sharesOutstanding')
+            except: shares = 0
+            try: divrate = verifKey(infoStock['summaryDetail'],'dividendRate')
+            except: divrate = 0
+            try: divyield = verifKey(infoStock['summaryDetail'],'dividendYield')
+            except: divyield = 0
+            try: divlastval = verifKey(infoStock['defaultKeyStatistics'],'lastDividendValue')
+            except: divlastval = 0
+            try: divlastdate = verifKey(infoStock['defaultKeyStatistics'],'lastDividendDate')
+            except: divlastdate = 0
+            try: divexdate = verifKey(infoStock['summaryDetail'],'exDividendDate')
+            except: divexdate = 0
+            try: payout = verifKey(infoStock['summaryDetail'],'payoutRatio')
+            except: payout = 0
+            try: avg52 = verifKey(infoStock['summaryDetail'],'fiftyDayAverage')
+            except: avg52 = 0
+            #avg52 = infoStock2['fiftyDayAverage']
+            try: max52 = verifKey(infoStock['summaryDetail'],'fiftyTwoWeekHigh')
+            except: max52 = 0
+            #max52 = infoStock2['fiftyTwoWeekHigh']
+            dist52=0
+            try: avg200 = verifKey(infoStock['summaryDetail'],'twoHundredDayAverage')
+            except: avg200 = 0
+            #avg200 = infoStock2['twoHundredDayAverage']
+            dist200=0
+            #if len(divexdate) > 2:
+              #divexdate=divexdate[:10]
+            ###testing
+            #data_chatpgpt = yf.download(tick, period="2y", interval="1d")
+            #data_last_52_weeks = data_chatpgpt.tail(252)
+            #max52= data_last_52_weeks['High'].max()
+            #print(f"ticker {tick} con valore data {divexdate} e lunghezza {len(divexdate)}")
+            #if len(divexdate) > 2: #quindi se non è 0
+            # divexdate=divexdate[8:10] +'/'+divexdate[5:7]+'/'+divexdate[:4]
+            #except:
+            #  marketCap = 0
+            #  volume = 0
+            #  epstrailing = 0
+            #  epsforward =0
+            #  petrailing = 0
+            #  peforward =0
+            #  pegratio = 0
+            #  beta = 0
+            #  earnings = 0
+            #  ptb = 0
+            #  book = 0
+            #  shares = 0
+            #  divrate = 0
+            #  divyield = 0
+            #  divlastval = 0
+            #  divlastdate = 0
+            #  divexdate = 0
+            #  payout = 0
+            #  avg52 = 0
+            #  dist52=0
+            #  max52=0
+            #  avg200 = 0
+            #  dist200=0
+            #  divexdate=0
+            #  list2d.append([i,tick,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]) 
+          #divlastdate=
+          #appendo Settore, industria
+          #print(f'lavoro con TICK {tick}')
+          #print(tabIsinData['ASSET'].iloc[0])
+          else:
+            ############# se non funziona yahoo query uso yfinance
+            infoStock2 = getStockInfo(tick)
+            marketCap = infoStock2["marketCap"]
+            volume = 0
+            epstrailing = infoStock2["trailingEps"]
+            epsforward = infoStock2["forwardEps"]
+            petrailing = infoStock2["trailingPE"]
+            peforward = infoStock2["forwardPE"]
+            pegratio = infoStock2["pegRatio"]
+            beta = infoStock2["beta"]
+            earnings = infoStock2["earningsGrowth"]
+            ptb = infoStock2["priceToBook"]
+            book = infoStock2["bookValue"]
+            shares = 0
+            divrate = infoStock2["dividRate"]
+            divyield = infoStock2["dividYield"]
+            divlastval = infoStock2["lastDividendValue"]
+            divlastdate = infoStock2["lastDividendDate"]
+            divexdate = infoStock2["exdividDate"]
+            payout = infoStock2["payoutratio"]
+            avg52 = infoStock2["fiftyDayAverage"]
+            dist52 = 0
+            avg200 = infoStock2["twoHundredDayAverage"]
+            dist200 = 0
+            max52 = infoStock2["fiftyTwoWeekHigh"]
+
           list2d.append([i,tick,marketCap,volume,epstrailing,epsforward,petrailing,
           peforward,pegratio,beta, earnings, ptb, book, shares, divrate, divyield,divlastval,
           divlastdate,divexdate,payout,avg52,dist52,avg200,dist200,max52])
