@@ -881,109 +881,113 @@ class Portfolio:
       #voglio lista di etf perchè la funzione massiva di raccoglimento settori funziona meglio della singola..
       etfs = port[port['Asset'] == "ETF-AZIONI"]
       etfsList = etfs['Ticker'].tolist()
-      allSectorsEtf = sectorsMultipEtf(etfsList)
+      allSectorsEtf = sectorsMultipEtf(etfsList)#Verificare SE NON E VUOTO!!!!!!
+      if allSectorsEtf != "KO":
       #primo = allSectorsEtf['XDEQ.MI']
       #print(primo)
   
-      for i in range(len(portShort)):
-        if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
+        for i in range(len(portShort)):
+          if(portShort['Asset'].loc[i] == "ETF-AZIONI"):
 
-          #leggo i settori dell'etf
-          #settori = sectorsEtf(portShort['Ticker'].loc[i]) #####QUI capire se posso usare il massivo..
-          #print(allSectorsEtf['GLUX.MI'])
-          print(portShort['Ticker'].loc[i])
-          settori1 = allSectorsEtf[portShort['Ticker'].loc[i]]
-          #print(settori)
-          settori = settori1.to_frame()
+            #leggo i settori dell'etf
+            #settori = sectorsEtf(portShort['Ticker'].loc[i]) #####QUI capire se posso usare il massivo..
+            #print(allSectorsEtf['GLUX.MI'])
+            print(portShort['Ticker'].loc[i])
+            settori1 = allSectorsEtf[portShort['Ticker'].loc[i]]
+            #print(settori)
+            settori = settori1.to_frame()
 
-          print(settori)
-          print('---------------')
-          print(type(settori))
+            print(settori)
+            print('---------------')
+            print(type(settori))
 
-          #print(settori.index)
-          #print('stampo columns')
-          #print(settori.columns)
-          #time.sleep(20) #aspetto un po perchè vedo che non mi da sempre i valori
-          #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
-          settori['Settore_ETF'] = settori.index
-      
-          #print('creo colonna')
-          #cambio l'index che conteneva il settore
-          #print(settori)
-          #print('resetto indice')
-          settori=settori.reset_index()
-          #print(settori)
-          #costruisco il DF
-          settori['Data'] = Portfolio.todayDate_f
-          settori['Asset'] = portShort['Asset'].loc[i]
-          settori['Ticker'] = portShort['Ticker'].loc[i]
-          settori['Descrizione'] = portShort['DESCRIZIONE LUNGA'].loc[i]
-          settori['Peso_Tick'] = portShort['peso'].loc[i]
-          if len(settori[portShort['Ticker'].loc[i]]) > 1:
-            settori['Settore'] = settori['Settore_ETF'].str.upper()
-            settori['Settore'] = settori['Settore'].str.replace('_',' ')
-            settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]       
-            settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
-            #tolgo la colonna che si chiama come il ticker
-            settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF',0], axis =1)
-            
-            #print(settori.to_string())
-          else : #caso in cui la funzione non mi torna i settori
-            settori['Settore'] = 'Other'
-            settori['Peso_singolo'] =0 
-            settori['Peso'] = portShort['peso'].loc[i]
-            settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF','index'], axis =1)
-            AllData='INCOMPLETE'
-
-          #print(settori.to_string())
-   
-        else: #azione o bond
-          d = {'Data' :Portfolio.todayDate_f,
-              'Asset':portShort['Asset'].loc[i],
-              'Ticker':portShort['Ticker'].loc[i],
-              'Descrizione':portShort['DESCRIZIONE LUNGA'].loc[i],
-              'Settore':portShort['SETTORE'].loc[i].upper(),
-              'Peso_Tick':portShort['peso'].loc[i],
-              'Peso_singolo':portShort['peso'].loc[i],
-              'Peso':portShort['peso'].loc[i]}
-          settori = pd.DataFrame(d, index =[0])
-          
+            #print(settori.index)
+            #print('stampo columns')
+            #print(settori.columns)
+            #time.sleep(20) #aspetto un po perchè vedo che non mi da sempre i valori
+            #dato che la funzione di prima riporta i settori come chiavi li riporto come colonna
+            settori['Settore_ETF'] = settori.index
         
-        #concateno su un unico DF i vari dati
-        allSectors = pd.concat([allSectors,settori], ignore_index=True)
-      #calcolo il peso totale che dovrà essere 1
-      totalWeight= allSectors['Peso'].sum()
-      #print(allSectors.to_string())
+            #print('creo colonna')
+            #cambio l'index che conteneva il settore
+            #print(settori)
+            #print('resetto indice')
+            settori=settori.reset_index()
+            #print(settori)
+            #costruisco il DF
+            settori['Data'] = Portfolio.todayDate_f
+            settori['Asset'] = portShort['Asset'].loc[i]
+            settori['Ticker'] = portShort['Ticker'].loc[i]
+            settori['Descrizione'] = portShort['DESCRIZIONE LUNGA'].loc[i]
+            settori['Peso_Tick'] = portShort['peso'].loc[i]
+            if len(settori[portShort['Ticker'].loc[i]]) > 1:
+              settori['Settore'] = settori['Settore_ETF'].str.upper()
+              settori['Settore'] = settori['Settore'].str.replace('_',' ')
+              settori['Peso_singolo'] = settori[portShort['Ticker'].loc[i]]       
+              settori['Peso'] = portShort['peso'].loc[i]*settori[portShort['Ticker'].loc[i]]
+              #tolgo la colonna che si chiama come il ticker
+              settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF',0], axis =1)
+              
+              #print(settori.to_string())
+            else : #caso in cui la funzione non mi torna i settori
+              settori['Settore'] = 'Other'
+              settori['Peso_singolo'] =0 
+              settori['Peso'] = portShort['peso'].loc[i]
+              settori = settori.drop([portShort['Ticker'].loc[i],'Settore_ETF','index'], axis =1)
+              AllData='INCOMPLETE'
 
-      #Ora mi serve un nuovo dataframe con solo i settori singoli e la somma dei pesi
-      #copio il df
-      sectorsUnique=allSectors[['Settore','Peso']].copy()
-      #scrivo i totali dei pesi
-      sectorsUnique['Total'] = allSectors.groupby(['Settore'])['Peso'].transform('sum')
-      #tolgo la colonna peso originale
-      sectorsUnique = sectorsUnique.drop('Peso', axis =1)
-      #tolgo i duplicati
-      sectorsUnique1 = sectorsUnique.drop_duplicates(inplace=False)
-      #ordino DF
-      sectorsUnique1=sectorsUnique1.sort_values(by=['Total'], ascending=[False])
-      #print(sectorsUnique1)
-
-      #scrivo i dati su spreadsheet
-      listPrint = allSectors.values.tolist()
-      lastRowSt=str(len(listPrint)+1)
-      listPrintWeights = sectorsUnique1.values.tolist()
-      lastRowWeights=str(len(listPrintWeights)+1)
-      deleteOldRows = delete_range('tab_sectors!A2:M600',newPrj)
-      write_range('tab_sectors!A2:H'+lastRowSt,listPrint,newPrj)
-      write_range('tab_sectors!J2:J2',[[totalWeight]],newPrj)
-      write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
-      write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
-      
-      return 'OK'
-    else:
-      print('Aggiornamento non necessario')
-      return 'UNNECESSARY'
+            #print(settori.to_string())
     
+          else: #azione o bond
+            d = {'Data' :Portfolio.todayDate_f,
+                'Asset':portShort['Asset'].loc[i],
+                'Ticker':portShort['Ticker'].loc[i],
+                'Descrizione':portShort['DESCRIZIONE LUNGA'].loc[i],
+                'Settore':portShort['SETTORE'].loc[i].upper(),
+                'Peso_Tick':portShort['peso'].loc[i],
+                'Peso_singolo':portShort['peso'].loc[i],
+                'Peso':portShort['peso'].loc[i]}
+            settori = pd.DataFrame(d, index =[0])
+            
+          
+          #concateno su un unico DF i vari dati
+          allSectors = pd.concat([allSectors,settori], ignore_index=True)
+        #calcolo il peso totale che dovrà essere 1
+        totalWeight= allSectors['Peso'].sum()
+        #print(allSectors.to_string())
+
+        #Ora mi serve un nuovo dataframe con solo i settori singoli e la somma dei pesi
+        #copio il df
+        sectorsUnique=allSectors[['Settore','Peso']].copy()
+        #scrivo i totali dei pesi
+        sectorsUnique['Total'] = allSectors.groupby(['Settore'])['Peso'].transform('sum')
+        #tolgo la colonna peso originale
+        sectorsUnique = sectorsUnique.drop('Peso', axis =1)
+        #tolgo i duplicati
+        sectorsUnique1 = sectorsUnique.drop_duplicates(inplace=False)
+        #ordino DF
+        sectorsUnique1=sectorsUnique1.sort_values(by=['Total'], ascending=[False])
+        #print(sectorsUnique1)
+
+        #scrivo i dati su spreadsheet
+        listPrint = allSectors.values.tolist()
+        lastRowSt=str(len(listPrint)+1)
+        listPrintWeights = sectorsUnique1.values.tolist()
+        lastRowWeights=str(len(listPrintWeights)+1)
+        deleteOldRows = delete_range('tab_sectors!A2:M600',newPrj)
+        write_range('tab_sectors!A2:H'+lastRowSt,listPrint,newPrj)
+        write_range('tab_sectors!J2:J2',[[totalWeight]],newPrj)
+        write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
+        write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
+        
+        return 'OK'
+      else:
+        print('Aggiornamento non necessario')
+        return 'UNNECESSARY'
+    else:
+      print('Errore Yahooquery')
+      return 'KO'
+
 
 ################################################################################
 ##### TABELLA COMPOSIZIONE - PAESI
