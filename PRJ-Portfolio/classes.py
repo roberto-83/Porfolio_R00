@@ -42,13 +42,19 @@ class Portfolio:
   def __init__(self,num_port):
     self.num_port = num_port #specifico il numero del portafolgio
     #tutte le transazioni fino ad oggi
+    print(f"## PORTAFOGLIO {num_port}")
+    print(f"## 1 - Lettura transazioni")
     self.transact = Portfolio.readActiveIsinByDate(self,Portfolio.todayDate_f,num_port)
-    #if num_port == 1:
-    self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
-    self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
+    if num_port == '1':
+      print(f"## 1.1 - Lettura valori banca Ing")
+      self.bankING = Portfolio.readValueBanks(self,Portfolio.todayDate_f,'Ing')
+      self.totUsci = Portfolio.countUsciteSpese(self,Portfolio.todayDate_f)
+    print(f"## 2 - Calcoli su transazioni")
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact,num_port)
+    print(f"## 3 - Leggo i dati da tabella tab_isin")
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
+    print(f"## 4 - Portafoglio completo")
     self.portSenzaFinan = Portfolio.dFPortf(self)
    
 
@@ -365,7 +371,15 @@ class Portfolio:
             if int(divlastdate) >0:
               data_unix = datetime.utcfromtimestamp(divlastdate)
               divlastdate = data_unix.strftime("%d/%m/%Y")
+            else:
+              divlastdate = '30/12/1899'
             divexdate = infoStock2["exdividDate"]
+            # print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+            # print(f"ticker {tick}")
+            # print(f"data stacco {divexdate}")
+            # print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+            if divexdate == '0':
+              divexdate = '30/12/1899'
             payout = infoStock2["payoutratio"]
             avg52 = infoStock2["fiftyDayAverage"]
             dist52 = 0
