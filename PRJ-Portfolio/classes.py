@@ -899,7 +899,9 @@ class Portfolio:
       etfs = port[port['Asset'] == "ETF-AZIONI"]
       etfsList = etfs['Ticker'].tolist()
       allSectorsEtf = sectorsMultipEtf(etfsList)#Verificare SE NON E VUOTO!!!!!!
-      if allSectorsEtf != "KO":
+      print(allSectorsEtf)
+      if allSectorsEtf.size > 0:
+      # if allSectorsEtf != "KO":
       #primo = allSectorsEtf['XDEQ.MI']
       #print(primo)
   
