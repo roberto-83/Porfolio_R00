@@ -134,7 +134,8 @@ def sectorsMultipEtf(tickers):
   except:
     #return  pd.DataFrame() #dataframe vuoto
     #return  pd.DataFrame({ticker:[0,0]},index=[0,'Other']) #dataframe vuoto
-    return  'KO' #dataframe vuoto
+    #return  'KO' #dataframe vuoto
+    return  pd.Dataframe() #dataframe vuoto
 
 #print(sectorsEtf('GLUX.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
