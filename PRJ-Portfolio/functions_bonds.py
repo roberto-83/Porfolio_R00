@@ -214,6 +214,10 @@ def readEuronextREV2(isin, data):
       i += 1
     #print(histpriceExt)
     driverExt.quit()
+    if driverExt.service.process.poll() is None:
+      print("Driver attivo")
+    else:
+        print("Driver terminato")
     os.system("pkill chromedriver")
     os.system("pkill chrome")
     #provo  a dare tempo dopo la chiusura per vedere che chiusa tutto e non rimanga appeso
