@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from io import StringIO
+import os
 #import investpy fuori uso
 
 
