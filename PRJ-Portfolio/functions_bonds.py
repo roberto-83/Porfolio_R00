@@ -171,7 +171,7 @@ def readEuronextREV2(isin, data):
     #leggo i dati
     #dfsExt = pd.read_html(driverExt.page_source)
     dfsExt = pd.read_html(StringIO(driverExt.page_source))
-    print(dfsExt)
+    #print(dfsExt)
     time.sleep(5)
     
     #prendo la tabella
