@@ -213,6 +213,8 @@ def readEuronextREV2(isin, data):
       i += 1
     #print(histpriceExt)
     driverExt.quit()
+    #provo  a dare tempo dopo la chiusura per vedere che chiusa tutto e non rimanga appeso
+    time.sleep(5)
 
   return histpriceExt
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
