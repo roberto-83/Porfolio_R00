@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from io import StringIO
 import os
@@ -139,11 +140,18 @@ def readEuronextREV2(isin, data):
 
         print("Caricamento URL ESTESO...")
         driverExt.get(URL_ESTESO)
-
+        #scrivo nel log
+        service = Service(log_path="/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/chromedriver.log")
+        driverExt = webdriver.Chrome(service=service, options=chrome_options)
         # Attendi che la tabella o il pulsante "Load more" sia presente
-        WebDriverWait(driverExt, 20).until(
-            EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
-        )
+        try:
+            WebDriverWait(driverExt, 60).until(
+                EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
+            )
+        except TimeoutException:
+            print("Tabella non caricata entro il tempo previsto.")
+            driverExt.quit()
+            return None
         soup = BeautifulSoup(driverExt.page_source, "html.parser")
         target_table = soup.find("table", {"id": "AwlHistoricalPriceTable"})
 

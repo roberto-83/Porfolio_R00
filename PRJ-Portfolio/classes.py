@@ -727,8 +727,8 @@ class Portfolio:
     dfUnique.drop_duplicates(inplace=True)
     listAll=[[]]
     #dfUnique = dfUnique.to_frame()
-    print('###########LEGGI QUESTO')
-    print(dfUnique)
+    #print('###########LEGGI QUESTO')
+    #print(dfUnique)
     #loop per ogni isin
     for i in dfUnique:
       #ho il dataframe filtrato
