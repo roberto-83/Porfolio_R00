@@ -167,7 +167,9 @@ def readEuronextREV2(isin, data):
         WebDriverWait(driverExt, 20).until(
             EC.presence_of_element_located((By.ID, "historical-price-load-more"))
         )
-        
+        print("Page title:", driverExt.title)
+        print("Current URL:", driverExt.current_url)
+        print("Page length:", len(driverExt.page_source))
         print("Tabella caricata, parsing HTML...")
         time.sleep(5)  # piccolo delay extra
         dfsExt = pd.read_html(StringIO(driverExt.page_source))
