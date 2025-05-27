@@ -104,7 +104,6 @@ def readEuronext(isin):
 
 def readEuronextREV2(isin, data):
   print(f"#############Leggo i dati di {isin}")
-  #URl singola mi da alcune info
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
   URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
@@ -121,16 +120,11 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("--dns-prefetch-disable")
   chrome_options.add_argument("--disable-gpu")
   
-  #leggo dati comuni
-  #driver = webdriver.Chrome( options=chrome_options)
-  #driver.get(URL)
-  #time.sleep(5)
 
-  #todayDate = datetime.today().strftime('%d/%m/%Y')
   todayDate = datetime.today().strftime('%Y-%m-%d')
-  #diffdate = ( datetime.strptime(todayDate, "%d/%m/%Y") - datetime.strptime(data, "%d/%m/%Y")).days
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
   #print(f"Differenza date {diffdate}")
+  
   #Se la diff date è <=0 allor anon devo fare nulla
   #se è minore di 5 uso primo metodo (+ veloce)
   #altrimenti metodo esteso
@@ -138,23 +132,6 @@ def readEuronextREV2(isin, data):
     print('Aggiornamento non necessario')
     histprice = 0 
   else:
-    # print("inizia driver")
-    # driverExt = webdriver.Chrome( options=chrome_options)
-    # driverExt.get(URL_ESTESO)
-    # print("10 sec wait")
-    # time.sleep(10)
-    
-    # #leggo i dati
-    # dfsExt = pd.read_html(StringIO(driverExt.page_source))
-    # time.sleep(5)
-    
-    # #prendo la tabella
-
-    # histBtpExt = dfsExt[22]
-    # histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
-    # #print("stampo quello che leggo")##########################################################
-    # histpriceExt = fillDatesDFrame(histBtpExt)
-    #CHAT GRP 
     try:
         print("inizia driver")
         driverExt = webdriver.Chrome(options=chrome_options)
@@ -165,24 +142,18 @@ def readEuronextREV2(isin, data):
 
         # Attendi che la tabella o il pulsante "Load more" sia presente
         WebDriverWait(driverExt, 20).until(
-            EC.presence_of_element_located((By.ID, "AwlHistoricalPrice"))
+            EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
         )
+        soup = BeautifulSoup(driverExt.page_source, "html.parser")
+        target_table = soup.find("table", {"id": "AwlHistoricalPriceTable"})
 
-        print("Tabella caricata, parsing HTML...")
-        time.sleep(5)  # piccolo delay extra
-        dfsExt = pd.read_html(StringIO(driverExt.page_source))
-        print("stampo output")
-        print(dfsExt)
-        
-        # Cerca tabella con colonna 'Date'
-        histBtpExt = None
-        for df in dfsExt:
-            if 'Date' in df.columns:
-                histBtpExt = df
-                break
-        if histBtpExt is None:
-            raise ValueError("Tabella con 'Date' non trovata.")
-
+        if target_table is None:
+            raise ValueError("Tabella con id 'AwlHistoricalPrice' non trovata.")
+        #print(target_table)
+        histBtpExt = pd.read_html(str(target_table))[0]
+        print(histBtpExt)
+        histpriceExt = fillDatesDFrame(histBtpExt)
+        print(histpriceExt)
     except TimeoutException as te:
         print("Errore: Timeout nel caricamento della pagina o elementi.")
         driverExt.quit()
@@ -193,18 +164,21 @@ def readEuronextREV2(isin, data):
         driverExt.quit()
         return None
 
-
     #loop per cercare la data nel sito
+    print(f"sto confrontando con data {data}")
     i=0
     while i <= 12:
       print(f"Loop numero {i}")
       #verifico se la data è presente
       #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
-      print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%Y-%m-%d')}")
-      if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
-        #print('Presente')
+      #print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%Y-%m-%d')}")
+      print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%d/%m/%Y')}")
+      #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
+      if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%d/%m/%Y')]) == 1:
+        print('Presente')
         break
       else:
+        #QUESTO BLOCCO NON DOVREBBE SERVOIRE.. perchè leggo la tabella nella pagina e non quella che mi si presenta in sovraimpressione...
         #print('manca')
         #premo tasto per aumentare lo storico
         time.sleep(5)
