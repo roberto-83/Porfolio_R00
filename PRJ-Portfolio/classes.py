@@ -473,6 +473,8 @@ class Portfolio:
       #histPrice = pd.Series( [histPrice1], index=[row['Ticker']])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
       histTot = readEuronextREV2(row['Isin'],dateRead)
+      print('Output read euronext')
+      print(histTot)
       histPriceDf = histTot[histTot['Date'] == dateRead]
       if len(histPriceDf) >0 :
         histPrice = histPriceDf['Close'].values[0]
