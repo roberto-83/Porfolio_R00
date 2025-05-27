@@ -719,7 +719,6 @@ class Portfolio:
       return importo
 
   def calcDataPortREV2(self, df,num_port):
-    print('#LEGGI QUESTO')
 
     df_filt = df[df['Num Portfolio'] == num_port]
     #prendo solo gli isin
@@ -728,6 +727,8 @@ class Portfolio:
     dfUnique.drop_duplicates(inplace=True)
     listAll=[[]]
     #dfUnique = dfUnique.to_frame()
+    print('###########LEGGI QUESTO')
+    print(dfUnique)
     #loop per ogni isin
     for i in dfUnique:
       #ho il dataframe filtrato
