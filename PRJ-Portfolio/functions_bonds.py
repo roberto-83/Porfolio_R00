@@ -100,6 +100,7 @@ def readEuronext(isin):
 #print(readEuronext('IT0005580003'))
 
 def readEuronextREV2(isin, data):
+  print(f"#############Leggo i dati di {isin}")
   #URl singola mi da alcune info
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
@@ -212,7 +213,8 @@ def readEuronextREV2(isin, data):
         histpriceExt.Date = pd.to_datetime(histpriceExt.Date)
 
       i += 1
-    #print(histpriceExt)
+    print('Output funzione:')
+    print(histpriceExt)
     driverExt.quit()
     if driverExt.service.process.poll() is None:
       print("Driver attivo")
