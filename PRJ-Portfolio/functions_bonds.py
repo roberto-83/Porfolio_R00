@@ -172,6 +172,8 @@ def readEuronextREV2(isin, data):
         time.sleep(5)  # piccolo delay extra
         dfsExt = pd.read_html(StringIO(driverExt.page_source))
         print("stampo output")
+        print(dfsExt)
+        
         # Cerca tabella con colonna 'Date'
         histBtpExt = None
         for df in dfsExt:
