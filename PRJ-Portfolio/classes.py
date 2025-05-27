@@ -719,6 +719,8 @@ class Portfolio:
       return importo
 
   def calcDataPortREV2(self, df,num_port):
+    print('#LEGGI QUESTO')
+
     df_filt = df[df['Num Portfolio'] == num_port]
     #prendo solo gli isin
     dfUnique = df_filt['ISIN'] 
