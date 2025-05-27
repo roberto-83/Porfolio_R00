@@ -7,6 +7,9 @@ from datetime import datetime,timedelta
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from io import StringIO
 import os
@@ -134,33 +137,110 @@ def readEuronextREV2(isin, data):
   if(diffdate <= 0):
     print('Aggiornamento non necessario')
     histprice = 0 
-  #elif diffdate <=5:
-    # Inizializza il driver di Chrome
-    #driver = webdriver.Chrome( options=chrome_options)
-    #Get URL
-    #driver.get(URL)
-    #wait 5 secondi
-    #time.sleep(5)
-    #----------------Dati storici
-    #Esporto tutte le tabelle della pagina web
-    #dfs = pd.read_html(driver.page_source)
-    #prendo la tabella che interessa (sono 5 giorni indietro rispetto ad oggi senza oggi)
-    #histBtp = dfs[20]
-    #aggiungo i dati mancanti
-    #histprice = fillDatesDFrame(histBtp)
-    #----------------Dati liveg
-    #nameBtp = driver.find_element(By.XPATH,'/html/body/div[2]/div[1]/div/div/div[1]/section/div[2]/div/div/div/div/div/div[1]/div[1]/h1/strong').text
-    #pricBtp = driver.find_element(By.XPATH,'//*[@id="header-instrument-price"]').text
-    #dateBtp = driver.find_element(By.XPATH,'/html/body/div[2]/div[1]/div/div/div[1]/section/div[2]/div/div/div/div/div/div[2]/div/div[1]/div[1]/div[2]/div/div[2]').text
-    #liveDate = datetime.strptime(dateBtp[0:10], '%d/%m/%Y') 
-    #aggiungo riga su df con i dati di oggi
-    #histprice.loc[len(histprice.index)] = [liveDate, pricBtp, 0]
-    #riformatto le date
-    #histprice['Date'] = pd.to_datetime(histprice['Date'], format='%d/%m/%Y')
-    #aggiungo nome btp
-    #histprice['Name'] = nameBtp
-    #histprice['Isin'] = isin
-    #driver.quit()
+  else:
+    # print("inizia driver")
+    # driverExt = webdriver.Chrome( options=chrome_options)
+    # driverExt.get(URL_ESTESO)
+    # print("10 sec wait")
+    # time.sleep(10)
+    
+    # #leggo i dati
+    # dfsExt = pd.read_html(StringIO(driverExt.page_source))
+    # time.sleep(5)
+    
+    # #prendo la tabella
+
+    # histBtpExt = dfsExt[22]
+    # histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
+    # #print("stampo quello che leggo")##########################################################
+    # histpriceExt = fillDatesDFrame(histBtpExt)
+    #CHAT GRP 
+
+    #loop per cercare la data nel sito
+    i=0
+    while i <= 12:
+      print(f"Loop numero {i}")
+      #verifico se la data è presente
+      #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%d/%m/%Y").strftime('%Y-%m-%d')]) == 1:
+      print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%Y-%m-%d')}")
+      if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
+        #print('Presente')
+        break
+      else:
+        #print('manca')
+        #premo tasto per aumentare lo storico
+        time.sleep(5)
+        buttonLoad = driverExt.find_element(By.XPATH,'//*[@id="historical-price-load-more"]')
+        time.sleep(5)
+        driverExt.execute_script("arguments[0].click();", buttonLoad)
+        time.sleep(5)
+        #leggo i dati
+        #dfsExt = pd.read_html(driverExt.page_source)
+        dfsExt = pd.read_html(StringIO(driverExt.page_source))
+        histBtpExt = dfsExt[22]
+        #print(histBtpExt)
+        histpriceExt = fillDatesDFrame(histBtpExt)
+        histpriceExt.Date = pd.to_datetime(histpriceExt.Date)
+
+      i += 1
+    print('Output funzione:')
+    print(histpriceExt)
+    driverExt.quit()
+    if driverExt.service.process.poll() is None:
+      print("Driver attivo")
+    else:
+        print("Driver terminato")
+    #os.system("pkill chromedriver")
+    #os.system("pkill chrome")
+    #cerco di chiudere il driver..
+    if driverExt:
+      try:
+          driverExt.quit()
+      except Exception as e:
+          print("Errore durante quit:", e)
+      finally:
+          del driverExt
+    #provo  a dare tempo dopo la chiusura per vedere che chiusa tutto e non rimanga appeso
+    time.sleep(5)
+
+  return histpriceExt
+#print(readEuronextREV2('IT0005580003','08/05/2024'))
+
+def readEuronextREV2_BACKUP(isin, data):
+  print(f"#############Leggo i dati di {isin}")
+  #URl singola mi da alcune info
+  #se vado in URL_ESTESO ho piu storico da leggere
+  URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
+  URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
+  URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
+  print(f"url che sto leggendo {URL_ESTESO}")
+  # Configura le opzioni del browser Chrome
+  chrome_options = Options()
+  chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
+  chrome_options.add_argument('--no-sandbox')
+  chrome_options.add_argument("--enable-javascript")
+  chrome_options.add_argument('--disable-dev-shm-usage')
+  chrome_options.add_argument("enable-automation")
+  chrome_options.add_argument("--disable-extensions")
+  chrome_options.add_argument("--dns-prefetch-disable")
+  chrome_options.add_argument("--disable-gpu")
+  
+  #leggo dati comuni
+  #driver = webdriver.Chrome( options=chrome_options)
+  #driver.get(URL)
+  #time.sleep(5)
+
+  #todayDate = datetime.today().strftime('%d/%m/%Y')
+  todayDate = datetime.today().strftime('%Y-%m-%d')
+  #diffdate = ( datetime.strptime(todayDate, "%d/%m/%Y") - datetime.strptime(data, "%d/%m/%Y")).days
+  diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
+  #print(f"Differenza date {diffdate}")
+  #Se la diff date è <=0 allor anon devo fare nulla
+  #se è minore di 5 uso primo metodo (+ veloce)
+  #altrimenti metodo esteso
+  if(diffdate <= 0):
+    print('Aggiornamento non necessario')
+    histprice = 0 
   else:
     print("inizia driver")
     driverExt = webdriver.Chrome( options=chrome_options)
@@ -220,13 +300,20 @@ def readEuronextREV2(isin, data):
       print("Driver attivo")
     else:
         print("Driver terminato")
-    os.system("pkill chromedriver")
-    os.system("pkill chrome")
+    #os.system("pkill chromedriver")
+    #os.system("pkill chrome")
+    #cerco di chiudere il driver..
+    if driverExt:
+      try:
+          driverExt.quit()
+      except Exception as e:
+          print("Errore durante quit:", e)
+      finally:
+          del driverExt
     #provo  a dare tempo dopo la chiusura per vedere che chiusa tutto e non rimanga appeso
     time.sleep(5)
 
   return histpriceExt
-#print(readEuronextREV2('IT0005580003','08/05/2024'))
 
 def getBtpData(isin_val):
   if(isin_val == 'IT0005580003'):#non è piu disponibile..
