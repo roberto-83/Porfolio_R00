@@ -155,7 +155,43 @@ def readEuronextREV2(isin, data):
     # #print("stampo quello che leggo")##########################################################
     # histpriceExt = fillDatesDFrame(histBtpExt)
     #CHAT GRP 
+    try:
+        print("inizia driver")
+        driverExt = webdriver.Chrome(options=chrome_options)
+        driverExt.set_page_load_timeout(60)
 
+        print("Caricamento URL ESTESO...")
+        driverExt.get(URL_ESTESO)
+
+        # Attendi che la tabella o il pulsante "Load more" sia presente
+        WebDriverWait(driverExt, 20).until(
+            EC.presence_of_element_located((By.ID, "historical-price-load-more"))
+        )
+
+        print("Tabella caricata, parsing HTML...")
+        time.sleep(5)  # piccolo delay extra
+        dfsExt = pd.read_html(StringIO(driverExt.page_source))
+
+        # Cerca tabella con colonna 'Date'
+        histBtpExt = None
+        for df in dfsExt:
+            if 'Date' in df.columns:
+                histBtpExt = df
+                break
+        if histBtpExt is None:
+            raise ValueError("Tabella con 'Date' non trovata.")
+
+    except TimeoutException as te:
+        print("Errore: Timeout nel caricamento della pagina o elementi.")
+        driverExt.quit()
+        return None
+
+    except Exception as e:
+        print(f"Errore imprevisto: {e}")
+        driverExt.quit()
+        return None
+
+        
     #loop per cercare la data nel sito
     i=0
     while i <= 12:
