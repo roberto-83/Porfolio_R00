@@ -103,6 +103,8 @@ def readEuronext(isin):
   return histprice
 #print(readEuronext('IT0005580003'))
 
+
+#print(readEuronextREV2('IT0005580003','08/05/2024'))
 def readEuronextREV2(isin, data):
   print(f"#############Leggo i dati di {isin}")
   #se vado in URL_ESTESO ho piu storico da leggere
