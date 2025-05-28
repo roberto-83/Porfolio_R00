@@ -146,12 +146,13 @@ def readEuronextREV2(isin, data):
         #driverExt.get(URL_ESTESO)
         driverExt.get(URL)
         time.sleep(10)
+        print("fine wait")
         #faccio screenshot
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         print("Directory dello script:", script_dir)
         driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
-        
+
         print('stamp 1 fatto')
         #premo accept id=onetrust-accept-btn-handler
         try:      
