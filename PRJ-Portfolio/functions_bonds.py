@@ -146,7 +146,16 @@ def readEuronextREV2(isin, data):
       print("✅ Chromium e WebDriver funzionano correttamente.")
   except WebDriverException as e:
       print("❌ Errore con WebDriver o Chromium:", str(e))
+  try:
+      
 
+      driver = webdriver.Chrome(options=chrome_options)
+      driver.get(URL_ESTESO)
+      print("Titolo della pagina:", driver.title)
+      driver.quit()
+      print("✅ Chromium e WebDriver funzionano correttamente.")
+  except WebDriverException as e:
+      print("❌ Errore con WebDriver o Chromium:", str(e))
 
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
@@ -165,8 +174,8 @@ def readEuronextREV2(isin, data):
         driverExt.set_page_load_timeout(60)
 
         print("Caricamento URL ESTESO...")
-        #driverExt.get(URL_ESTESO)
-        driverExt.get(URL)
+        driverExt.get(URL_ESTESO)
+        #driverExt.get(URL)
         time.sleep(10)
         print("fine wait")
         #faccio screenshot
