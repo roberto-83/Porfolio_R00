@@ -494,3 +494,34 @@ if __name__ == "__main__":
 
 print("output CHAT GPT")
 print(scrape_historical_data)
+
+print('TEST ALTRO PLUGIN')
+from playwright.sync_api import sync_playwright
+import pandas as pd
+
+def scrape_with_playwright():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto("https://live.euronext.com/en/product/bonds/IT0005534141-MOTX")
+
+        # Aspetta che la tabella venga caricata
+        page.wait_for_selector("table[data-table-id='historical-data-table']")
+
+        rows = page.query_selector_all("table[data-table-id='historical-data-table'] tr")
+        data = []
+
+        for i, row in enumerate(rows):
+            cols = [col.inner_text().strip() for col in row.query_selector_all("th, td")]
+            data.append(cols)
+
+        browser.close()
+
+        df = pd.DataFrame(data[1:], columns=data[0])
+        return df
+
+if __name__ == "__main__":
+    df = scrape_with_playwright()
+    print(df.head())
+    df.to_csv("historical_data.csv", index=False)
+print(scrape_with_playwright)
