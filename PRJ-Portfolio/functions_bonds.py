@@ -247,7 +247,7 @@ def readEuronextREV2(isin, data):
   return histpriceExt
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
 #print('test')
-print(readEuronextREV2('IT0005534141','2025-05-27'))
+#print(readEuronextREV2('IT0005534141','2025-05-27'))
 
 def readEuronextREV2_BACKUP(isin, data):
   print(f"#############Leggo i dati di {isin}")
