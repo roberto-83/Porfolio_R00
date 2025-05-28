@@ -162,27 +162,12 @@ def readEuronextREV2(isin, data):
         #altro screen
         driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
         print('stamp 2 fatto')
-        #scrivo nel log
-        #service = Service(log_path="/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/chromedriver.log")
-        service = Service(log_path=script_dir+"/tmpFiles/chromedriver.log")
-        driverExt = webdriver.Chrome(service=service, options=chrome_options)
-        # Attendi che la tabella o il pulsante "Load more" sia presente
-        # try:
-        #     WebDriverWait(driverExt, 120).until(
-        #         EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
-        #     )
-        # except TimeoutException:
-        #     print("Tabella non caricata entro il tempo previsto.")
-        #     driverExt.quit()
-        #     return None
-        soup = BeautifulSoup(driverExt.page_source, "html.parser")
-        target_table = soup.find("table", {"id": "AwlHistoricalPriceTable"})
-
-        if target_table is None:
-            raise ValueError("Tabella con id 'AwlHistoricalPrice' non trovata.")
-        #print(target_table)
-        histBtpExt = pd.read_html(str(target_table))[0]
+        #LEGGO
+        dfsExt = pd.read_html(StringIO(driverExt.page_source))
+        #print(dfsExt) # tutte le tabelle...
+        histBtpExt = dfsExt[20]
         print(histBtpExt)
+        histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
         histpriceExt = fillDatesDFrame(histBtpExt)
         print(histpriceExt)
     except TimeoutException as te:
