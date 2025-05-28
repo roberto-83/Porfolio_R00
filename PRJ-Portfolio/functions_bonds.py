@@ -111,7 +111,7 @@ def readEuronextREV2(isin, data):
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
   URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
   URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
-  print(f"url che sto leggendo {URL_ESTESO}")
+  print(f"url che sto leggendo {URL_ESTESO} alla data {data}")
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
   chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
@@ -236,7 +236,7 @@ def readEuronextREV2(isin, data):
   return histpriceExt
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
 #print('test')
-#print(readEuronextREV2('IT0005534141','2025-05-27'))
+print(readEuronextREV2('IT0005534141','2025-05-27'))
 
 def readEuronextREV2_BACKUP(isin, data):
   print(f"#############Leggo i dati di {isin}")
