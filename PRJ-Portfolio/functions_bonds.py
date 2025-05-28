@@ -122,6 +122,8 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("--disable-extensions")
   chrome_options.add_argument("--dns-prefetch-disable")
   chrome_options.add_argument("--disable-gpu")
+  chrome_options.add_argument("--window-size=1920,1080")
+
   
 
   todayDate = datetime.today().strftime('%Y-%m-%d')
@@ -143,31 +145,36 @@ def readEuronextREV2(isin, data):
         print("Caricamento URL ESTESO...")
         #driverExt.get(URL_ESTESO)
         driverExt.get(URL)
+        time.sleep(10)
         #faccio screenshot
-        driverExt.save_screenshot("/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/tmpFiles/pagina_euronext_1.png")
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+        print("Directory dello script:", script_dir)
+        driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
+        print('stamp 1 fatto')
         #premo accept id=onetrust-accept-btn-handler
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
-            ).click()
-            print("✅ Cookie banner accettato.")
+        try:      
+            buttonPrivac = driverExt.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]')
+            driverExt.execute_script("arguments[0].click();", buttonPrivac)
+            print("Cookie banner accettato.")
         except:
-            print("⚠️ Cookie banner non trovato (già accettato o non presente).")
+            print("Cookie banner non trovato (già accettato o non presente).")
         #altro screen
-        driverExt.save_screenshot("/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/tmpFiles/pagina_euronext_2.png")
+        driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
+        print('stamp 2 fatto')
         #scrivo nel log
         #service = Service(log_path="/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/chromedriver.log")
-        service = Service(log_path="/content/drive/chromedriver.log")
+        service = Service(log_path=script_dir+"/tmpFiles/chromedriver.log")
         driverExt = webdriver.Chrome(service=service, options=chrome_options)
         # Attendi che la tabella o il pulsante "Load more" sia presente
-        try:
-            WebDriverWait(driverExt, 120).until(
-                EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
-            )
-        except TimeoutException:
-            print("Tabella non caricata entro il tempo previsto.")
-            driverExt.quit()
-            return None
+        # try:
+        #     WebDriverWait(driverExt, 120).until(
+        #         EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
+        #     )
+        # except TimeoutException:
+        #     print("Tabella non caricata entro il tempo previsto.")
+        #     driverExt.quit()
+        #     return None
         soup = BeautifulSoup(driverExt.page_source, "html.parser")
         target_table = soup.find("table", {"id": "AwlHistoricalPriceTable"})
 
