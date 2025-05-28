@@ -15,7 +15,11 @@ from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from io import StringIO
 import os
 #import investpy fuori uso
+#################BOT TELEGRAM
+import requests
 
+BOT_TOKEN = '7999582413:AAFkLrAEeh-I5GFx-7PW-cQFkYAie9zkLPE'
+CHAT_ID = '1006608750'
 
 #Leggo i dati dei BTP dal sito https://www.simpletoolsforinvestors.eu/monitors.shtml
 #ad oggi prendo solo dati generici e fornisco i link per andare in profondità e avere cedole
@@ -154,6 +158,13 @@ def readEuronextREV2(isin, data):
         driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
 
         print('stamp 1 fatto')
+        #mi mando lo stamp su telegram
+        with open(script_dir+"/tmpFiles/pagina_euronext_1.png", 'rb') as f:
+          requests.post(
+              f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto',
+              data={'chat_id': CHAT_ID},
+              files={'photo': f}
+        )
         #premo accept id=onetrust-accept-btn-handler
         try:      
             buttonPrivac = driverExt.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]')
