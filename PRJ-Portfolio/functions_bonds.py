@@ -141,13 +141,15 @@ def readEuronextREV2(isin, data):
         driverExt.set_page_load_timeout(120)
 
         print("Caricamento URL ESTESO...")
-        driverExt.get(URL_ESTESO)
+        #driverExt.get(URL_ESTESO)
+        driverExt.get(URL)
         #scrivo nel log
-        service = Service(log_path="/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/chromedriver.log")
+        #service = Service(log_path="/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/chromedriver.log")
+        service = Service(log_path="/content/drive/chromedriver.log")
         driverExt = webdriver.Chrome(service=service, options=chrome_options)
         # Attendi che la tabella o il pulsante "Load more" sia presente
         try:
-            WebDriverWait(driverExt, 60).until(
+            WebDriverWait(driverExt, 120).until(
                 EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable"))
             )
         except TimeoutException:
@@ -430,3 +432,65 @@ def getBotData(isin_val):
 #print(test)
 
 #print(getDividBtp('IT0005273013'))
+
+#CODICE CHATGPT
+import time
+import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+URL = "https://live.euronext.com/en/product/bonds/IT0005534141-MOTX"
+
+def scrape_historical_data():
+    # Impostazioni di Chrome per ambiente headless
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")  # usare 'new' per evitare deprecation warning
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Percorso del ChromeDriver (modifica se necessario)
+    service = Service("/usr/bin/chromedriver")  # o il path corretto nel tuo container
+
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    try:
+        driver.get(URL)
+
+        # Aspetta che la tabella venga caricata
+        WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "table[data-table-id='historical-data-table']"))
+        )
+
+        # Attendi ulteriori secondi se il contenuto viene ancora caricato via JS
+        time.sleep(5)
+
+        table = driver.find_element(By.CSS_SELECTOR, "table[data-table-id='historical-data-table']")
+        rows = table.find_elements(By.TAG_NAME, "tr")
+
+        # Parsing dei dati
+        data = []
+        headers = [th.text.strip() for th in rows[0].find_elements(By.TAG_NAME, "th")]
+        for row in rows[1:]:
+            cols = [td.text.strip() for td in row.find_elements(By.TAG_NAME, "td")]
+            if cols:
+                data.append(cols)
+
+        df = pd.DataFrame(data, columns=headers)
+        return df
+
+    finally:
+        driver.quit()
+
+if __name__ == "__main__":
+    df = scrape_historical_data()
+    print(df.head())
+    df.to_csv("historical_data.csv", index=False)
+
+print("output CHAT GPT")
+print(scrape_historical_data)
