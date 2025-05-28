@@ -104,7 +104,7 @@ def readEuronext(isin):
 #print(readEuronext('IT0005580003'))
 
 
-#print(readEuronextREV2('IT0005580003','08/05/2024'))
+
 def readEuronextREV2(isin, data):
   print(f"#############Leggo i dati di {isin}")
   #se vado in URL_ESTESO ho piu storico da leggere
@@ -143,6 +143,18 @@ def readEuronextREV2(isin, data):
         print("Caricamento URL ESTESO...")
         #driverExt.get(URL_ESTESO)
         driverExt.get(URL)
+        #faccio screenshot
+        driverExt.save_screenshot("/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/tmpFiles/pagina_euronext_1.png")
+        #premo accept id=onetrust-accept-btn-handler
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler"))
+            ).click()
+            print("✅ Cookie banner accettato.")
+        except:
+            print("⚠️ Cookie banner non trovato (già accettato o non presente).")
+        #altro screen
+        driverExt.save_screenshot("/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/tmpFiles/pagina_euronext_2.png")
         #scrivo nel log
         #service = Service(log_path="/content/drive/MyDrive/Programmazione-COLAB/PRJ-Portfolio/chromedriver.log")
         service = Service(log_path="/content/drive/chromedriver.log")
@@ -229,6 +241,8 @@ def readEuronextREV2(isin, data):
 
   return histpriceExt
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
+print('test')
+print(readEuronextREV2('IT0005534141','2025-05-27'))
 
 def readEuronextREV2_BACKUP(isin, data):
   print(f"#############Leggo i dati di {isin}")
@@ -434,94 +448,94 @@ def getBotData(isin_val):
 #print(getDividBtp('IT0005273013'))
 
 #CODICE CHATGPT
-import time
-import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+# import time
+# import pandas as pd
+# from selenium import webdriver
+# from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support import expected_conditions as EC
 
-URL = "https://live.euronext.com/en/product/bonds/IT0005534141-MOTX"
+# URL = "https://live.euronext.com/en/product/bonds/IT0005534141-MOTX"
 
-def scrape_historical_data():
-    # Impostazioni di Chrome per ambiente headless
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # usare 'new' per evitare deprecation warning
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--window-size=1920,1080")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+# def scrape_historical_data():
+#     # Impostazioni di Chrome per ambiente headless
+#     chrome_options = Options()
+#     chrome_options.add_argument("--headless=new")  # usare 'new' per evitare deprecation warning
+#     chrome_options.add_argument("--disable-gpu")
+#     chrome_options.add_argument("--no-sandbox")
+#     chrome_options.add_argument("--window-size=1920,1080")
+#     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    # Percorso del ChromeDriver (modifica se necessario)
-    service = Service("/usr/bin/chromedriver")  # o il path corretto nel tuo container
+#     # Percorso del ChromeDriver (modifica se necessario)
+#     service = Service("/usr/bin/chromedriver")  # o il path corretto nel tuo container
 
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+#     driver = webdriver.Chrome(service=service, options=chrome_options)
 
-    try:
-        driver.get(URL)
+#     try:
+#         driver.get(URL)
 
-        # Aspetta che la tabella venga caricata
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "table[data-table-id='historical-data-table']"))
-        )
+#         # Aspetta che la tabella venga caricata
+#         WebDriverWait(driver, 30).until(
+#             EC.presence_of_element_located((By.CSS_SELECTOR, "table[data-table-id='historical-data-table']"))
+#         )
 
-        # Attendi ulteriori secondi se il contenuto viene ancora caricato via JS
-        time.sleep(5)
+#         # Attendi ulteriori secondi se il contenuto viene ancora caricato via JS
+#         time.sleep(5)
 
-        table = driver.find_element(By.CSS_SELECTOR, "table[data-table-id='historical-data-table']")
-        rows = table.find_elements(By.TAG_NAME, "tr")
+#         table = driver.find_element(By.CSS_SELECTOR, "table[data-table-id='historical-data-table']")
+#         rows = table.find_elements(By.TAG_NAME, "tr")
 
-        # Parsing dei dati
-        data = []
-        headers = [th.text.strip() for th in rows[0].find_elements(By.TAG_NAME, "th")]
-        for row in rows[1:]:
-            cols = [td.text.strip() for td in row.find_elements(By.TAG_NAME, "td")]
-            if cols:
-                data.append(cols)
+#         # Parsing dei dati
+#         data = []
+#         headers = [th.text.strip() for th in rows[0].find_elements(By.TAG_NAME, "th")]
+#         for row in rows[1:]:
+#             cols = [td.text.strip() for td in row.find_elements(By.TAG_NAME, "td")]
+#             if cols:
+#                 data.append(cols)
 
-        df = pd.DataFrame(data, columns=headers)
-        return df
+#         df = pd.DataFrame(data, columns=headers)
+#         return df
 
-    finally:
-        driver.quit()
+#     finally:
+#         driver.quit()
 
-if __name__ == "__main__":
-    df = scrape_historical_data()
-    print(df.head())
-    df.to_csv("historical_data.csv", index=False)
+# if __name__ == "__main__":
+#     df = scrape_historical_data()
+#     print(df.head())
+#     df.to_csv("historical_data.csv", index=False)
 
-print("output CHAT GPT")
-print(scrape_historical_data)
+#print("output CHAT GPT")
+#print(scrape_historical_data)
 
-print('TEST ALTRO PLUGIN')
-from playwright.sync_api import sync_playwright
-import pandas as pd
+# print('TEST ALTRO PLUGIN')
+# from playwright.sync_api import sync_playwright
+# import pandas as pd
 
-def scrape_with_playwright():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto("https://live.euronext.com/en/product/bonds/IT0005534141-MOTX")
+# def scrape_with_playwright():
+#     with sync_playwright() as p:
+#         browser = p.chromium.launch(headless=True)
+#         page = browser.new_page()
+#         page.goto("https://live.euronext.com/en/product/bonds/IT0005534141-MOTX")
 
-        # Aspetta che la tabella venga caricata
-        page.wait_for_selector("table[data-table-id='historical-data-table']")
+#         # Aspetta che la tabella venga caricata
+#         page.wait_for_selector("table[data-table-id='historical-data-table']")
 
-        rows = page.query_selector_all("table[data-table-id='historical-data-table'] tr")
-        data = []
+#         rows = page.query_selector_all("table[data-table-id='historical-data-table'] tr")
+#         data = []
 
-        for i, row in enumerate(rows):
-            cols = [col.inner_text().strip() for col in row.query_selector_all("th, td")]
-            data.append(cols)
+#         for i, row in enumerate(rows):
+#             cols = [col.inner_text().strip() for col in row.query_selector_all("th, td")]
+#             data.append(cols)
 
-        browser.close()
+#         browser.close()
 
-        df = pd.DataFrame(data[1:], columns=data[0])
-        return df
+#         df = pd.DataFrame(data[1:], columns=data[0])
+#         return df
 
-if __name__ == "__main__":
-    df = scrape_with_playwright()
-    print(df.head())
-    df.to_csv("historical_data.csv", index=False)
-print(scrape_with_playwright)
+# if __name__ == "__main__":
+#     df = scrape_with_playwright()
+#     print(df.head())
+#     df.to_csv("historical_data.csv", index=False)
+# print(scrape_with_playwright)
