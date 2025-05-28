@@ -147,6 +147,13 @@ def readEuronextREV2(isin, data):
         #driverExt.set_page_load_timeout(120)
 
         print("Caricamento URL ESTESO...")
+        driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_o.png")
+        with open(script_dir+"/tmpFiles/pagina_euronext_0.png", 'rb') as f:
+          requests.post(
+              f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto',
+              data={'chat_id': CHAT_ID},
+              files={'photo': f}
+        )
         #driverExt.get(URL_ESTESO)
         driverExt.get(URL)
         time.sleep(10)
