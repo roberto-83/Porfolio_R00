@@ -12,6 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
+from selenium.common.exceptions import WebDriverException
+
 from io import StringIO
 import os
 #import investpy fuori uso
@@ -134,6 +136,18 @@ def readEuronextREV2(isin, data):
 
   
 
+  try:
+      
+
+      driver = webdriver.Chrome(options=chrome_options)
+      driver.get("https://www.google.com")
+      print("Titolo della pagina:", driver.title)
+      driver.quit()
+      print("✅ Chromium e WebDriver funzionano correttamente.")
+  except WebDriverException as e:
+      print("❌ Errore con WebDriver o Chromium:", str(e))
+
+
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
   #print(f"Differenza date {diffdate}")
@@ -151,21 +165,12 @@ def readEuronextREV2(isin, data):
         driverExt.set_page_load_timeout(60)
 
         print("Caricamento URL ESTESO...")
-        driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_0.png")
-        with open(script_dir+"/tmpFiles/pagina_euronext_0.png", 'rb') as f:
-          requests.post(
-              f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto',
-              data={'chat_id': CHAT_ID},
-              files={'photo': f}
-        )
         #driverExt.get(URL_ESTESO)
         driverExt.get(URL)
         time.sleep(10)
         print("fine wait")
         #faccio screenshot
-        
         driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
-
         print('stamp 1 fatto')
         #mi mando lo stamp su telegram
         with open(script_dir+"/tmpFiles/pagina_euronext_1.png", 'rb') as f:
