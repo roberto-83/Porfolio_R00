@@ -20,6 +20,10 @@ import requests
 
 BOT_TOKEN = '7999582413:AAFkLrAEeh-I5GFx-7PW-cQFkYAie9zkLPE'
 CHAT_ID = '1006608750'
+#SCRIPT DIR
+script_path = os.path.abspath(__file__)
+script_dir = os.path.dirname(script_path)
+#print("Directory dello script:", script_dir)
 
 #Leggo i dati dei BTP dal sito https://www.simpletoolsforinvestors.eu/monitors.shtml
 #ad oggi prendo solo dati generici e fornisco i link per andare in profondità e avere cedole
@@ -159,9 +163,7 @@ def readEuronextREV2(isin, data):
         time.sleep(10)
         print("fine wait")
         #faccio screenshot
-        script_path = os.path.abspath(__file__)
-        script_dir = os.path.dirname(script_path)
-        print("Directory dello script:", script_dir)
+        
         driverExt.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
 
         print('stamp 1 fatto')
