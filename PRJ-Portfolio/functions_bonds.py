@@ -147,13 +147,14 @@ def readEuronextREV2(isin, data):
   # except WebDriverException as e:
   #     print("❌ Errore con WebDriver o Chromium:", str(e))
   try:
-      driver = webdriver.Chrome(options=chrome_options)
-      driver.get(URL_ESTESO)
-      print("Titolo della pagina:", driver.title)
-      driver.quit()
+      driver1 = webdriver.Chrome(options=chrome_options)
+      driver1.get(URL_ESTESO)
+      print("Titolo della pagina:", driver1.title)
+      driver1.quit()
       print("✅ Chromium e WebDriver funzionano correttamente.")
   except WebDriverException as e:
       print("❌ Errore con WebDriver o Chromium:", str(e))
+      driver1.quit()
 
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
