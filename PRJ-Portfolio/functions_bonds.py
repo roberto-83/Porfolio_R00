@@ -234,11 +234,11 @@ def readEuronextREV2(isin, data):
         time.sleep(5)
         buttonLoad = driverExtBtp.find_element(By.XPATH,'//*[@id="historical-price-load-more"]')
         time.sleep(5)
-        driverExt.execute_script("arguments[0].click();", buttonLoad)
+        driverExtBtp.execute_script("arguments[0].click();", buttonLoad)
         time.sleep(5)
         #leggo i dati
         #dfsExt = pd.read_html(driverExt.page_source)
-        dfsExt = pd.read_html(StringIO(driverExt.page_source))
+        dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         histBtpExt = dfsExt[22]
         #print(histBtpExt)
         histpriceExt = fillDatesDFrame(histBtpExt)
@@ -247,21 +247,21 @@ def readEuronextREV2(isin, data):
       i += 1
     print('Output funzione:')
     print(histpriceExt)
-    driverExt.quit()
-    if driverExt.service.process.poll() is None:
+    driverExtBtp.quit()
+    if driverExtBtp.service.process.poll() is None:
       print("Driver attivo")
     else:
         print("Driver terminato")
     #os.system("pkill chromedriver")
     #os.system("pkill chrome")
     #cerco di chiudere il driver..
-    if driverExt:
+    if driverExtBtp:
       try:
-          driverExt.quit()
+          driverExtBtp.quit()
       except Exception as e:
           print("Errore durante quit:", e)
       finally:
-          del driverExt
+          del driverExtBtp
     #provo  a dare tempo dopo la chiusura per vedere che chiusa tutto e non rimanga appeso
     time.sleep(5)
 
