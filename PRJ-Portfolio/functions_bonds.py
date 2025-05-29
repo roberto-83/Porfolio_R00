@@ -148,6 +148,10 @@ def readEuronextREV2(isin, data):
   #     print("❌ Errore con WebDriver o Chromium:", str(e))
   try:
       driver1 = webdriver.Chrome(options=chrome_options)
+      if driver1.service.process.poll() is None:
+        print("Driver attivo")
+      else:
+        print("Driver terminato")
       driver1.get(URL_ESTESO)
       print("Titolo della pagina:", driver1.title)
       driver1.quit()
@@ -252,7 +256,7 @@ def readEuronextREV2(isin, data):
     if driverExtBtp.service.process.poll() is None:
       print("Driver attivo")
     else:
-        print("Driver terminato")
+      print("Driver terminato")
     #os.system("pkill chromedriver")
     #os.system("pkill chrome")
     #cerco di chiudere il driver..
