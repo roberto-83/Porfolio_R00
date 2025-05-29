@@ -13,6 +13,9 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from selenium.common.exceptions import WebDriverException
+from settings import * #importa variabili globali
+
+
 
 from io import StringIO
 import os
@@ -20,8 +23,7 @@ import os
 #################BOT TELEGRAM
 import requests
 
-BOT_TOKEN = '7999582413:AAFkLrAEeh-I5GFx-7PW-cQFkYAie9zkLPE'
-CHAT_ID = '1006608750'
+
 #SCRIPT DIR
 script_path = os.path.abspath(__file__)
 script_dir = os.path.dirname(script_path)
@@ -144,7 +146,7 @@ def readEuronextREV2(isin, data):
       
 
       driver = webdriver.Chrome(options=chrome_options)
-      driver.get("https://www.google.com")
+      driver.get("https://www.zucchetti.it/cas/login?locale=it")
       print("Titolo della pagina:", driver.title)
       driver.quit()
       print("✅ Chromium e WebDriver funzionano correttamente.")
