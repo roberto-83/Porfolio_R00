@@ -149,9 +149,9 @@ def readEuronextREV2(isin, data):
   try:
       driver1 = webdriver.Chrome(options=chrome_options)
       if driver1.service.process.poll() is None:
-        print("Driver attivo")
+        print("Driver 1 attivo")
       else:
-        print("Driver terminato")
+        print("Driver 1 non attivo")
       driver1.get(URL_ESTESO)
       print("Titolo della pagina:", driver1.title)
       driver1.quit()
