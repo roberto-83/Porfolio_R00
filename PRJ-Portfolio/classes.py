@@ -4,7 +4,7 @@ from functions_sheets import read_range
 from functions_sheets import write_range
 from functions_sheets import delete_range,appendRow
 from functions_bonds import getBtpData
-from functions_bonds import getBotData,readEuronext,readEuronextREV2
+from functions_bonds import getBotData,readEuronextREV2
 from functions_stocks import getStockInfo
 from functions_stocks import verifKey,findRowSpes
 from functions_etf import sectorsEtf,sectorsMultipEtf
