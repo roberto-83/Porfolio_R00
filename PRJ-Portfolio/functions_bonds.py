@@ -23,6 +23,14 @@ import os
 #################BOT TELEGRAM
 import requests
 
+import psutil
+
+mem = psutil.virtual_memory()
+
+print(f"Totale RAM: {mem.total / (1024 ** 3):.2f} GB")
+print(f"RAM disponibile: {mem.available / (1024 ** 3):.2f} GB")
+print(f"RAM usata: {mem.used / (1024 ** 3):.2f} GB")
+print(f"Percentuale di utilizzo: {mem.percent}%")
 
 #SCRIPT DIR
 script_path = os.path.abspath(__file__)
