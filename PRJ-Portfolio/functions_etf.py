@@ -209,6 +209,9 @@ def listEtfCountries(isin):
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--dns-prefetch-disable")
     chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
 
     driverExt = webdriver.Chrome( options=chrome_options)
     driverExt.get(URL)
@@ -273,7 +276,9 @@ def listStocksCountries(isin):
   chrome_options.add_argument("--disable-extensions")
   chrome_options.add_argument("--dns-prefetch-disable")
   chrome_options.add_argument("--disable-gpu")
-  chrome_options.add_argument("--remote-debugging-pipe")
+  chrome_options.add_argument("--window-size=1920,1080")
+  chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+  chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
 
 
   if(isin == 'GB0007366395'):
@@ -377,6 +382,13 @@ def readHoldings():
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
+  chrome_options.add_argument("enable-automation")
+  chrome_options.add_argument("--disable-extensions")
+  chrome_options.add_argument("--dns-prefetch-disable")
+  chrome_options.add_argument("--disable-gpu")
+  chrome_options.add_argument("--window-size=1920,1080")
+  chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+  chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
   #CARTELLA DOWNLOAD
   #nome file corrente
   #print('File name :    ', os.path.basename(__file__))
