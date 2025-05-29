@@ -138,22 +138,22 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("--disable-blink-features=AutomationControlled")
   chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
 
-  try:
-      driver1 = webdriver.Chrome(options=chrome_options)
-      if driver1.service.process.poll() is None:
-        print("Driver 1 attivo")
-      else:
-        print("Driver 1 non attivo")
-      driver1.get(URL_ESTESO)
-      print("Titolo della pagina:", driver1.title)
-      driver1.quit()
-      print("✅ Chromium e WebDriver funzionano correttamente.")
-  except WebDriverException as e:
-      print("❌ Errore con WebDriver o Chromium:", str(e))
-      driver1.quit()
-  except Exception as e:
-      print("Errore:", str(e))
-      driver1.quit()
+  # try:
+  #     driver1 = webdriver.Chrome(options=chrome_options)
+  #     if driver1.service.process.poll() is None:
+  #       print("Driver 1 attivo")
+  #     else:
+  #       print("Driver 1 non attivo")
+  #     driver1.get(URL_ESTESO)
+  #     print("Titolo della pagina:", driver1.title)
+  #     driver1.quit()
+  #     print("✅ Chromium e WebDriver funzionano correttamente.")
+  # except WebDriverException as e:
+  #     print("❌ Errore con WebDriver o Chromium:", str(e))
+  #     driver1.quit()
+  # except Exception as e:
+  #     print("Errore:", str(e))
+  #     driver1.quit()
 
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
