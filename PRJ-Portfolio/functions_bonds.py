@@ -186,8 +186,16 @@ def readEuronextREV2(isin, data):
         # print('stamp 2 fatto')
         #LEGGO
         print('start read {print(time.time())}')
+        html = driverExtBtp.page_source
+
+        # Parsifica con BeautifulSoup
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # Trova la tabella con ID specifico
+        table = soup.find('table', {'id': 'AwlHistoricalPriceTable'})
+        print(table)
         gfdgaergferag
-        
+
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         #print(dfsExt) # tutte le tabelle...
         histBtpExt = dfsExt[20]
