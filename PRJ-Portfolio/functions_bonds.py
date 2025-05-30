@@ -185,10 +185,11 @@ def readEuronextREV2(isin, data):
         # driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
         # print('stamp 2 fatto')
         #LEGGO
-        ptint('start')
+        print('start read {print(time.time())}')
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         #print(dfsExt) # tutte le tabelle...
         histBtpExt = dfsExt[20]
+        print('end read {print(time.time())}')
         print(histBtpExt)
         histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
         histpriceExt = fillDatesDFrame(histBtpExt)
