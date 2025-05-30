@@ -475,7 +475,7 @@ class Portfolio:
       #histTot = readEuronextREV2(row['Isin'],dateRead)
       histTot = investing_data(row['Isin'],dateRead)
       print('Output read euronext')
-      print(histTot)
+      print(histTot.to_string())
       histPriceDf = histTot[histTot['Date'] == dateRead]
       if len(histPriceDf) >0 :
         histPrice = histPriceDf['Close'].values[0]
