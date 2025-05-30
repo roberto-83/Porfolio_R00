@@ -200,6 +200,7 @@ def readEuronextREV2(isin, data):
         # print('stamp 2 fatto')
         #LEGGO
         
+        WebDriverWait(driverExtBtp, 20).until(EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable")))
 
         print('start read {print(time.time())}')
         html = driverExtBtp.page_source
