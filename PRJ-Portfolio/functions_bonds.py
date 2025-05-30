@@ -157,7 +157,10 @@ def readEuronextREV2(isin, data):
         driverExtBtp = webdriver.Chrome(options=chrome_options)
         driverExtBtp.set_page_load_timeout(120)
         print("Caricamento URL ESTESO...")
+        print(time.time())
         driverExtBtp.get(URL_ESTESO)
+        print('temrine load page')
+        print(time.time())
         #driverExt.get(URL)
         #time.sleep(10)
         print("fine wait")
@@ -182,6 +185,7 @@ def readEuronextREV2(isin, data):
         # driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
         # print('stamp 2 fatto')
         #LEGGO
+        ptint('start')
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         #print(dfsExt) # tutte le tabelle...
         histBtpExt = dfsExt[20]
