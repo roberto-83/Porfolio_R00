@@ -186,6 +186,8 @@ def readEuronextREV2(isin, data):
         # print('stamp 2 fatto')
         #LEGGO
         print('start read {print(time.time())}')
+        gfdgaergferag
+        
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         #print(dfsExt) # tutte le tabelle...
         histBtpExt = dfsExt[20]
