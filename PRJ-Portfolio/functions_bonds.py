@@ -471,19 +471,19 @@ def getBotData(isin_val):
 #print(test)
 
 #print(getDividBtp('IT0005273013'))
-IT0005534141
+
 
 def investing_data(isin, data):
   print(f"##########cambiamo sito per i dati storici per isin {isin} alla data {data}")
   if isin =="IT0005273013":
     URL_1="https://it.investing.com/rates-bonds/btp-tf-3,45-mz48-eur-historical-data"
-  elif isin =="IT0005273013":
+  elif isin =="IT0005534141":
     URL_1="https://it.investing.com/rates-bonds/it0005534141-historical-data"
   elif isin =="ES0000012J15":
     URL_1="https://it.investing.com/rates-bonds/es0000012j15-historical-data"
   elif isin =="DE0001102416":
     URL_1="https://it.investing.com/rates-bonds/bund-tf-0,25-fb27-eur-historical-data"
-  elif isin =="IT0005273013":
+  elif isin =="XS1934867547":
     URL_1="https://it.investing.com/rates-bonds/xs1934867547-historical-data"
   else:
     URL_1=""
