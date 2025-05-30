@@ -527,7 +527,7 @@ def investing_data(isin, data):
   
   # Converti la colonna Data in datetime con il formato corretto
   df['Data'] = pd.to_datetime(df['Data'], format='%d.%m.%Y', errors='coerce')
-  df = df.rename(columns={'Data': 'data'})
+  df = df.rename(columns={'Data': 'Date'})
 
   ####### Ora uso il df per trovare il valore alla data 
   print(f"sto confrontando con data {data}")
