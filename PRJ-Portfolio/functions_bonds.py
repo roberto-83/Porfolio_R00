@@ -474,7 +474,7 @@ def getBotData(isin_val):
 
 
 def investing_data(isin, data):
-  print("##########cambiamo sito per i dati storici")
+  print("##########cambiamo sito per i dati storici per isin {}")
   if isin =="IT0005273013":
     URL_1="https://it.investing.com/rates-bonds/btp-tf-3,45-mz48-eur-historical-data"
   elif isin =="IT0005273013":
