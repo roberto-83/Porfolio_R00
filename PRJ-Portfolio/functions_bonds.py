@@ -126,7 +126,7 @@ def readEuronextREV2(isin, data):
   print(f"url che sto leggendo {URL_ESTESO} alla data {data}")
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
-  chrome_options.add_argument('--headless-new')  # Esegui Chrome in modalità headless
+  chrome_options.add_argument('--headless=new')  # Esegui Chrome in modalità headless
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
@@ -155,7 +155,7 @@ def readEuronextREV2(isin, data):
         print("inizia driver")
         service = Service(ChromeDriverManager().install())
         driverExtBtp = webdriver.Chrome(options=chrome_options)
-        driverExtBtp.set_page_load_timeout(60)
+        driverExtBtp.set_page_load_timeout(120)
         print("Caricamento URL ESTESO...")
         driverExtBtp.get(URL_ESTESO)
         #driverExt.get(URL)
