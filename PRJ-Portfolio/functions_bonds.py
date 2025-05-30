@@ -163,17 +163,17 @@ def readEuronextREV2(isin, data):
         print(time.time())
         #driverExt.get(URL)
         #time.sleep(10)
-        print("fine wait")
-        #faccio screenshot
-        driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
-        print('stamp 1 fatto')
-        #mi mando lo stamp su telegram
-        with open(script_dir+"/tmpFiles/pagina_euronext_1.png", 'rb') as f:
-          requests.post(
-              f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto',
-              data={'chat_id': CHAT_ID},
-              files={'photo': f}
-        )
+        # print("fine wait")
+        # #faccio screenshot
+        # driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
+        # print('stamp 1 fatto')
+        # #mi mando lo stamp su telegram
+        # with open(script_dir+"/tmpFiles/pagina_euronext_1.png", 'rb') as f:
+        #   requests.post(
+        #       f'https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto',
+        #       data={'chat_id': CHAT_ID},
+        #       files={'photo': f}
+        # )
         #premo accept id=onetrust-accept-btn-handler SERVE??
         # try:      
         #     buttonPrivac = driverExtBtp.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]')
