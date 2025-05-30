@@ -618,7 +618,7 @@ class Portfolio:
   
   def totalhistory(self,histDf,i):
     print('Stampo histdataframe')
-    print(histDf)
+    print(histDf.to_string())
     histDf_no_Btp_1 = histDf
     if histDf.empty == False:
       #DATI PORTAFOLGIO COMPLETO
