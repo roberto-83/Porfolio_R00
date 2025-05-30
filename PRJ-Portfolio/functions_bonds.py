@@ -126,7 +126,7 @@ def readEuronextREV2(isin, data):
   print(f"url che sto leggendo {URL_ESTESO} alla data {data}")
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
-  chrome_options.add_argument('--headless=new')  # Esegui Chrome in modalità headless
+  #chrome_options.add_argument('--headless=new')  # Esegui Chrome in modalità headless
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument("--enable-javascript")
   chrome_options.add_argument('--disable-dev-shm-usage')
