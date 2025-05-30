@@ -135,7 +135,13 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("--window-size=1920,1080")
   chrome_options.add_argument("--disable-blink-features=AutomationControlled")
   chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-
+  if driverExtBtp:
+        try:
+            driverExtBtp.quit()
+        except Exception as e:
+            print("Errore durante quit:", e)
+        finally:
+            del driverExtBtp
   # try:
   #     driver1 = webdriver.Chrome(options=chrome_options)
   #     if driver1.service.process.poll() is None:
@@ -246,10 +252,10 @@ def readEuronextREV2(isin, data):
     print('Output funzione:')
     print(histpriceExt)
     driverExtBtp.quit()
-    if driverExtBtp.service.process.poll() is None:
-      print("Driver attivo")
-    else:
-      print("Driver terminato")
+    # if driverExtBtp.service.process.poll() is None:
+    #   print("Driver attivo")
+    # else:
+    #   print("Driver terminato")
     #os.system("pkill chromedriver")
     #os.system("pkill chrome")
     #cerco di chiudere il driver..
