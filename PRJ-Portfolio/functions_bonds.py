@@ -174,11 +174,17 @@ def readEuronextREV2(isin, data):
         print("inizia driver")
         driverExtBtp = webdriver.Chrome(options=chrome_options)
         driverExtBtp.set_page_load_timeout(60)
+        import logging
+        logging.basicConfig(level=logging.DEBUG)
 
-        print("Caricamento URL ESTESO...")
-        driverExtBtp.get(URL_ESTESO)
+        try:
+            print("Caricamento URL ESTESO...")
+            driverExtBtp.get(URL_ESTESO)
+        except Exception as e:
+            logging.exception("Errore durante il caricamento pagina")
+        
         #driverExt.get(URL)
-        time.sleep(10)
+        #time.sleep(10)
         print("fine wait")
         #faccio screenshot
         driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_1.png")
