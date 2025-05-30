@@ -168,6 +168,7 @@ def readEuronextREV2(isin, data):
   else:
     try:
         print("inizia driver")
+        service = Service(ChromeDriverManager().install())
         driverExtBtp = webdriver.Chrome(options=chrome_options)
         driverExtBtp.set_page_load_timeout(60)
         import logging
