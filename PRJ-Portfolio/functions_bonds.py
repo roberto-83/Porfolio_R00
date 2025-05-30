@@ -14,6 +14,8 @@ from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from selenium.common.exceptions import WebDriverException
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import tempfile
 
 from settings import * #importa variabili globali
@@ -126,6 +128,8 @@ def readEuronextREV2(isin, data):
   URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
   URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
   print(f"url che sto leggendo {URL_ESTESO} alla data {data}")
+  caps = DesiredCapabilities.CHROME.copy()
+  caps["pageLoadStrategy"] = "eager"  # carica solo HTML iniziale
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
   chrome_options.add_argument('--headless=new')  # Esegui Chrome in modalità headless
@@ -195,6 +199,8 @@ def readEuronextREV2(isin, data):
         # driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
         # print('stamp 2 fatto')
         #LEGGO
+        
+
         print('start read {print(time.time())}')
         html = driverExtBtp.page_source
 
