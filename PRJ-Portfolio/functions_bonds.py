@@ -13,7 +13,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from selenium.common.exceptions import WebDriverException
-from webdriver_manager.chrome import ChromeDriverManager
+#from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import tempfile
@@ -122,14 +122,14 @@ def fillDatesDFrame(df):
 
 def readEuronextREV2(isin, data):
   print(f"#############Leggo i dati di {isin}")
-  user_data_dir = tempfile.mkdtemp()
+  #user_data_dir = tempfile.mkdtemp()
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
   URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
   URL_det="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX/market-information"
   print(f"url che sto leggendo {URL_ESTESO} alla data {data}")
-  caps = DesiredCapabilities.CHROME.copy()
-  caps["pageLoadStrategy"] = "eager"  # carica solo HTML iniziale
+  #caps = DesiredCapabilities.CHROME.copy()
+  #caps["pageLoadStrategy"] = "eager"  # carica solo HTML iniziale
   # Configura le opzioni del browser Chrome
   chrome_options = Options()
   chrome_options.add_argument('--headless=new')  # Esegui Chrome in modalità headless
@@ -163,18 +163,18 @@ def readEuronextREV2(isin, data):
     print('Aggiornamento non necessario')
     histprice = 0 
   else:
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
+    #import logging
+    #logging.basicConfig(level=logging.DEBUG)
     try:
         print("inizia driver")
-        service = Service(ChromeDriverManager().install())
+        #service = Service(ChromeDriverManager().install())
         driverExtBtp = webdriver.Chrome(options=chrome_options)
         driverExtBtp.set_page_load_timeout(120)
         print("Caricamento URL ESTESO...")
-        print(time.time())
+        #print(time.time())
         driverExtBtp.get(URL_ESTESO)
-        print('temrine load page')
-        print(time.time())
+        #print('temrine load page')
+        #print(time.time())
         #driverExt.get(URL)
         #time.sleep(10)
         # print("fine wait")
@@ -202,7 +202,7 @@ def readEuronextREV2(isin, data):
         
         WebDriverWait(driverExtBtp, 20).until(EC.presence_of_element_located((By.ID, "AwlHistoricalPriceTable")))
 
-        print('start read {print(time.time())}')
+        #print('start read {print(time.time())}')
         html = driverExtBtp.page_source
 
         # Parsifica con BeautifulSoup
@@ -210,15 +210,14 @@ def readEuronextREV2(isin, data):
 
         # Trova la tabella con ID specifico
         table = soup.find('table', {'id': 'AwlHistoricalPriceTable'})
-        print(table)
-        driverExtBtp.quit()
-        gfdgaergferag
-
+        #print(table)
+        #driverExtBtp.quit()
+        
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         #print(dfsExt) # tutte le tabelle...
         histBtpExt = dfsExt[20]
-        print('end read {print(time.time())}')
-        print(histBtpExt)
+        #print('end read {print(time.time())}')
+        #print(histBtpExt)
         histBtpExt['Date'] = pd.to_datetime(histBtpExt['Date'], format='%d/%m/%Y')
         histpriceExt = fillDatesDFrame(histBtpExt)
         print(histpriceExt)
@@ -263,30 +262,12 @@ def readEuronextREV2(isin, data):
         histpriceExt.Date = pd.to_datetime(histpriceExt.Date)
 
       i += 1
-    print('Output funzione:')
-    print(histpriceExt)
     driverExtBtp.quit()
-    # if driverExtBtp.service.process.poll() is None:
-    #   print("Driver attivo")
-    # else:
-    #   print("Driver terminato")
-    #os.system("pkill chromedriver")
-    #os.system("pkill chrome")
-    #cerco di chiudere il driver..
-    if driverExtBtp:
-      try:
-          driverExtBtp.quit()
-      except Exception as e:
-          print("Errore durante quit:", e)
-      finally:
-          del driverExtBtp
-    #provo  a dare tempo dopo la chiusura per vedere che chiusa tutto e non rimanga appeso
-    #time.sleep(5)
-
+    
   return histpriceExt
 #print(readEuronextREV2('IT0005580003','08/05/2024'))
 #print('test')
-#print(readEuronextREV2('IT0005534141','2025-05-27'))
+#print(readEuronextREV2('IT0005273013','2025-05-27'))
 
 # def readEuronextREV2_BACKUP(isin, data):
 #   print(f"#############Leggo i dati di {isin}")
@@ -491,95 +472,105 @@ def getBotData(isin_val):
 
 #print(getDividBtp('IT0005273013'))
 
-#CODICE CHATGPT
-# import time
-# import pandas as pd
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
 
-# URL = "https://live.euronext.com/en/product/bonds/IT0005534141-MOTX"
+def investing_data(isin, data):
+  print("##########cambiamo sito per i dati storici")
+  if isin =="IT0005273013":
+    URL_1="https://it.investing.com/rates-bonds/btp-tf-3,45-mz48-eur-historical-data"
+  elif isin =="IT0005273013":
+    URL_1="https://it.investing.com/rates-bonds/it0005534141-historical-data"
+  elif isin =="ES0000012J15":
+    URL_1="https://it.investing.com/rates-bonds/es0000012j15-historical-data"
+  elif isin =="DE0001102416":
+    URL_1="https://it.investing.com/rates-bonds/bund-tf-0,25-fb27-eur-historical-data"
+  elif isin =="IT0005273013":
+    URL_1="https://it.investing.com/rates-bonds/xs1934867547-historical-data"
 
-# def scrape_historical_data():
-#     # Impostazioni di Chrome per ambiente headless
-#     chrome_options = Options()
-#     chrome_options.add_argument("--headless=new")  # usare 'new' per evitare deprecation warning
-#     chrome_options.add_argument("--disable-gpu")
-#     chrome_options.add_argument("--no-sandbox")
-#     chrome_options.add_argument("--window-size=1920,1080")
-#     chrome_options.add_argument("--disable-dev-shm-usage")
+  headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/122.0.0.0 Safari/537.36"
+        ),
+        "Referer": "https://www.google.com"
+  }
 
-#     # Percorso del ChromeDriver (modifica se necessario)
-#     service = Service("/usr/bin/chromedriver")  # o il path corretto nel tuo container
+  response = requests.get(URL_1, headers=headers)
+  if response.status_code != 200:
+      print(f"Errore nella richiesta: {response.status_code}")
+      return None
 
-#     driver = webdriver.Chrome(service=service, options=chrome_options)
+  soup = BeautifulSoup(response.content, 'html.parser')
 
-#     try:
-#         driver.get(URL)
+  # Trova la tabella contenente i dati storici
+  table = soup.find('table', {'class': 'freeze-column-w-1 w-full overflow-x-auto text-xs leading-4'})
 
-#         # Aspetta che la tabella venga caricata
-#         WebDriverWait(driver, 30).until(
-#             EC.presence_of_element_located((By.CSS_SELECTOR, "table[data-table-id='historical-data-table']"))
-#         )
+  if not table:
+      print("Tabella dei dati storici non trovata.")
+      return None
 
-#         # Attendi ulteriori secondi se il contenuto viene ancora caricato via JS
-#         time.sleep(5)
+  # Estrai le intestazioni delle colonne
+  headers = [th.get_text(strip=True) for th in table.find_all('th')]
 
-#         table = driver.find_element(By.CSS_SELECTOR, "table[data-table-id='historical-data-table']")
-#         rows = table.find_elements(By.TAG_NAME, "tr")
+  # Estrai le righe dei dati
+  rows = []
+  for tr in table.find_all('tr')[1:]:
+      cells = [td.get_text(strip=True) for td in tr.find_all('td')]
+      if len(cells) == len(headers):
+          rows.append(cells)
 
-#         # Parsing dei dati
-#         data = []
-#         headers = [th.text.strip() for th in rows[0].find_elements(By.TAG_NAME, "th")]
-#         for row in rows[1:]:
-#             cols = [td.text.strip() for td in row.find_elements(By.TAG_NAME, "td")]
-#             if cols:
-#                 data.append(cols)
+  # Crea il DataFrame
+  df = pd.DataFrame(rows, columns=headers)
+  df = df[['Data', 'Ultimo']]
+  
+  # Converti la colonna Data in datetime con il formato corretto
+  df['Data'] = pd.to_datetime(df['Data'], format='%d.%m.%Y', errors='coerce')
 
-#         df = pd.DataFrame(data, columns=headers)
-#         return df
+  ####### Ora uso il df per trovare il valore alla data 
+  print(f"sto confrontando con data {data}")
+  i=0
+  while i <= 12:
+    print(f"Loop numero {i}")
+    #verifico se la data è presente
+    print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%d/%m/%Y')}")
+    #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
+    if len(df[df['Data'] == datetime.strptime(data, "%Y-%m-%d").strftime('%d/%m/%Y')]) == 1:
+      print('Presente')
+      break
 
-#     finally:
-#         driver.quit()
+    i += 1
+  #print('Output funzione:')
+  #print(histpriceExt)
 
-# if __name__ == "__main__":
-#     df = scrape_historical_data()
-#     print(df.head())
-#     df.to_csv("historical_data.csv", index=False)
+  return df
 
-#print("output CHAT GPT")
-#print(scrape_historical_data)
+#print(investing_data('IT0005534141','2025-05-27'))
 
-# print('TEST ALTRO PLUGIN')
-# from playwright.sync_api import sync_playwright
-# import pandas as pd
 
-# def scrape_with_playwright():
-#     with sync_playwright() as p:
-#         browser = p.chromium.launch(headless=True)
-#         page = browser.new_page()
-#         page.goto("https://live.euronext.com/en/product/bonds/IT0005534141-MOTX")
 
-#         # Aspetta che la tabella venga caricata
-#         page.wait_for_selector("table[data-table-id='historical-data-table']")
 
-#         rows = page.query_selector_all("table[data-table-id='historical-data-table'] tr")
-#         data = []
 
-#         for i, row in enumerate(rows):
-#             cols = [col.inner_text().strip() for col in row.query_selector_all("th, td")]
-#             data.append(cols)
 
-#         browser.close()
 
-#         df = pd.DataFrame(data[1:], columns=data[0])
-#         return df
 
-# if __name__ == "__main__":
-#     df = scrape_with_playwright()
-#     print(df.head())
-#     df.to_csv("historical_data.csv", index=False)
-# print(scrape_with_playwright)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

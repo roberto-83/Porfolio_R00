@@ -4,7 +4,7 @@ from functions_sheets import read_range
 from functions_sheets import write_range
 from functions_sheets import delete_range,appendRow
 from functions_bonds import getBtpData
-from functions_bonds import getBotData,readEuronextREV2
+from functions_bonds import getBotData,readEuronextREV2,investing_data
 from functions_stocks import getStockInfo
 from functions_stocks import verifKey,findRowSpes
 from functions_etf import sectorsEtf,sectorsMultipEtf
@@ -472,7 +472,8 @@ class Portfolio:
       #d = {'Ticker':}
       #histPrice = pd.Series( [histPrice1], index=[row['Ticker']])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
-      histTot = readEuronextREV2(row['Isin'],dateRead)
+      #histTot = readEuronextREV2(row['Isin'],dateRead)
+      histTot = investing_data(row['Isin'],dateRead)
       print('Output read euronext')
       print(histTot)
       histPriceDf = histTot[histTot['Date'] == dateRead]
