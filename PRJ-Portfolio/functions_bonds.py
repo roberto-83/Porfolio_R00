@@ -13,6 +13,8 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from selenium.common.exceptions import WebDriverException
+from webdriver_manager.chrome import ChromeDriverManager
+
 from settings import * #importa variabili globali
 
 
