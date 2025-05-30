@@ -544,7 +544,7 @@ def investing_data(isin, data):
     i += 1
   #print('Output funzione:')
   #print(histpriceExt)
-
+  print(df)
   return df
 
 #print(investing_data('IT0005534141','2025-05-27'))
