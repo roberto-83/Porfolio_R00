@@ -120,6 +120,7 @@ def fillDatesDFrame(df):
 
 def readEuronextREV2(isin, data):
   print(f"#############Leggo i dati di {isin}")
+  user_data_dir = tempfile.mkdtemp()
   #se vado in URL_ESTESO ho piu storico da leggere
   URL="https://live.euronext.com/en/product/bonds/"+isin+"-MOTX"
   URL_ESTESO = "https://live.euronext.com/en/product/bonds/"+isin+"-MOTX#historical-price"
@@ -140,7 +141,7 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
   chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
 
-  user_data_dir = tempfile.mkdtemp()
+  
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
   #print(f"Differenza date {diffdate}")
