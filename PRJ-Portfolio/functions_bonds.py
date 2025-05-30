@@ -138,23 +138,6 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("--disable-blink-features=AutomationControlled")
   chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
   
-  # try:
-  #     driver1 = webdriver.Chrome(options=chrome_options)
-  #     if driver1.service.process.poll() is None:
-  #       print("Driver 1 attivo")
-  #     else:
-  #       print("Driver 1 non attivo")
-  #     driver1.get(URL_ESTESO)
-  #     print("Titolo della pagina:", driver1.title)
-  #     driver1.quit()
-  #     print("✅ Chromium e WebDriver funzionano correttamente.")
-  # except WebDriverException as e:
-  #     print("❌ Errore con WebDriver o Chromium:", str(e))
-  #     driver1.quit()
-  # except Exception as e:
-  #     print("Errore:", str(e))
-  #     driver1.quit()
-
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
   #print(f"Differenza date {diffdate}")
@@ -166,20 +149,15 @@ def readEuronextREV2(isin, data):
     print('Aggiornamento non necessario')
     histprice = 0 
   else:
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
     try:
         print("inizia driver")
         service = Service(ChromeDriverManager().install())
         driverExtBtp = webdriver.Chrome(options=chrome_options)
         driverExtBtp.set_page_load_timeout(60)
-        import logging
-        logging.basicConfig(level=logging.DEBUG)
-
-        try:
-            print("Caricamento URL ESTESO...")
-            driverExtBtp.get(URL_ESTESO)
-        except Exception as e:
-            logging.exception("Errore durante il caricamento pagina")
-        
+        print("Caricamento URL ESTESO...")
+        driverExtBtp.get(URL_ESTESO)
         #driverExt.get(URL)
         #time.sleep(10)
         print("fine wait")
@@ -193,16 +171,16 @@ def readEuronextREV2(isin, data):
               data={'chat_id': CHAT_ID},
               files={'photo': f}
         )
-        #premo accept id=onetrust-accept-btn-handler
-        try:      
-            buttonPrivac = driverExtBtp.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]')
-            driverExtBtp.execute_script("arguments[0].click();", buttonPrivac)
-            print("Cookie banner accettato.")
-        except:
-            print("Cookie banner non trovato (già accettato o non presente).")
-        #altro screen
-        driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
-        print('stamp 2 fatto')
+        #premo accept id=onetrust-accept-btn-handler SERVE??
+        # try:      
+        #     buttonPrivac = driverExtBtp.find_element(By.XPATH,'//*[@id="onetrust-accept-btn-handler"]')
+        #     driverExtBtp.execute_script("arguments[0].click();", buttonPrivac)
+        #     print("Cookie banner accettato.")
+        # except:
+        #     print("Cookie banner non trovato (già accettato o non presente).")
+        # #altro screen
+        # driverExtBtp.save_screenshot(script_dir+"/tmpFiles/pagina_euronext_2.png")
+        # print('stamp 2 fatto')
         #LEGGO
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
         #print(dfsExt) # tutte le tabelle...
