@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from urllib3.poolmanager import _DEFAULT_BLOCKSIZE
 from selenium.common.exceptions import WebDriverException
 from webdriver_manager.chrome import ChromeDriverManager
+import tempfile
 
 from settings import * #importa variabili globali
 
@@ -137,7 +138,9 @@ def readEuronextREV2(isin, data):
   chrome_options.add_argument("--window-size=1920,1080")
   chrome_options.add_argument("--disable-blink-features=AutomationControlled")
   chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
-  
+  chrome_options.add_argument(f'--user-data-dir={user_data_dir}')
+
+  user_data_dir = tempfile.mkdtemp()
   todayDate = datetime.today().strftime('%Y-%m-%d')
   diffdate = ( datetime.strptime(todayDate, "%Y-%m-%d") - datetime.strptime(data, "%Y-%m-%d")).days
   #print(f"Differenza date {diffdate}")
@@ -194,6 +197,7 @@ def readEuronextREV2(isin, data):
         # Trova la tabella con ID specifico
         table = soup.find('table', {'id': 'AwlHistoricalPriceTable'})
         print(table)
+        driverExtBtp.quit()
         gfdgaergferag
 
         dfsExt = pd.read_html(StringIO(driverExtBtp.page_source))
