@@ -178,6 +178,7 @@ class Portfolio:
       #price1d = infoStock['prevClose']
       price1d = infoStock['previousClose']
       price1d = Portfolio.calcCurren(price1d,row['CURRENCY'])
+      print(f"Il prezzo che leggo è {row['LivePrice']}")
       delta = row['LivePrice'] - price1d
     elif row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
       price=getPriceETF(row['Ticker'])
