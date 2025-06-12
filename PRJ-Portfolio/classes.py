@@ -1440,11 +1440,12 @@ class Portfolio:
       tickInfo[18],tickInfo[19],tickInfo[20],tickInfo[21],tickInfo[22],tickInfo[23],tickInfo[24],tickInfo[25],
       tickInfo[26],tickInfo[27],tickInfo[28],tickInfo[29],tickInfo[30],tickInfo[31],tickInfo[32],tickInfo[33],tickInfo[34],tickInfo[35] ])
       #portIsinCalc['LivePrice']=portIsinCalc.apply(Portfolio.getLivePrice,axis=1 )
+    print(listPrin)
     #print(len(listPrin))
     numRow = len(listPrin)+1
 
     #cancello vecchie righe
-    deleteOldRowsWat = delete_range('tab_watchlist!A2:AS250',newPrj)
+    deleteOldRowsWat = delete_range('tab_watchlist!A2:AS1250',newPrj)
     #scrivo le nuove
     write_range('tab_watchlist!A2:AS'+str(numRow),listPrin,newPrj)
     return 'OK'
