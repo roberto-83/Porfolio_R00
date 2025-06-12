@@ -181,6 +181,19 @@ def getStockInfo(ticker):
     if qType == "CRYPTOCURRENCY":
         qType = "CRYPTO"
 
+    # Preleva il prezzo corrente da fast_info
+    current_price = get_fast("last_price", get("currentPrice"))
+
+    # Se il prezzo è 0 o None, prova a usare lo storico
+    if not current_price:
+        try:
+            hist = stock.history(period="1d")
+            if not hist.empty:
+                current_price = hist["Close"][-1]
+        except Exception as e:
+            logging.warning(f"[{ticker}] Errore ottenendo prezzo da history(): {e}")
+            current_price = None
+
     stockInfo = {
         # GENERIC
         "quoteType": qType,
@@ -193,7 +206,7 @@ def getStockInfo(ticker):
 
         # PRICE
         "previousClose": get_fast("previous_close", get("previousClose")),
-        "currentPrice": get_fast("last_price", get("currentPrice")),
+        "currentPrice": current_price,
         "open": get_fast("open", get("regularMarketOpen")),
         "dayLow": get_fast("day_low"),
         "dayHigh": get_fast("day_high"),
