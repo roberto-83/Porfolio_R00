@@ -274,7 +274,7 @@ def verifKey(dict,val):
   else:
     return '0'
 
-print(getStockInfo('RACE.MI'))
+#print(getStockInfo('RACE.MI'))
 #print(getStockInfo('MSF.DE'))
 #print(getStockInfo('^VIX'))
 #g = getStockInfo('^VIX')
