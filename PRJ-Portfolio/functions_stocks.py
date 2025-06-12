@@ -170,10 +170,10 @@ def getStockInfo(ticker):
     fast_info = stock.fast_info or {}
 
     # Helper per accesso sicuro
-    def get(key, default=None):
+    def get(key, default=0):
         return info.get(key, default)
 
-    def get_fast(key, default=None):
+    def get_fast(key, default=0):
         return fast_info.get(key, default)
 
     # Quote type
