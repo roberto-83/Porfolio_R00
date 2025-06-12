@@ -67,12 +67,18 @@ def testReadDataYf(tick):
 
 
 #FUNZIONI COMPLETE
-def getStockInfo(ticker):
+def getStockInfo_OLD(ticker):
   stock = yf.Ticker(ticker)
   #print(stock)
   #get all stock info
-  info = stock.info
-  #print(info)
+  #info = stock.info
+  info = stock.get_info()
+  #funzione rapida per le stock info ma molto scarna
+  #info3 = stock.fast_info
+  #print(info3["last_price"])
+  print(info)
+  #print(info2)
+  #print(info3)
   #Creo dizionario filtrato
   qType = verifKey(info,'quoteType')
   if qType == "CRYPTOCURRENCY" : qType = "CRYPTO"
@@ -146,6 +152,87 @@ def getStockInfo(ticker):
   }
   return stockInfo
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
+def getStockInfo(ticker):
+    stock = yf.Ticker(ticker)
+
+    # Prova a ottenere info dettagliate
+    try:
+        info = stock.get_info()
+    except Exception as e:
+        logging.warning(f"[{ticker}] Errore nel recupero info dettagliate: {e}")
+        info = {}
+
+    # Prende i dati rapidi
+    fast_info = stock.fast_info or {}
+
+    # Helper per accesso sicuro
+    def get(key, default=None):
+        return info.get(key, default)
+
+    def get_fast(key, default=None):
+        return fast_info.get(key, default)
+
+    # Quote type
+    qType = get("quoteType", "")
+    if qType == "CRYPTOCURRENCY":
+        qType = "CRYPTO"
+
+    stockInfo = {
+        # GENERIC
+        "quoteType": qType,
+        "country": get("country"),
+        "sector": get("sector"),
+        "industry": get("industry"),
+        "shortName": get("shortName"),
+        "longName": get("longName"),
+        "currency": get_fast("currency", get("currency")),
+
+        # PRICE
+        "previousClose": get_fast("previous_close", get("previousClose")),
+        "currentPrice": get_fast("last_price", get("currentPrice")),
+        "open": get_fast("open", get("regularMarketOpen")),
+        "dayLow": get_fast("day_low"),
+        "dayHigh": get_fast("day_high"),
+        "yearLow": get_fast("year_low", get("fiftyTwoWeekLow")),
+        "yearHigh": get_fast("year_high", get("fiftyTwoWeekHigh")),
+
+        # VALUTAZIONE & INDICATORI
+        "beta": get("beta"),
+        "trailingPE": get("trailingPE"),
+        "forwardPE": get("forwardPE"),
+        "priceToSalesTrailing12Months": get("priceToSalesTrailing12Months"),
+        "bookValue": get("bookValue"),
+        "priceToBook": get("priceToBook"),
+
+        # DIVIDENDI
+        "dividendYield": get("dividendYield"),
+        "lastDividendValue": get("lastDividendValue"),
+        "lastDividendDate": get("lastDividendDate"),
+        "exDividendDate": get("exDividendDate"),
+        "payoutRatio": get("payoutRatio"),
+
+        # FINANCIALS
+        "ebitda": get("ebitda"),
+        "freeCashflow": get("freeCashflow"),
+        "operatingCashflow": get("operatingCashflow"),
+        "marketCap": get_fast("market_cap", get("marketCap")),
+        "enterpriseValue": get("enterpriseValue"),
+
+        # TARGET & RECOMMENDATION
+        "targetHighPrice": get("targetHighPrice"),
+        "targetLowPrice": get("targetLowPrice"),
+        "targetMeanPrice": get("targetMeanPrice"),
+        "targetMedianPrice": get("targetMedianPrice"),
+        "recommendationMean": get("recommendationMean"),
+        "recommendationKey": get("recommendationKey"),
+        "numberOfAnalystOpinions": get("numberOfAnalystOpinions")
+    }
+
+    return stockInfo
+
 def histData(ticker,periodo):
   stock = yf.Ticker(ticker)
   return stock.history(period=periodo)
@@ -187,7 +274,8 @@ def verifKey(dict,val):
   else:
     return '0'
 
-#print(getStockInfo('ADB.DE'))
+print(getStockInfo('RACE.MI'))
+#print(getStockInfo('MSF.DE'))
 #print(getStockInfo('^VIX'))
 #g = getStockInfo('^VIX')
 #print(g['previousClose'])
