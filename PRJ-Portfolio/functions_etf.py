@@ -95,7 +95,7 @@ def getPriceETF(ticker):
   output = [ticker, livePrice,datePrice,curre,price1d]
     
   return output
-print(getPriceETF('WSPX.MI'))
+#print(getPriceETF('WSPX.MI'))
 
 def getSummary(ticker):
   fund = Ticker(ticker)

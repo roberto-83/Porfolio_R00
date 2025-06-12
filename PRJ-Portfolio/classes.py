@@ -439,7 +439,7 @@ class Portfolio:
     #ordino dataframe per id portaf e asset e composizione
     portFinal = portfin0.sort_values(by=['Num Port', 'Asset', 'peso'])
     #print('Stampa 03')
-    #print(portFinal.to_string())
+    print(portFinal.to_string())
     ################# End multiple portfolio
     #trasformo in lista
     listPrint = portFinal.values.tolist()
