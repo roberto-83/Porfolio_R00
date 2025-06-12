@@ -65,22 +65,34 @@ def testReadDataYf(tick):
 #print(getcurrencyEtc('BITC.SW',52))
 #print(testReadDataYf('EURCHF=X'))
 
-
+import logging
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 #FUNZIONI COMPLETE
-def getStockInfo_OLD(ticker):
+def getStockInfo(ticker):
   stock = yf.Ticker(ticker)
   #print(stock)
   #get all stock info
   #info = stock.info
   info = stock.get_info()
   #funzione rapida per le stock info ma molto scarna
-  #info3 = stock.fast_info
-  #print(info3["last_price"])
-  print(info)
+  info3 = stock.fast_info
+  # print(info3)
+  #print(info3["previousClose"])
+  #print(verifKey(info,'previousClose'))
+  # print(info)
   #print(info2)
   #print(info3)
+  if verifKey(info,'previousClose') == '0':
+    if info3["previousClose"] is None:
+        prevClosePrice = 0
+    else:
+        prevClosePrice = info3["previousClose"]
+  else:
+    prevClosePrice = verifKey(info,'previousClose')
+
   #Creo dizionario filtrato
-  qType = verifKey(info,'quoteType')
+  qType = info3["currency"] if verifKey(info,'quoteType') == '0' else verifKey(info,'quoteType')
   if qType == "CRYPTOCURRENCY" : qType = "CRYPTO"
   stockInfo = {
   #GENERIC
@@ -90,7 +102,7 @@ def getStockInfo_OLD(ticker):
   "industry": verifKey(info,'industry'),
   "shortName": verifKey(info,'shortName'),
   "longName": verifKey(info,'longName'),
-  "currency": verifKey(info,'currency'),
+  "currency": info3["currency"] if verifKey(info,'currency') == '0' else verifKey(info,'currency'),
   #INDICATORI
   "beta": verifKey(info,'beta'),
   "trailingPE": verifKey(info,'trailingPE'),
@@ -103,10 +115,15 @@ def getStockInfo_OLD(ticker):
   "pegRatio": verifKey(info,'pegRatio'),
   "trailingPegRatio": verifKey(info,'trailingPegRatio'),
   #PRICE
-  "previousClose": verifKey(info,'previousClose'),
-  "currentPrice": verifKey(info,'currentPrice'),
+  #"previousClose": info3["previousClose"],
+  #"currentPrice": info3["last_price"],
+  #"previousClose": verifKey(info,'previousClose'),
+  #"currentPrice": verifKey(info,'currentPrice'),
+  "currentPrice": info3["last_price"] if verifKey(info, 'currentPrice') == '0' else verifKey(info, 'currentPrice'),
+  "previousClose": prevClosePrice,
   "bid": verifKey(info,'bid'),
-  "open": verifKey(info,'regularMarketOpen'),
+  #"open": verifKey(info,'regularMarketOpen'),
+  "open": info3["open"] if verifKey(info,'regularMarketOpen')== '0' else verifKey(info,'regularMarketOpen'),
   #DIVIDEND
   "dividRate": verifKey(info,'dividRate'),
   "dividYield": verifKey(info,'dividYield'),
@@ -117,7 +134,7 @@ def getStockInfo_OLD(ticker):
   #ANDAM PREZZO
   "fiftyTwoWeekLow": verifKey(info,'fiftyTwoWeekLow'),
   "fiftyTwoWeekHigh": verifKey(info,'fiftyTwoWeekHigh'),
-  "fiftyDayAverage": verifKey(info,'fiftyDayAverage'),
+  "fiftyDayAverage": info3["fiftyDayAverage"] if verifKey(info,'fiftyDayAverage') == '0' else verifKey(info,'fiftyDayAverage'),
   "52WeekChange": verifKey(info,'52WeekChange'),
   "twoHundredDayAverage": verifKey(info,'twoHundredDayAverage'),
   #FINANCIALS
@@ -147,16 +164,14 @@ def getStockInfo_OLD(ticker):
   "targetMedianPrice": verifKey(info,'targetMedianPrice'),
   "recommendationMean": verifKey(info,'recommendationMean'),
   "recommendationKey": verifKey(info,'recommendationKey'),
-  "marketCap": verifKey(info,'marketCap'),
+  "marketCap": info3["marketCap"] if verifKey(info,'marketCap') == '0' else verifKey(info,'marketCap'),
   "numberOfAnalystOpinions": verifKey(info,'numberOfAnalystOpinions')
   }
   return stockInfo
 
-import logging
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 
-def getStockInfo(ticker):
+
+def getStockInfo_CHATGPT(ticker):
     stock = yf.Ticker(ticker)
 
     # Prova a ottenere info dettagliate
@@ -288,7 +303,7 @@ def verifKey(dict,val):
   else:
     return '0'
 
-#print(getStockInfo('RACE.MI'))
+#print(getStockInfo('JUSE.MI'))
 #print(getStockInfo('MSF.DE'))
 #print(getStockInfo('^VIX'))
 #g = getStockInfo('^VIX')
