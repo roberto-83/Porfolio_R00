@@ -85,7 +85,7 @@ def getStockInfo(ticker):
   #print(info3)
   if verifKey(info,'previousClose') == '0':
     if info3["previousClose"] is None:
-        prevClosePrice = 0
+        prevClosePrice = 0.000001
     else:
         prevClosePrice = info3["previousClose"]
   else:
