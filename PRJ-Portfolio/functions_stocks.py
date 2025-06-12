@@ -154,6 +154,7 @@ def getStockInfo_OLD(ticker):
 
 import logging
 logging.basicConfig(level=logging.INFO)
+logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 
 def getStockInfo(ticker):
     stock = yf.Ticker(ticker)
@@ -162,7 +163,7 @@ def getStockInfo(ticker):
     try:
         info = stock.get_info()
     except Exception as e:
-        logging.warning(f"[{ticker}] Errore nel recupero info dettagliate: {e}")
+        logging.warning(f"[{ticker}] get_info() fallito: {e}")
         info = {}
 
     # Prende i dati rapidi
