@@ -24,8 +24,8 @@ def read_stock_fts_mib():
     if link:
       description = link.get_text()
       href = link['href']
-      data.append((description, href))
-  df = pd.DataFrame(data, columns=['Descrizione','LINK'])
+      data.append((description, href,'AzioniFtseMib',0))
+  df = pd.DataFrame(data, columns=['Descrizione','LINK','Type','Rating'])
   #print(df.to_string())
   return df
 
@@ -43,11 +43,37 @@ def read_stock_cap():
     if link:
       description = link.get_text()
       href = link['href']
-      data.append((description, href))
-  df = pd.DataFrame(data, columns=['Descrizione','LINK'])
+      data.append((description, href,'AzioniCap',0))
+  df = pd.DataFrame(data, columns=['Descrizione','LINK','Type','Rating'])
   #print(df.to_string())
   return df
 
+def read_commodities():
+  URL = "https://www.operativetrading.it/materie-prime-analisi-tecnica/"
+  r = requests.get(URL) 
+  soup = BeautifulSoup(r.content, 'html5lib') 
+  table = soup.find('table', id='tablepress-5')
+  number_of_rows = len(table.findAll(lambda tag: tag.name == 'tr' and tag.findParent('table') == table))
+  #print(f"Numero di righe della tabella: {number_of_rows}")
+  rows = table.find_all('tr')
+  data = []
+  for row in rows:
+    link = row.find('a')
+    rating_com = row.find('td', class_='column-2')
+    if rating_com:
+      rating_com = rating_com.text
+    else:
+      rating_com=0
+    rating_com = str(rating_com).replace("\n","")
+    #print(rating_com[1])
+    if link:
+      description = link.get_text()
+      href = link['href']
+      data.append((description, href,'Commodities',rating_com))
+  df = pd.DataFrame(data, columns=['Descrizione','LINK','Type','Rating'])
+  #print(df.to_string())
+  return df
+#print(read_commodities())
 ####################################################################
 ####################################################################
 
@@ -148,17 +174,18 @@ def all_stocks():
   if readlastDate('tab_op_tr') == 1:
     tab1 = read_stock_fts_mib()
     tab2 = read_stock_cap()
-    df = pd.concat([tab1, tab2], ignore_index=True)
+    tab3 = read_commodities()
+    df = pd.concat([tab1, tab2, tab3], ignore_index=True)
     list_data = []
     for index,row in df.iterrows():
       print(f"Indice {index} e riga {row['Descrizione']} con link {row['LINK']}")
       val_stock = read_singl_stock(row['LINK'])
-      list_data.append((todayDate,val_stock['Nome'], val_stock['Descrizione'],val_stock['Rating'],val_stock['TargetPrice'],val_stock['PNC']))
+      list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],val_stock['Rating'],val_stock['TargetPrice'],val_stock['PNC']))
       print(list_data[index])
     #print(list_data)
     ########STAMP
     #
-    appendRow('tab_op_tr!A:F',list_data,newPrj)
+    appendRow('tab_op_tr!A:G',list_data,newPrj)
     return "OK"
   else:
     return "NOT NECESSARY"
