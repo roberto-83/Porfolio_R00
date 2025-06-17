@@ -21,6 +21,7 @@ from yahooquery import Ticker
 from yahooread import readYahooSite
 from fred_data import writeMacroData,writeMacroDataHistory
 from investing_read import write_economin_data
+from read_operative_trading import all_stocks
 #from get_all_tickers import get_tickers as gt
 
 #variabile per non eseguire tutto il codice..
@@ -48,32 +49,32 @@ if developerMode == 0:
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 1 - Fine - Aggiornamento Tab Isin")
   #Crea la tabella del portafoglio
   #time.sleep(5) #aspetto tempo perchè la tabella sopra sia scritta
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio 1")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_a - Inizio - Aggiornamento Portafoglio 1")
   #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
   time2s = time.time()
   initialTime=time2s   #START
   print(port.writePortfolio())
   delta2 = time.time() - time2s
-  log_insert1("Aggiornamento Tab Portafoglio","Fine",delta2,initialTime)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio 1")
+  log_insert1("Aggiornamento Tab Portafoglio 1","Fine",delta2,initialTime)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_a - Fine - Aggiornamento Portafoglio 1")
 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio 2")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_b - Inizio - Aggiornamento Portafoglio 2")
   #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
   time2s_b = time.time()
   #initialTime=time2s   #START
   print(port2.writePortfolio())
   delta2_b = time.time() - time2s_b
   log_insert1("Aggiornamento Tab Portafoglio 2","Fine",delta2_b,initialTime)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio 2")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_b - Fine - Aggiornamento Portafoglio 2")
 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Inizio - Aggiornamento Portafoglio 3")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Inizio - Aggiornamento Portafoglio 3")
   #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
   time2s_c = time.time()
   #initialTime=time2s   #START
   print(port3.writePortfolio())
   delta2_c = time.time() - time2s_c
   log_insert1("Aggiornamento Tab Portafoglio 3","Fine",delta2_c,initialTime)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2 - Fine - Aggiornamento Portafoglio 3")
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Fine - Aggiornamento Portafoglio 3")
 
   #creo calendar
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
@@ -138,15 +139,26 @@ if developerMode == 0:
   delta6 = time.time() - time6s
   log_insert1("Aggiornamento Tab Watchlist","Fine",delta6,initialTime) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
+
+  #dati "operative trading"
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 10 - Inizio - Dati Operative Trading")
+  time10s = time.time()
+  #print(writeMacroDataHistory())
+  output_econ = all_stocks()
+  #print(write_economin_data())
+  delta10 = time.time() - time10s
+  log_insert1("Aggiornamento Tab Oper Trading","Fine",delta10,initialTime,output_econ) 
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 10 - Fine - Dati Operative Trading")
+
   #dati fed
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Inizio - Dati Economici")
-  time7s = time.time()
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Inizio - Dati Economici")
+  time11s = time.time()
   #print(writeMacroDataHistory())
   output_econ = write_economin_data()
   #print(write_economin_data())
-  delta7 = time.time() - time7s
-  log_insert1("Aggiornamento Tab Macro","Fine",delta6,initialTime,output_econ) 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Dati Economici")
+  delta11 = time.time() - time11s
+  log_insert1("Aggiornamento Tab Macro","Fine",delta11,initialTime,output_econ) 
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Economici")
 else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
