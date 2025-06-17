@@ -164,4 +164,4 @@ def all_stocks():
     return "NOT NECESSARY"
 
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-amplifon/"))
-print(all_stocks())
+#print(all_stocks())
