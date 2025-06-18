@@ -18,7 +18,6 @@ from manage_logs import log_insert,log_insert1
 import pytz
 import time
 import yahooquery
-import yfinance as yf
 from yahooquery import Ticker
 from yahooread import readYahooSite
 from fred_data import writeMacroData,writeMacroDataHistory
