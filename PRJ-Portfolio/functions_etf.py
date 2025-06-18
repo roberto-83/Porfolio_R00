@@ -128,7 +128,7 @@ def sectorsMultipEtf(tickers):
   fund = Ticker(tickers)
   #print(fund)
   try:
-    fund_df = fund.fund_sector_weightings(timeout=30)
+    fund_df = fund.fund_sector_weightings
     print("risultato della funzione")
     print(fund_df.to_string())
     return fund_df
