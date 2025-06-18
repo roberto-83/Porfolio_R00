@@ -23,7 +23,10 @@ from fred_data import writeMacroData,writeMacroDataHistory
 from investing_read import write_economin_data
 from read_operative_trading import all_stocks
 #from get_all_tickers import get_tickers as gt
-
+print("Stampo le versioni dei package")
+print(f"yahooquery {yahooquery.__version__}")
+print(f"yahooquery {yahooquery.__version__}")
+print(f"yahooquery {yahooquery.__version__}")
 #variabile per non eseguire tutto il codice..
 developerMode=0
 if developerMode == 0:
