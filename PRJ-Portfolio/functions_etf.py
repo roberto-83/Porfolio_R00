@@ -129,7 +129,7 @@ def sectorsMultipEtf(tickers):
   #print(fund)
   try:
     fund_df = fund.fund_sector_weightings
-    #print(fund_df)
+    print(fund_df.to_string())
     return fund_df
   except:
     #return  pd.DataFrame() #dataframe vuoto
@@ -137,6 +137,7 @@ def sectorsMultipEtf(tickers):
     #return  'KO' #dataframe vuoto
     return  pd.Dataframe() #dataframe vuoto
 
+print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
 #print(sectorsEtf('GLUX.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
 #########################################
