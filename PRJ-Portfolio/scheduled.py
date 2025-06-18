@@ -17,6 +17,7 @@ from settings import * #importa variabili globali
 from manage_logs import log_insert,log_insert1
 import pytz
 import time
+import yahooquery
 from yahooquery import Ticker
 from yahooread import readYahooSite
 from fred_data import writeMacroData,writeMacroDataHistory
