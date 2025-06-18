@@ -25,8 +25,9 @@ from read_operative_trading import all_stocks
 #from get_all_tickers import get_tickers as gt
 print("Stampo le versioni dei package")
 print(f"yahooquery {yahooquery.__version__}")
-print(f"yahooquery {yahooquery.__version__}")
-print(f"yahooquery {yahooquery.__version__}")
+print(f"yfinance {yfinance.__version__}")
+print(f"python {python.__version__}")
+print(f"pip {pip.__version__}")
 #variabile per non eseguire tutto il codice..
 developerMode=0
 if developerMode == 0:
