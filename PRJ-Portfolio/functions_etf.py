@@ -137,7 +137,7 @@ def sectorsMultipEtf(tickers):
     #return  'KO' #dataframe vuoto
     return  pd.Dataframe() #dataframe vuoto
 
-print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
+#print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
 #print(sectorsEtf('GLUX.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
 #########################################
