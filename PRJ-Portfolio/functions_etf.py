@@ -141,7 +141,8 @@ def sectorsMultipEtf(tickers):
     for col in tickers:
       if col not in fund_df.columns:
         fund_df[col] = 0
-        print(f" Colonna {col} aggiunta con valore 0)
+        print(f" Colonna {col} aggiunta con valore 0")
+    print(fund_df.to_string())
     return fund_df
   except:
     #return  pd.DataFrame() #dataframe vuoto
