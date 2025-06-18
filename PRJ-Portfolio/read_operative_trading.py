@@ -90,12 +90,17 @@ def read_singl_stock(url):
   if div:
     descrizione = div.find('p').text
     #print(descrizione)
+  # indice_punto = descrizione.find('.')
+  # resto_testo = descrizione[indice_punto + 1:].lstrip()
+  #descrizione = str(descrizione).replace("","").strip()
   #rating
   rating_tab = soup.find('table')
   if rating_tab:
     rating = rating_tab.find('td').text.strip()
   else:
     rating='0'
+  rating = str(rating).replace("%”>     ","").strip()
+  rating = str(rating).replace("%”>     ","").strip()
   #print(rating)
   #### target price
   name_stock_barrato = name_stock.replace(" ","-")
@@ -115,6 +120,9 @@ def read_singl_stock(url):
     #i=i+1
     if target_price !='0':
       break
+  target_price = str(target_price).replace("Di seguito riportiamo il consensus di prezzo ottenuto attraverso la media dei giudizi di differenti analisti. ","").strip()
+  target_price = str(target_price).replace("Le raccomandazioni delle banche d’affari si basano su fonti ritenute attendibili ma non possiamo garantirne la correttezza.","").strip()
+  
 
   #### PNC = Posizioni nette corte
   list_id_pnc = [f"Posizioni-corte-nette-Consob-{name_stock_barrato}",
@@ -135,7 +143,7 @@ def read_singl_stock(url):
   if pnc == '0':
       print("controlla PNC")
   #print(testo_finale_pnc)
-  df = ({'Nome' : name_stock , 'Descrizione' : descrizione, 'Rating':rating, 'TargetPrice':target_price, 'PNC':pnc})
+  df = ({'Nome' : name_stock , 'Descrizione' : descrizione, 'Rating':rating, 'TargetPrice':target_price, 'PNC':pnc, 'Rating_Num':rating[-3:]})
   return df
 
 def read_data_bs(h3):
@@ -180,15 +188,15 @@ def all_stocks():
     for index,row in df.iterrows():
       print(f"Indice {index} e riga {row['Descrizione']} con link {row['LINK']}")
       val_stock = read_singl_stock(row['LINK'])
-      list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],val_stock['Rating'],val_stock['TargetPrice'],val_stock['PNC']))
+      list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],val_stock['Rating'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['Rating_Num']))
       print(list_data[index])
     #print(list_data)
     ########STAMP
     #
-    appendRow('tab_op_tr!A:G',list_data,newPrj)
+    appendRow('tab_op_tr!A:H',list_data,newPrj)
     return "OK"
   else:
     return "NOT NECESSARY"
 
-#print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-amplifon/"))
+print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-amplifon/"))
 #print(all_stocks())
