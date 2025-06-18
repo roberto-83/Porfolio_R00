@@ -140,8 +140,8 @@ def sectorsMultipEtf(tickers):
     print(fund_df.to_string())
     for col in tickers:
       if col not in fund_df.columns:
-        fund_df[col] = 0
-        print(f" Colonna {col} aggiunta con valore 0")
+        fund_df[col] = sectorsEtf(col)
+        #print(f" Colonna {col} aggiunta con valore 0")
     print(fund_df.to_string())
     return fund_df
   except:
@@ -150,8 +150,9 @@ def sectorsMultipEtf(tickers):
     #return  'KO' #dataframe vuoto
     return  pd.Dataframe() #dataframe vuoto
 
-#print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
-#print(sectorsEtf('GLUX.MI'))
+print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
+print('singolo')
+print(sectorsEtf('XDEM.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
 #########################################
 ####API di ETFDB
