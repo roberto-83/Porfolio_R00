@@ -907,6 +907,8 @@ class Portfolio:
       #voglio lista di etf perchè la funzione massiva di raccoglimento settori funziona meglio della singola..
       etfs = port[port['Asset'] == "ETF-AZIONI"]
       etfsList = etfs['Ticker'].tolist()
+      print("stampo la lista di ticker che passo alla funzione")
+      print(etfsList)
       allSectorsEtf = sectorsMultipEtf(etfsList)#Verificare SE NON E VUOTO!!!!!!
       print('Stampo i settori per tutti gli etf che ho')
       print(allSectorsEtf)
