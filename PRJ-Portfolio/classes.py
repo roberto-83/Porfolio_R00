@@ -897,7 +897,8 @@ class Portfolio:
       #port = Portfolio.dFPortf(self)
       port = self.portSenzaFinan
       portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso','SETTORE']].copy()
-      pruint()
+      print("####Leggo i settori:")
+      print(portShort.to_string())
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
       #for i in portShort.iterrows():
       allSectors = pd.DataFrame()
