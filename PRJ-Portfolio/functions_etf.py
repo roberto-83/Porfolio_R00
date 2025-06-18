@@ -25,7 +25,14 @@ import shutil
 from io import StringIO
 import subprocess
 
+# Imposta il timeout globale per tutte le richieste HTTP
+session = requests.Session()
+session.adapters.clear()
+session.adapters.DEFAULT_RETRIES = 3
+session.timeout = 30  # Timeout di 30 secondi
 
+# Configura yahooquery per utilizzare questa sessione personalizzata
+Ticker._session = session
 
 #import openpyxl
 #from openpyxl.styles.colors import WHITE, RGB 
@@ -131,6 +138,10 @@ def sectorsMultipEtf(tickers):
     fund_df = fund.fund_sector_weightings
     print("risultato della funzione")
     print(fund_df.to_string())
+    for col in tickers:
+      if col not in fund_df.columns:
+        fund_df[col] = 0
+        print(f" Colonna {col} aggiunta con valore 0)
     return fund_df
   except:
     #return  pd.DataFrame() #dataframe vuoto
