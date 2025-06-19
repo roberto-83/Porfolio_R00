@@ -266,4 +266,15 @@ def all_stocks():
 
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
-#print(all_stocks())
+print(all_stocks())
+
+
+
+
+
+
+
+
+
+
+
