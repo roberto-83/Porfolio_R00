@@ -25,14 +25,14 @@ import shutil
 from io import StringIO
 import subprocess
 
-# Imposta il timeout globale per tutte le richieste HTTP
-session = requests.Session()
-session.adapters.clear()
-session.adapters.DEFAULT_RETRIES = 3
-session.timeout = 30  # Timeout di 30 secondi
+# # Imposta il timeout globale per tutte le richieste HTTP
+# session = requests.Session()
+# session.adapters.clear()
+# session.adapters.DEFAULT_RETRIES = 3
+# session.timeout = 30  # Timeout di 30 secondi
 
-# Configura yahooquery per utilizzare questa sessione personalizzata
-Ticker._session = session
+# # Configura yahooquery per utilizzare questa sessione personalizzata
+# Ticker._session = session
 
 #import openpyxl
 #from openpyxl.styles.colors import WHITE, RGB 
@@ -142,6 +142,7 @@ def sectorsMultipEtf(tickers):
       if col not in fund_df.columns:
         fund_df[col] = sectorsEtf(col)
         #print(f" Colonna {col} aggiunta con valore 0")
+    fund_df.fillna(0, inplace=True)
     print(fund_df.to_string())
     return fund_df
   except:
@@ -150,9 +151,9 @@ def sectorsMultipEtf(tickers):
     #return  'KO' #dataframe vuoto
     return  pd.Dataframe() #dataframe vuoto
 
-print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
-print('singolo')
-print(sectorsEtf('XDEM.MI'))
+#print(sectorsMultipEtf(['CSSPX.MI', 'EMAE.MI', 'CSSX5E.MI', 'ZPRV.DE', 'XDEM.MI', 'CSNDX.MI', 'MWRD.MI']))
+#print('singolo')
+#print(sectorsEtf('XDEM.MI'))
 #print(sectorsEtf('CSSPX.MIT'))
 #########################################
 ####API di ETFDB
