@@ -1123,7 +1123,7 @@ class Portfolio:
       listPrintWeights = countryUnique1.values.tolist()
       lastRowWeights=str(len(listPrintWeights)+1)
       print(f"Il TOTAL WEIGHT è {totalWeight}")
-      deleteOldRows = delete_range('tab_country!A2:M600',newPrj)
+      deleteOldRows = delete_range('tab_country!A2:M100',newPrj)
       write_range('tab_country!A2:H'+lastRowSt,listPrint,newPrj)
       write_range('tab_country!J2:J2',[[totalWeight]],newPrj)
       write_range('tab_country!L2:M'+lastRowWeights,listPrintWeights,newPrj)
