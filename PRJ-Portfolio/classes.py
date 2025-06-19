@@ -891,7 +891,7 @@ class Portfolio:
         print(f" Ultima data foglio {lastDate} e data oggi {datetime.today().strftime('%Y-%m-%d')}")
         if lastDate == datetime.today().strftime('%Y-%m-%d'):
           print(f"Somma dei pesi {Portfolio.read_sum_weight(self)}")
-          if float(Portfolio.read_sum_weight(self)) < 0.8:
+          if float(Portfolio.read_sum_weight(self)) < 0.8: ##se ha già girato ma incompleto (pesi <80%) lo faccio girare di nuovo
             return 'ok'
           return 'Aggiornamento non Necessario'
         else:
