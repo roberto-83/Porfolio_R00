@@ -893,7 +893,7 @@ class Portfolio:
           print(f"Somma dei pesi {Portfolio.read_sum_weight(self)}")
           sum_weight_val=Portfolio.read_sum_weight(self)
           print(type(sum_weight_val))
-          if float(sum_weight_val) < 0.8: ##se ha già girato ma incompleto (pesi <80%) lo faccio girare di nuovo
+          if float(sum_weight_val[]) < 0.8: ##se ha già girato ma incompleto (pesi <80%) lo faccio girare di nuovo
             return 'ok'
           return 'Aggiornamento non Necessario'
         else:
