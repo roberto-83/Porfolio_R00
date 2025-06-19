@@ -122,6 +122,42 @@ def delete_range_OLD(range_name,spreadsheet_id):
   spreadsheetId=spreadsheet_id, range=range_name).execute()
   print("Deleted")
 
+# Funzione per cancellare un intervallo nelle celle di Google Sheets con retry
+def delete_range(range_name, spreadsheet_id, retries=3, delay=5):
+    """
+    Elimina l'intervallo di celle da Google Sheets con gestione dei retry in caso di errore.
+    
+    :param range_name: Il range di celle da cancellare (es: 'tab_country!A2:M600')
+    :param spreadsheet_id: L'ID del foglio di calcolo
+    :param retries: Il numero di tentativi in caso di errore
+    :param delay: Il ritardo (in secondi) tra i tentativi
+    """
+    for attempt in range(retries):
+        try:
+            # Tentativo di cancellazione delle celle
+            result = spreadsheet_service.spreadsheets().values().clear(
+                spreadsheetId=spreadsheet_id, range=range_name).execute()
+            print("Deleted")
+            return  # Uscita dalla funzione se l'operazione ha avuto successo
+        
+        except (BrokenPipeError, socket.error, ssl.SSLError) as e:
+            # Se c'è un errore di connessione (BrokenPipeError, socket error, SSL error)
+            print(f"Errore di connessione: {e}. Riprovando tra {delay} secondi...")
+            if attempt < retries - 1:
+                time.sleep(delay)  # Aspetta prima di riprovare
+            else:
+                print("Max retries raggiunti. Impossibile completare l'operazione.")
+                raise  # Rilancia l'errore dopo l'ultimo tentativo
+        
+        except HttpError as e:
+            # Gestione degli errori specifici delle API di Google (ad esempio limiti superati)
+            print(f"Errore API: {e}")
+            raise  # Rilancia l'errore, potrebbe essere necessario fermarsi
+            
+        except Exception as e:
+            # Cattura altri tipi di errori
+            print(f"Errore sconosciuto: {e}")
+            raise  # Rilancia l'errore
 
 #########INFO
 #https://developers.google.com/sheets/api/reference/rest?hl=it
