@@ -873,8 +873,9 @@ class Portfolio:
 ##### TABELLA COMPOSIZIONE - SETTORI
 ################################################################################
   def read_sum_weight(self):
-    sum_weight = read_range('tab_sectors!J2',newPrj)
-    return sum_weight
+    sum_weight = read_range('tab_sectors!J1:J2',newPrj)
+    numero = sum_weight['SOMMA PESI'].loc[1]
+    return numero
 
   def readDateTabSettori(self):
     tabIsinsNew = read_range('tab_sectors!A:M',newPrj)
@@ -890,6 +891,8 @@ class Portfolio:
         print(f" Ultima data foglio {lastDate} e data oggi {datetime.today().strftime('%Y-%m-%d')}")
         if lastDate == datetime.today().strftime('%Y-%m-%d'):
           print(f"Somma dei pesi {Portfolio.read_sum_weight(self)}")
+          if float(Portfolio.read_sum_weight(self)) < 0.8:
+            return 'ok'
           return 'Aggiornamento non Necessario'
         else:
           return 'ok'

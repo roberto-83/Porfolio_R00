@@ -199,6 +199,7 @@ def testapi():
 
 #print(testapi())
 
+
 #########################################
 ####LEGGO da ExtraETF
 ####https://extraetf.com/it/stock-profile/US79466L3024
