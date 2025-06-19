@@ -629,8 +629,8 @@ class Portfolio:
       #mercato e vwce
       print(f"Trovo delta alla data {histDf['dataHist'].iloc[0]}")
       dataDelta = (datetime.strptime(histDf['dataHist'].iloc[0], '%Y-%m-%d')+timedelta(days=5)).strftime('%Y-%m-%d')
-      prezzoMerc1 = yf.download('CSSPX.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
-      prezzoMerc1_vwce = yf.download('VWCE.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False) 
+      prezzoMerc1 = yf.download('CSSPX.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False,auto_adjust=True)) 
+      prezzoMerc1_vwce = yf.download('VWCE.MI',histDf['dataHist'].iloc[0],dataDelta,progress=False,auto_adjust=True)) 
       print(f'Verifico se ci sono dati pre bonifica per ticker {histDf["dataHist"].iloc[0]}')
       print(prezzoMerc1)
       prezzoMerc2 = prezzoMerc1.asfreq('D')

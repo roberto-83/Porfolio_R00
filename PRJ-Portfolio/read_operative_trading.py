@@ -77,6 +77,21 @@ def read_commodities():
 ####################################################################
 ####################################################################
 
+def remove_phrase_at_end(phrase, num_car, text_remove):
+  #Divido le frasi
+  frasi = phrase.split(".")
+  # Rimuovi eventuali spazi vuoti o stringhe vuote dovute alla divisione
+  frasi = [frase.strip() for frase in frasi if frase.strip()]
+  # Prendi l'ultima frase
+  ultima_frase = frasi[-1]
+  #print(f"Ulitma frase è :{ultima_frase}")
+  #Tolgo la frase se 
+  if ultima_frase[:num_car]==text_remove:
+    descr = ". ".join(frasi[:-1])
+  else: 
+    descr=phrase
+  return descr
+
 def read_singl_stock(url):
   r = requests.get(url) 
   soup = BeautifulSoup(r.content, 'html5lib') 
@@ -85,15 +100,26 @@ def read_singl_stock(url):
   name_stock = name_stock.replace("Analisi tecnica", "").strip()
   name_stock = name_stock.replace("Analisi Tecnica", "").strip()
   #print(name_stock)
-  #escrizione estesa
+  #### LEGGO la descrizione estesa
   div = soup.find('div', class_='entry-content clear')
   if div:
     descrizione = div.find('p').text
     #print(descrizione)
-  # indice_punto = descrizione.find('.')
-  # resto_testo = descrizione[indice_punto + 1:].lstrip()
-  #descrizione = str(descrizione).replace("","").strip()
-  #rating
+  #Tolgo la prima frase
+  if descrizione[:9]=='In questa':
+    posizione_punto = descrizione.find(".")
+    if posizione_punto != -1:
+      descrizione = descrizione[posizione_punto +1:].lstrip()
+  descrizione = remove_phrase_at_end(descrizione, 13, "Infine potrai")
+  descrizione = remove_phrase_at_end(descrizione, 13, "A seguire pot")
+  descrizione = remove_phrase_at_end(descrizione, 13, "In seguito po")
+  descrizione = remove_phrase_at_end(descrizione, 13, "Potrai quindi")
+  descrizione = remove_phrase_at_end(descrizione, 13, "Lo studio ini")
+  descrizione = remove_phrase_at_end(descrizione, 13, "In questa pag")
+
+ 
+
+  #### LEGGO il rating
   rating_tab = soup.find('table')
   if rating_tab:
     rating = rating_tab.find('td').text.strip()
@@ -102,7 +128,13 @@ def read_singl_stock(url):
   rating = str(rating).replace("%”>     ","").strip()
   rating = str(rating).replace("%”>     ","").strip()
   #print(rating)
-  #### target price
+  #### LEGGO rating numero
+  rating_num = rating[-3:]
+  try:
+    rating_num = float(rating_num)
+  except ValueError:
+    rating_num = 0
+  #### LEGGO target price
   name_stock_barrato = name_stock.replace(" ","-")
   print(name_stock_barrato)
 
@@ -135,15 +167,42 @@ def read_singl_stock(url):
     h3_pnc = soup.find('h3',id=li)
     pnc = read_data_bs(h3_pnc)
     pnc = pnc.replace("Di seguito puoi osservare la tendenza dellePNCdegli investitori professionali nel corso del mese.","").strip()
+    pnc = pnc.replace("  Nota che l’unica fonte ufficiale delle PNC è il sito della Consob.  I dati del sito hanno solo scopo di informazione. Il loro utilizzo come supporto alle scelte di trading è a completo rischio dell’utente che se ne assume la piena responsabilità.","").strip()
+    percentuale_num=0
     #print(pnc)
     if pnc !='0':
+      pnc = remove_phrase_at_end(pnc, 26, "Approfondisci lePNC Consob")
+      pnc = remove_phrase_at_end(pnc, 26, "Nota che l’unica fonte uff")
+      pnc = remove_phrase_at_end(pnc, 26, "Approfondisci lePNC Consob")
+      pnc = remove_phrase_at_end(pnc, 26, "Approfondisci le PNC Conso")
+      pnc = remove_phrase_at_end(pnc, 26, "ApprofondisciPNC Consob – ")
+      pnc = remove_phrase_at_end(pnc, 26, "Appfofondisci lePNC Consob")
+      pnc = remove_phrase_at_end(pnc, 26, "Il loro utilizzo come supp")
+      pnc = remove_phrase_at_end(pnc, 26, "I dati del sito hanno solo")
+      pnc = remove_phrase_at_end(pnc, 26, "Nota che l’unica fonte uff")
+      #tolgo la prima frase
+      pnc_indice = pnc.find("sono pari al") #stringa lunga 12 piu uno di spazio..
+      pnc = pnc[pnc_indice+13:]#estraggo tutto ciò che è dopo il testo 
+      pnc=pnc.replace(" del capitale sociale, ","")
+      #tolgo "rispetto alla seduta precedente"
+      pnc=pnc.replace("rispetto alla seduta precedente","")
+      #sistemo la percentuale
+      pos_perc = pnc.find("%")
+      percentuale = pnc[:pos_perc]
+      try:
+        percentuale=percentuale.replace(" ","")
+        percentuale_num = float(percentuale)
+      except ValueError:
+        percentuale_num = 0
+      #print(percentuale)
       break
+ 
   if target_price == '0':
       print("controlla target price")
   if pnc == '0':
       print("controlla PNC")
   #print(testo_finale_pnc)
-  df = ({'Nome' : name_stock , 'Descrizione' : descrizione, 'Rating':rating, 'TargetPrice':target_price, 'PNC':pnc, 'Rating_Num':rating[-3:]})
+  df = ({'Nome' : name_stock , 'Descrizione' : descrizione, 'Rating':rating, 'Rating_Num':rating_num, 'TargetPrice':target_price, 'PNC':pnc ,'PERC_PNC':percentuale_num,"URL":url})
   return df
 
 def read_data_bs(h3):
@@ -188,15 +247,17 @@ def all_stocks():
     for index,row in df.iterrows():
       print(f"Indice {index} e riga {row['Descrizione']} con link {row['LINK']}")
       val_stock = read_singl_stock(row['LINK'])
-      list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],val_stock['Rating'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['Rating_Num']))
+      list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],\
+      val_stock['Rating_Num'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['PERC_PNC'],val_stock['URL']))
       print(list_data[index])
     #print(list_data)
     ########STAMP
     #
-    appendRow('tab_op_tr!A:H',list_data,newPrj)
+    appendRow('tab_op_tr!A:I',list_data,newPrj)
     return "OK"
   else:
     return "NOT NECESSARY"
 
-#print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-amplifon/"))
+#print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
+#print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
 #print(all_stocks())
