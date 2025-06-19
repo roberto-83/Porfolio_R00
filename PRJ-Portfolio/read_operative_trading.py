@@ -92,7 +92,7 @@ def remove_phrase_at_end(phrase, num_car, text_remove):
     descr=phrase
   return descr
 
-def read_singl_stock(url):
+def read_singl_stock(url,type_stock):
   r = requests.get(url) 
   soup = BeautifulSoup(r.content, 'html5lib') 
   #nome stock
@@ -101,21 +101,24 @@ def read_singl_stock(url):
   name_stock = name_stock.replace("Analisi Tecnica", "").strip()
   #print(name_stock)
   #### LEGGO la descrizione estesa
-  div = soup.find('div', class_='entry-content clear')
-  if div:
-    descrizione = div.find('p').text
-    #print(descrizione)
-  #Tolgo la prima frase
-  if descrizione[:9]=='In questa':
-    posizione_punto = descrizione.find(".")
-    if posizione_punto != -1:
-      descrizione = descrizione[posizione_punto +1:].lstrip()
-  descrizione = remove_phrase_at_end(descrizione, 13, "Infine potrai")
-  descrizione = remove_phrase_at_end(descrizione, 13, "A seguire pot")
-  descrizione = remove_phrase_at_end(descrizione, 13, "In seguito po")
-  descrizione = remove_phrase_at_end(descrizione, 13, "Potrai quindi")
-  descrizione = remove_phrase_at_end(descrizione, 13, "Lo studio ini")
-  descrizione = remove_phrase_at_end(descrizione, 13, "In questa pag")
+  if type_stock=='Commodities':
+    descrizione=''
+  else:
+    div = soup.find('div', class_='entry-content clear')
+    if div:
+      descrizione = div.find('p').text
+      #print(descrizione)
+    #Tolgo la prima frase
+    if descrizione[:9]=='In questa':
+      posizione_punto = descrizione.find(".")
+      if posizione_punto != -1:
+        descrizione = descrizione[posizione_punto +1:].lstrip()
+    descrizione = remove_phrase_at_end(descrizione, 13, "Infine potrai")
+    descrizione = remove_phrase_at_end(descrizione, 13, "A seguire pot")
+    descrizione = remove_phrase_at_end(descrizione, 13, "In seguito po")
+    descrizione = remove_phrase_at_end(descrizione, 13, "Potrai quindi")
+    descrizione = remove_phrase_at_end(descrizione, 13, "Lo studio ini")
+    descrizione = remove_phrase_at_end(descrizione, 13, "In questa pag")
 
  
 
@@ -249,7 +252,7 @@ def all_stocks():
     list_data = []
     for index,row in df.iterrows():
       print(f"Indice {index} e riga {row['Descrizione']} con link {row['LINK']}")
-      val_stock = read_singl_stock(row['LINK'])
+      val_stock = read_singl_stock(row['LINK'],row['Type'])
       list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],\
       val_stock['Rating_Num'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['PERC_PNC'],val_stock['URL'],val_stock['prova']))
       print(list_data[index])
