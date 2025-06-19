@@ -496,7 +496,7 @@ class Portfolio:
       #prendo anche due giorni dopo perchè se è lunedi yahoo mi da i dati di venerdi..
       dataFine = (datetime.strptime(todayCon, '%Y-%m-%d')+timedelta(days=3)).strftime('%Y-%m-%d')
       #trovo i prezzi
-      prices = yf.download(row['Ticker'],dataInizio,dataFine,progress=False) 
+      prices = yf.download(row['Ticker'],dataInizio,dataFine,progress=False,auto_adjust=True) 
       #print(prices)  
       #aggiungo le date vuote
       prices1 = prices.asfreq('D')
