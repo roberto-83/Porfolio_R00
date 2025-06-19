@@ -154,7 +154,9 @@ def read_singl_stock(url):
       break
   target_price = str(target_price).replace("Di seguito riportiamo il consensus di prezzo ottenuto attraverso la media dei giudizi di differenti analisti. ","").strip()
   target_price = str(target_price).replace("Le raccomandazioni delle banche d’affari si basano su fonti ritenute attendibili ma non possiamo garantirne la correttezza.","").strip()
-  
+  #modifico struttura per mettere le diciture a capo
+  frasi_trg = target_price.split(" . ")
+  target_price_mod = " .\n".join(frase.strip() for frase in frasi_trg)
 
   #### PNC = Posizioni nette corte
   list_id_pnc = [f"Posizioni-corte-nette-Consob-{name_stock_barrato}",
@@ -202,7 +204,8 @@ def read_singl_stock(url):
   if pnc == '0':
       print("controlla PNC")
   #print(testo_finale_pnc)
-  df = ({'Nome' : name_stock , 'Descrizione' : descrizione, 'Rating':rating, 'Rating_Num':rating_num, 'TargetPrice':target_price, 'PNC':pnc ,'PERC_PNC':percentuale_num,"URL":url})
+  df = ({'Nome' : name_stock , 'Descrizione' : descrizione, 'Rating':rating, 'Rating_Num':rating_num,\
+   'TargetPrice':target_price_mod, 'PNC':pnc ,'PERC_PNC':percentuale_num,"URL":url,"prova":''})
   return df
 
 def read_data_bs(h3):
@@ -248,7 +251,7 @@ def all_stocks():
       print(f"Indice {index} e riga {row['Descrizione']} con link {row['LINK']}")
       val_stock = read_singl_stock(row['LINK'])
       list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],\
-      val_stock['Rating_Num'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['PERC_PNC'],val_stock['URL']))
+      val_stock['Rating_Num'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['PERC_PNC'],val_stock['URL'],val_stock['prova']))
       print(list_data[index])
     #print(list_data)
     ########STAMP
@@ -260,4 +263,4 @@ def all_stocks():
 
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
-#print(all_stocks())
+print(all_stocks())
