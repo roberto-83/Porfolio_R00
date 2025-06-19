@@ -5,6 +5,9 @@ from auth import drive_service
 from settings import *
 import pandas as pd
 import time
+from googleapiclient.errors import HttpError
+import socket
+import ssl
 
 ########################################
 ############# CREATE SHEET #############
@@ -114,7 +117,7 @@ def appendRow(range_name,values,spreadsheet_id):
 ############# DELETE DATA #############
 ######################################
 
-def delete_range(range_name,spreadsheet_id):
+def delete_range_OLD(range_name,spreadsheet_id):
   result = spreadsheet_service.spreadsheets().values().clear(
   spreadsheetId=spreadsheet_id, range=range_name).execute()
   print("Deleted")
