@@ -872,7 +872,10 @@ class Portfolio:
 ################################################################################
 ##### TABELLA COMPOSIZIONE - SETTORI
 ################################################################################
-  
+  def read_sum_weight(self):
+    sum_weight = read_range('tab_sectors!J2',newPrj)
+    return sum_weight
+
   def readDateTabSettori(self):
     tabIsinsNew = read_range('tab_sectors!A:M',newPrj)
     statusReadDf = read_range('tab_sectors!O2:O2',newPrj)
@@ -886,6 +889,7 @@ class Portfolio:
         lastDate = tabIsinsNew['DATA'].iloc[0]
         print(f" Ultima data foglio {lastDate} e data oggi {datetime.today().strftime('%Y-%m-%d')}")
         if lastDate == datetime.today().strftime('%Y-%m-%d'):
+          print(f"Somma dei pesi {Portfolio.read_sum_weight(self)}")
           return 'Aggiornamento non Necessario'
         else:
           return 'ok'
@@ -897,8 +901,8 @@ class Portfolio:
       #port = Portfolio.dFPortf(self)
       port = self.portSenzaFinan
       portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso','SETTORE']].copy()
-      print("####Leggo i settori:")
-      print(portShort.to_string())
+      # print("####Leggo i settori:")
+      # print(portShort.to_string())
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
       #for i in portShort.iterrows():
       allSectors = pd.DataFrame()
