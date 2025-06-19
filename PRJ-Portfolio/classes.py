@@ -891,6 +891,7 @@ class Portfolio:
         print(f" Ultima data foglio {lastDate} e data oggi {datetime.today().strftime('%Y-%m-%d')}")
         if lastDate == datetime.today().strftime('%Y-%m-%d'):
           print(f"Somma dei pesi {Portfolio.read_sum_weight(self)}")
+          sum
           if float(Portfolio.read_sum_weight(self)) < 0.8: ##se ha già girato ma incompleto (pesi <80%) lo faccio girare di nuovo
             return 'ok'
           return 'Aggiornamento non Necessario'
@@ -1120,6 +1121,7 @@ class Portfolio:
       lastRowSt=str(len(listPrint)+1)
       listPrintWeights = countryUnique1.values.tolist()
       lastRowWeights=str(len(listPrintWeights)+1)
+      print(f"Il TOTAL WEIGHT è {totalWeight}")
       deleteOldRows = delete_range('tab_country!A2:M600',newPrj)
       write_range('tab_country!A2:H'+lastRowSt,listPrint,newPrj)
       write_range('tab_country!J2:J2',[[totalWeight]],newPrj)
