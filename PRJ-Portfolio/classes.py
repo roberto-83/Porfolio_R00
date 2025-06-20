@@ -906,6 +906,7 @@ class Portfolio:
       #port = Portfolio.dFPortf(self)
       port = self.portSenzaFinan
       portShort = port[['Asset','Ticker','DESCRIZIONE LUNGA','peso','SETTORE']].copy()
+      print(f"Calcolo i settori per {len(portShort)} oggetti")
       # print("####Leggo i settori:")
       # print(portShort.to_string())
       #portShort['Azienda']=portShort.apply(Portfolio.getCompany,axis=1 )
@@ -994,7 +995,10 @@ class Portfolio:
           allSectors = pd.concat([allSectors,settori], ignore_index=True)
         #calcolo il peso totale che dovrà essere 1
         totalWeight= allSectors['Peso'].sum()
-        #print(allSectors.to_string())
+        conteggio_colonna = allSectors['Peso'].value_counts(normalize=False, dropna=False)
+        numero_di_zeri = conteggio_colonna.get(0, 0)  # Ottieni il conteggio degli zeri, 0 se non presente
+   
+        print(allSectors.to_string())
 
         #Ora mi serve un nuovo dataframe con solo i settori singoli e la somma dei pesi
         #copio il df
@@ -1008,7 +1012,7 @@ class Portfolio:
         #ordino DF
         sectorsUnique1=sectorsUnique1.sort_values(by=['Total'], ascending=[False])
         #print(sectorsUnique1)
-
+        
         #scrivo i dati su spreadsheet
         listPrint = allSectors.values.tolist()
         lastRowSt=str(len(listPrint)+1)
@@ -1017,6 +1021,7 @@ class Portfolio:
         deleteOldRows = delete_range('tab_sectors!A2:M600',newPrj)
         write_range('tab_sectors!A2:H'+lastRowSt,listPrint,newPrj)
         write_range('tab_sectors!J2:J2',[[totalWeight]],newPrj)
+        write_range('tab_sectors!J3:J3',[[numero_di_zeri]],newPrj)
         write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
         write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
         
