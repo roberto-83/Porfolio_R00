@@ -136,14 +136,14 @@ def sectorsMultipEtf(tickers):
   #print(fund)
   try:
     fund_df = fund.fund_sector_weightings
-    print("risultato della funzione")
-    print(fund_df.to_string())
+    # print("risultato della funzione")
+    # print(fund_df.to_string())
     for col in tickers:
       if col not in fund_df.columns:
         fund_df[col] = sectorsEtf(col)
         #print(f" Colonna {col} aggiunta con valore 0")
     fund_df.fillna(0, inplace=True)
-    print(fund_df.to_string())
+    # print(fund_df.to_string())
     return fund_df
   except:
     #return  pd.DataFrame() #dataframe vuoto

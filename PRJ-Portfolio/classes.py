@@ -873,9 +873,14 @@ class Portfolio:
 ##### TABELLA COMPOSIZIONE - SETTORI
 ################################################################################
   def read_sum_weight(self):
-    sum_weight = read_range('tab_sectors!J1:J2',newPrj)
+    sum_weight = read_range('tab_sectors!J1:J4',newPrj)
     numero = sum_weight['SOMMA PESI'].loc[1]
-    return numero
+    numero = numero.replace(",",".")#peso
+    numero_zeros = sum_weight['SOMMA PESI'].loc[2]
+    if float(numero[:5]) < 0.8 or float(numero_zeros) <5:
+      return 0
+    else:
+      return 1
 
   def readDateTabSettori(self):
     tabIsinsNew = read_range('tab_sectors!A:M',newPrj)
@@ -892,8 +897,7 @@ class Portfolio:
         if lastDate == datetime.today().strftime('%Y-%m-%d'):
           print(f"Somma dei pesi {Portfolio.read_sum_weight(self)}")
           sum_weight_val=Portfolio.read_sum_weight(self)
-          sum_weight_val=sum_weight_val.replace(",",".")
-          if float(sum_weight_val[:5]) < 0.8: ##se ha già girato ma incompleto (pesi <80%) lo faccio girare di nuovo
+          if sum_weight_val == 1:#significa che il peso totale è minore di 0,8 OPPURE il numero di zeri è piu alto di 5
             return 'ok'
           return 'Aggiornamento non Necessario'
         else:
@@ -997,6 +1001,8 @@ class Portfolio:
         totalWeight= allSectors['Peso'].sum()
         conteggio_colonna = allSectors['Peso'].value_counts(normalize=False, dropna=False)
         numero_di_zeri = conteggio_colonna.get(0, 0)  # Ottieni il conteggio degli zeri, 0 se non presente
+        conteggio_colonna_singoli = allSectors['Peso_singolo'].value_counts(normalize=False, dropna=False)
+        numero_di_zeri_singoli = conteggio_colonna_singoli.get(0, 0)  # Ottieni il conteggio degli zeri, 0 se non presente
    
         print(allSectors.to_string())
 
@@ -1013,6 +1019,8 @@ class Portfolio:
         sectorsUnique1=sectorsUnique1.sort_values(by=['Total'], ascending=[False])
         #print(sectorsUnique1)
         print(f"NUERO DI ZERI IN COLONNA PESO {numero_di_zeri}")
+        print(type(int(numero_di_zeri)))
+        print(int(numero_di_zeri))
         #scrivo i dati su spreadsheet
         listPrint = allSectors.values.tolist()
         lastRowSt=str(len(listPrint)+1)
@@ -1021,7 +1029,8 @@ class Portfolio:
         deleteOldRows = delete_range('tab_sectors!A2:M600',newPrj)
         write_range('tab_sectors!A2:H'+lastRowSt,listPrint,newPrj)
         write_range('tab_sectors!J2:J2',[[totalWeight]],newPrj)
-        write_range('tab_sectors!J3:J3',[[numero_di_zeri]],newPrj)
+        write_range('tab_sectors!J3:J3',[[int(numero_di_zeri)]],newPrj)
+        write_range('tab_sectors!J4:J4',[[int(numero_di_zeri_singoli)]],newPrj)
         write_range('tab_sectors!L2:M'+lastRowWeights,listPrintWeights,newPrj)
         write_range('tab_sectors!O2:O2',[[AllData]],newPrj)
         

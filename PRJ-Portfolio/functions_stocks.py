@@ -90,9 +90,11 @@ def getStockInfo(ticker):
         prevClosePrice = info3["previousClose"]
   else:
     prevClosePrice = verifKey(info,'previousClose')
+  #print(f"TEST 01 currency {verifKey(info3,'quoteType')}")
+  print(f"TEST 02 currency {verifKey(info,'quoteType')}")
 
   #Creo dizionario filtrato
-  qType = verifKey(info3,"currency") if verifKey(info,'quoteType') == '0' else verifKey(info,'quoteType')
+  qType = verifKey(info3,"quoteType") if verifKey(info,'quoteType') == '0' else verifKey(info,'quoteType')
   if qType == "CRYPTOCURRENCY" : qType = "CRYPTO"
   stockInfo = {
   #GENERIC
