@@ -1012,7 +1012,7 @@ class Portfolio:
         #ordino DF
         sectorsUnique1=sectorsUnique1.sort_values(by=['Total'], ascending=[False])
         #print(sectorsUnique1)
-        
+        print(f"NUERO DI ZERI IN COLONNA PESO {numero_di_zeri}")
         #scrivo i dati su spreadsheet
         listPrint = allSectors.values.tolist()
         lastRowSt=str(len(listPrint)+1)
