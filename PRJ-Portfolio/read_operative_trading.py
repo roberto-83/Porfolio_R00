@@ -307,7 +307,7 @@ def readlastDate(tab):
     status = 1 #proseguo
   else:
     dateSheet = fulldata['Data'].iloc[-1]
-    print(f"ultima data del foglio {dateSheet} e oggi è {todayDate}")
+    print(f"ultima data del foglio {tab} è {dateSheet} mentre oggi è {todayDate}")
     if dateSheet == todayDate :
       status = 0 #non faccio nulla
     else:
@@ -323,7 +323,7 @@ def write_short_list():
   if readlastDate('tab_pnc') == 1:
     if not tab1.empty:
       list_data = tab1.values.tolist()
-      appendRow('tab_pnc!A:I',list_data,newPrj)
+      appendRow('tab_pnc!A:C',list_data,newPrj)
       return "OK"
     else:
       print("################ Errore lettura dati")
