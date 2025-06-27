@@ -22,7 +22,7 @@ from yahooquery import Ticker
 from yahooread import readYahooSite
 from fred_data import writeMacroData,writeMacroDataHistory
 from investing_read import write_economin_data
-from read_operative_trading import all_stocks
+from read_operative_trading import all_stocks,write_short_list
 #from get_all_tickers import get_tickers as gt
 print('#######################################')
 print("Stampo le versioni dei package")
@@ -151,6 +151,7 @@ if developerMode == 0:
   time10s = time.time()
   #print(writeMacroDataHistory())
   output_econ = all_stocks()
+  write_data = write_short_list()
   #print(write_economin_data())
   delta10 = time.time() - time10s
   log_insert1("Aggiornamento Tab Oper Trading","Fine",delta10,initialTime,output_econ) 
