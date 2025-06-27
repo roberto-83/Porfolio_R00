@@ -319,10 +319,14 @@ def write_short_list():
   todayDate = datetime.today().strftime('%d/%m/%Y')
   tab1 = read_shortlist()
   #print(readlastDate('tab_op_tr'))
-  if readlastDate('tab_pnc') == 1 and not tab1.empty:
-    list_data = tab1.values.tolist()
-    appendRow('tab_pnc!A:I',list_data,newPrj)
-    return "OK"
+  if readlastDate('tab_pnc') == 1:
+    if not tab1.empty:
+      list_data = tab1.values.tolist()
+      appendRow('tab_pnc!A:I',list_data,newPrj)
+      return "OK"
+    else:
+      print("################ Errore lettura dati")
+      return "KO"
   else:
     return "NOT NECESSARY"
 
