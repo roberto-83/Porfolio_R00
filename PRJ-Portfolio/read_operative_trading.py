@@ -316,6 +316,7 @@ def readlastDate(tab):
 
 #Funzone per scrivere la shortlist delle PNC
 def write_short_list():
+  print("##Scrivo i dati della shortlist")
   todayDate = datetime.today().strftime('%d/%m/%Y')
   tab1 = read_shortlist()
   #print(readlastDate('tab_op_tr'))
