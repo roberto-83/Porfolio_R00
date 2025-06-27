@@ -302,7 +302,7 @@ def read_data_bs(h3):
 
 def readlastDate(tab):
   todayDate = datetime.today().strftime('%d/%m/%Y')
-  fulldata = read_range('tab_op_tr!A:A',newPrj)
+  fulldata = read_range(tab+'!A:A',newPrj)
   if(len(fulldata) == 0):
     status = 1 #proseguo
   else:
