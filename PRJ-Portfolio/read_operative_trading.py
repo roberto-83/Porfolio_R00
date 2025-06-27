@@ -74,6 +74,79 @@ def read_commodities():
   #print(df.to_string())
   return df
 #print(read_commodities())
+
+#leggo le 4 tabelle riportate su https://www.operativetrading.it/screener-azioni-italia/
+def read_shortlist():
+  URL = "https://www.operativetrading.it/screener-azioni-italia/"
+  USERNAME = "robpol1983"
+  PASSWORD = "Zucchetti1!"
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  # URL di login e pagina da scaricare
+  LOGIN_URL = "https://www.operativetrading.it/area-riservata/"
+  TARGET_URL = URL
+
+  # Inizializza sessione
+  session = requests.Session()
+
+  # 1. Carica la pagina di login per prendere eventuali cookie o token (opzionale)
+  login_page = session.get(LOGIN_URL)
+  soup_login = BeautifulSoup(login_page.text, "html.parser")
+
+  # 2. Prepara i dati per il login
+  login_data = {
+      "username": USERNAME,
+      "pwd": PASSWORD,
+      "submit": "Login",
+      "redirect_to": TARGET_URL,
+      "testcookie": "1",
+      "rm_form_sub_id":"rm_login_form_1",
+      "rm_form_sub_no":"",
+      "rm_slug":"rm_login_form"
+  }
+
+  # 3. Fai POST per login
+  response = session.post(LOGIN_URL, data=login_data)
+
+  # 4. Accedi alla pagina con le tabelle
+  page = session.get(TARGET_URL)
+  
+  soup = BeautifulSoup(page.text, "html.parser")
+  if soup.find("table"):  # o un'altra verifica più specifica
+    print("✅ Login riuscito e contenuto accessibile!")
+    # 5. Trova tutte le tabelle nella pagina
+    tables = soup.find_all("table")
+
+    print(f"Trovate {len(tables)} tabelle")
+    list_name_table = [
+      'PNC aumento Oggi',
+      'PNC diminuzione Oggi',
+      'PNC aumento 5 sedute',
+      'PNC diminuzione 5 sedute'
+    ]
+
+    # 6. Converti le tabelle in DataFrame pandas
+    dataframes = []
+    for i, table in enumerate(tables[:4]):  # prendiamo le prime 4 tabelle
+        df = pd.read_html(str(table))[0]
+        df['Data'] = todayDate
+        df['Type'] = list_name_table[i]
+        df.columns.values[0] = "Titolo"
+        df = df[["Data", "Type", "Titolo"]]
+        dataframes.append(df)
+        # print(f"Tabella {i+1}:")
+        # print(df.head())
+    final_df = pd.concat(dataframes, ignore_index=True)
+    #print(final_df.to_string())
+    return final_df
+  else:
+    print("❌ Login fallito o accesso negato alla pagina.")
+    return pd.DataFrame()
+
+#print(read_shortlist())
+ 
+
+
+
 ####################################################################
 ####################################################################
 
@@ -241,6 +314,19 @@ def readlastDate(tab):
       status = 1 #proseguo
   return status
 
+#Funzone per scrivere la shortlist delle PNC
+def write_short_list():
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  tab1 = read_shortlist()
+  #print(readlastDate('tab_op_tr'))
+  if readlastDate('tab_pnc') == 1 and not tab1.empty:
+    list_data = tab1.values.tolist()
+    appendRow('tab_pnc!A:I',list_data,newPrj)
+    return "OK"
+  else:
+    return "NOT NECESSARY"
+
+
 def all_stocks():
   todayDate = datetime.today().strftime('%d/%m/%Y')
   #print(readlastDate('tab_op_tr'))
@@ -260,6 +346,8 @@ def all_stocks():
     ########STAMP
     #
     appendRow('tab_op_tr!A:I',list_data,newPrj)
+    #scrivo anche la shortlist su tab_PNC
+    write_data = write_short_list()
     return "OK"
   else:
     return "NOT NECESSARY"
@@ -267,6 +355,8 @@ def all_stocks():
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
 #print(all_stocks())
+
+
 
 
 
