@@ -346,8 +346,6 @@ def all_stocks():
     ########STAMP
     #
     appendRow('tab_op_tr!A:I',list_data,newPrj)
-    #scrivo anche la shortlist su tab_PNC
-    write_data = write_short_list()
     return "OK"
   else:
     return "NOT NECESSARY"
