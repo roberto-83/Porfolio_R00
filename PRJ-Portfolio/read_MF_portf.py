@@ -158,7 +158,7 @@ def extract_content_under_low_risk_portfolio_extended(folder_path):
 ##############################################################################
 ##############################################################################
 def read_write_MF_portfolio():
-    if __name__ == "__main__":
+   # if __name__ == "__main__":
       pdf_date, low_risk_section_df = extract_content_under_low_risk_portfolio_extended(PDF_FOLDER)
       fulldata = read_range('tab_mf_port!A:A',newPrj)
       dateSheet = fulldata['Data'].iloc[-1]
@@ -279,8 +279,8 @@ def read_write_MF_portfolio():
       else:
         return "NOT NECESSARY"    
               
-    else:
-        print("\nImpossibile estrarre la sezione desiderata. Controlla i log sopra per i dettagli.")
-        return 'KO'
+    # else:
+    #     print("\nImpossibile estrarre la sezione desiderata. Controlla i log sopra per i dettagli.")
+    #     return 'KO'
 
-print(read_write_MF_portfolio())
+#print(read_write_MF_portfolio())
