@@ -23,6 +23,7 @@ from yahooread import readYahooSite
 from fred_data import writeMacroData,writeMacroDataHistory
 from investing_read import write_economin_data
 from read_operative_trading import all_stocks,write_short_list
+from read_MF_portf import read_write_MF_portfolio
 #from get_all_tickers import get_tickers as gt
 print('#######################################')
 print("Stampo le versioni dei package")
@@ -166,6 +167,16 @@ if developerMode == 0:
   delta11 = time.time() - time11s
   log_insert1("Aggiornamento Tab Macro","Fine",delta11,initialTime,output_econ) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Economici")
+
+  #portafogli milano finanza
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Inizio - MF Portafogli")
+  time12s = time.time()
+  #print(writeMacroDataHistory())
+  output_econ = read_write_MF_portfolio()
+  #print(write_economin_data())
+  delta12 = time.time() - time12s
+  log_insert1("Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - MF Portafogli")
 else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
