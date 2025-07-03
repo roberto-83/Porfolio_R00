@@ -253,7 +253,7 @@ def read_write_MF_portfolio():
 
             todayDate = datetime.today().strftime('%d/%m/%Y')
           
-            df_port_basso_risch.insert(loc=0, column="Type", value="Basse")
+            df_port_basso_risch.insert(loc=0, column="Type", value="Basso")
             df_port_medio_risch.insert(loc=0, column="Type", value="Medio")
             df_port_alto_risch.insert(loc=0, column="Type", value="Alto")
             df_port_basso_risch.insert(loc=0, column="Date", value=pdf_date.strftime('%Y-%m-%d'))
