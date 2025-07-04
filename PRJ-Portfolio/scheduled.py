@@ -167,16 +167,22 @@ if developerMode == 0:
   delta11 = time.time() - time11s
   log_insert1("Aggiornamento Tab Macro","Fine",delta11,initialTime,output_econ) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Economici")
-
-  #portafogli milano finanza
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Inizio - MF Portafogli")
-  time12s = time.time()
-  #print(writeMacroDataHistory())
-  output_econ = read_write_MF_portfolio()
-  #print(write_economin_data())
-  delta12 = time.time() - time12s
-  log_insert1("Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - MF Portafogli")
+  #provo a vedere se c'è la libreria
+  try:
+      import camelot
+      CAMEL0T_AVAILABLE = True
+      #portafogli milano finanza
+      print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Inizio - MF Portafogli")
+      time12s = time.time()
+      #print(writeMacroDataHistory())
+      output_econ = read_write_MF_portfolio()
+      #print(write_economin_data())
+      delta12 = time.time() - time12s
+      log_insert1("Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
+      print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - MF Portafogli")
+  except ImportError:
+      CAMEL0T_AVAILABLE = False
+  
 else:
   print('Sono in modalità Developer')
   #VOGLIO LE LISTE DA PASSARE A GOOGLE COLB PER ANALISI
