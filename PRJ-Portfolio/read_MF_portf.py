@@ -10,11 +10,14 @@ import os
 import re
 import pandas as pd
 from datetime import datetime
-import camelot
-import fitz # PyMuPDF
 from functions_sheets import delete_range,appendRow,read_range
 from settings import * #importa variabili globali
-
+try:
+      import camelot
+      import fitz # PyMuPDF
+      CAMEL0T_AVAILABLE = True
+except ImportError:
+      CAMEL0T_AVAILABLE = False
 
 def manage_files(folder_path):
     """
@@ -157,6 +160,7 @@ def extract_content_under_low_risk_portfolio_extended(folder_path):
 ##############################################################################
 ##############################################################################
 def read_write_MF_portfolio():
+  if CAMEL0T_AVAILABLE == True:
    # if __name__ == "__main__":
       print("inizio")
       print(extract_content_under_low_risk_portfolio_extended(PDF_FOLDER))
@@ -360,6 +364,8 @@ def read_write_MF_portfolio():
             return "OK"
       else:
         return "NOT NECESSARY"    
+  else:
+    return "KO SERVER"
 
 def extract_dataframe_port(low_risk_section_df,index_start, index_end):
     df = low_risk_section_df.iloc[index_start+1:index_end-1]
