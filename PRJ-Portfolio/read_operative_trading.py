@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup 
-from functions_sheets import delete_range,appendRow,read_range
+from functions_sheets import delete_range,appendRow,read_range,write_range
 from settings import * #importa variabili globali
 import datetime
 from datetime import datetime,timedelta
@@ -324,6 +324,7 @@ def write_short_list():
     if not tab1.empty:
       list_data = tab1.values.tolist()
       appendRow('tab_pnc!A:C',list_data,newPrj)
+      CalcoloMediana = cal_mediana()
       return "OK"
     else:
       print("################ Errore lettura dati")
@@ -354,7 +355,34 @@ def all_stocks():
     return "OK"
   else:
     return "NOT NECESSARY"
+####################################################
+# ANALISI DATO
+####################################################
+def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
+  todayDate = datetime.today().strftime('%d/%m/%Y')
+  all_range = read_range('tab_op_tr!A:E',newPrj)
+  all_range = all_range.drop('Descrizione', axis=1)
+  all_range['Rating']=all_range['Rating'].str.replace(",",".")
+  #print(all_range.to_string())
+  #voglio un dataframe che riporti le prime azioni che hanno una mediana alta
+  #negli ultimi n giorni
+  n_giorni = 5
+  mediana_df = all_range
+  mediana_df['Data'] = pd.to_datetime(mediana_df['Data'])
+  mediana_df = mediana_df.sort_values(by=['Stock', 'Data'], ascending=True)
+  mediana_df['Mediana_5gg'] = mediana_df.groupby('Stock')['Rating'].rolling(window=n_giorni, min_periods=1).median().reset_index(level=0, drop=True)
+  #print(mediana_df.to_string())
+  df_azioni_uniche_con_mediana = mediana_df.groupby('Stock').tail(1).reset_index(drop=True)
+  df_azioni_uniche_con_mediana = df_azioni_uniche_con_mediana.sort_values(by=['Mediana_5gg'], ascending=False)
+  #print(df_azioni_uniche_con_mediana.to_string())
+  df_to_print=prime_10_righe = df_azioni_uniche_con_mediana.head(10)
+  df_to_print['Data'] = todayDate
+  list_data = df_to_print.values.tolist()
+  write_range('tab_op_tr!M2:Q11',list_data,newPrj)
+  return'OK'
 
+
+print(cal_mediana())
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
 #print(all_stocks())
