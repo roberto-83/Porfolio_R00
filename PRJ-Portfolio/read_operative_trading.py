@@ -345,12 +345,12 @@ def all_stocks():
       print(f"Indice {index} e riga {row['Descrizione']} con link {row['LINK']}")
       val_stock = read_singl_stock(row['LINK'],row['Type'])
       list_data.append((todayDate,row['Type'],val_stock['Nome'], val_stock['Descrizione'],\
-      val_stock['Rating_Num'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['PERC_PNC'],val_stock['URL'],val_stock['prova']))
+      val_stock['Rating_Num'],val_stock['TargetPrice'],val_stock['PNC'],val_stock['PERC_PNC'],val_stock['URL'],todayDate+"--"+val_stock['Nome']))
       print(list_data[index])
     #print(list_data)
     ########STAMP
     #
-    appendRow('tab_op_tr!A:I',list_data,newPrj)
+    appendRow('tab_op_tr!A:J',list_data,newPrj)
     return "OK"
   else:
     return "NOT NECESSARY"
