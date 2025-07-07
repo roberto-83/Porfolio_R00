@@ -366,7 +366,7 @@ def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
   #print(all_range.to_string())
   #voglio un dataframe che riporti le prime azioni che hanno una mediana alta
   #negli ultimi n giorni
-  n_giorni = 5
+  n_giorni = 7
   mediana_df = all_range
   mediana_df['Data'] = pd.to_datetime(mediana_df['Data'])
   mediana_df = mediana_df.sort_values(by=['Stock', 'Data'], ascending=True)
