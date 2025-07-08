@@ -372,6 +372,7 @@ def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
   mediana_df['Data'] = pd.to_datetime(mediana_df['Data'])
   mediana_df = mediana_df.sort_values(by=['Stock', 'Data'], ascending=True)
   mediana_df['Mediana_5gg'] = mediana_df.groupby('Stock')['Rating'].rolling(window=n_giorni, min_periods=1).median().reset_index(level=0, drop=True)
+  mediana_df['Media_5gg'] = mediana_df.groupby('Stock')['PNC Perc'].rolling(window=n_giorni, min_periods=1).mean().reset_index(level=0, drop=True)
   #print(mediana_df.to_string())
   df_azioni_uniche_con_mediana = mediana_df.groupby('Stock').tail(1).reset_index(drop=True)
   df_azioni_uniche_con_mediana = df_azioni_uniche_con_mediana.sort_values(by=['Mediana_5gg'], ascending=False)
@@ -379,7 +380,7 @@ def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
   df_to_print=prime_10_righe = df_azioni_uniche_con_mediana.head(10)
   df_to_print['Data'] = todayDate
   list_data = df_to_print.values.tolist()
-  write_range('tab_op_tr!M2:Q11',list_data,newPrj)
+  write_range('tab_op_tr!M2:R11',list_data,newPrj)
   return'OK'
 
 def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
@@ -396,6 +397,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   mediana_df['Data'] = pd.to_datetime(mediana_df['Data'])
   mediana_df = mediana_df.sort_values(by=['Stock', 'Data'], ascending=True)
   mediana_df['Mediana_5gg'] = mediana_df.groupby('Stock')['PNC Perc'].rolling(window=n_giorni, min_periods=1).median().reset_index(level=0, drop=True)
+  mediana_df['Media_5gg'] = mediana_df.groupby('Stock')['PNC Perc'].rolling(window=n_giorni, min_periods=1).mean().reset_index(level=0, drop=True)
   #print(mediana_df.to_string())
   df_azioni_uniche_con_mediana = mediana_df.groupby('Stock').tail(1).reset_index(drop=True)
   df_azioni_uniche_con_mediana = df_azioni_uniche_con_mediana.sort_values(by=['Mediana_5gg'], ascending=False)
@@ -403,7 +405,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   df_to_print=prime_10_righe = df_azioni_uniche_con_mediana.head(10)
   df_to_print['Data'] = todayDate
   list_data = df_to_print.values.tolist()
-  write_range('tab_op_tr!T2:X11',list_data,newPrj)
+  write_range('tab_op_tr!T2:Y11',list_data,newPrj)
   return'OK'
 print(cal_mediana_PNC())
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
