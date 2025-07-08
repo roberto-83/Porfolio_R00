@@ -408,6 +408,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   write_range('tab_op_tr!T2:Y11',list_data,newPrj)
   return'OK'
 print(cal_mediana_PNC())
+print(cal_mediana())
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
 #print(all_stocks())
