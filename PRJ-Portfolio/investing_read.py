@@ -115,12 +115,12 @@ def investing_Selenium(url, item):
         driver.execute_script("arguments[0].click();", buttonLoad)
         print('Bottone premuto')
     except TimeoutException:
-        print("Timeout: il bottone non è stato trovato in tempo.")
+        print("Timeout: il bottone non è stato trovato in tempo (TimeoutException) .")
         driver.quit()
         return pd.DataFrame()  # Restituisci un DataFrame vuoto in caso di errore
 
     except ReadTimeoutError as e:
-        print("Timeout: il bottone non è stato trovato in tempo.")
+        print("Timeout: il bottone non è stato trovato in tempo (ReadTimeoutError).")
         driver.quit()
         return pd.DataFrame()  # Restituisci un DataFrame vuoto in caso di errore
     print('fine secondo try')

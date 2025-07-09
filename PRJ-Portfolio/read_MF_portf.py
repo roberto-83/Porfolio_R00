@@ -10,7 +10,7 @@ import os
 import re
 import pandas as pd
 from datetime import datetime
-from functions_sheets import delete_range,appendRow,read_range
+from functions_sheets import delete_range,appendRow,read_range,write_range
 from settings import * #importa variabili globali
 try:
       import camelot
@@ -360,6 +360,8 @@ def read_write_MF_portfolio():
             appendRow('tab_mf_port!A:I',list_data_05,newPrj)
             appendRow('tab_mf_port!A:I',list_data_06,newPrj)
 
+            #Calcolo variazioni
+            variaz = cal_delta_variazioni()
 
             return "OK"
       else:
@@ -420,10 +422,44 @@ def extract_dataframe_port(low_risk_section_df,index_start, index_end):
     df = df.drop(columns=[col for col in df.columns if col == '' or col is None])
     return df
 
-   
+########################################
+#DELTA
+########################################
+
+def cal_delta_variazioni():
+  print('Inizio a gestire le diferenza tra gli ultimi due upload')
+  fulldata = read_range('tab_mf_port!A:H',newPrj)
+  fulldata = fulldata.drop(columns=['Tipo','Prezzo','Peso'])
+  #date singole
+  unique_dates = fulldata['Data'].sort_values().unique()
+  #print(unique_dates)
+  #ultime due date
+  latest_date = unique_dates[-1]
+  previous_date = unique_dates[-2]
+  # print(latest_date)
+  # print(previous_date)
+  #dataframe filtrato
+  fulldata = fulldata[fulldata['Data'] >= previous_date]
+  #chiave
+  fulldata['Key'] = fulldata['Portafoglio']+"--"+fulldata['ISIN']+"--"+fulldata['Q.tà']
+  #conto se la riga è duplicata
+  key_counts = fulldata['Key'].value_counts()
+  fulldata['Frequenza_Key'] = fulldata['Key'].map(key_counts)
+  #prendo solo le variaizoni
+  variazioni = fulldata[fulldata['Frequenza_Key']==1]
+  variazioni = variazioni.sort_values(by='Key')
+  variazioni = variazioni.drop(columns='Key')
+	#rint(f"Confronto dati della settimana: {previous_date} vs {latest_date}")
+  list_data = variazioni.values.tolist()
+  lenData=len(list_data)+1
+  print(f'scrivo {lenData} righe')
+  print(variazioni.to_string())
+  deleteOldRows = delete_range('tab_mf_port!L2:Q100',newPrj)
+  write_range('tab_mf_port!L2:Q'+str(lenData),list_data,newPrj)
+  return 'OK'
 
               
-
+#print(cal_delta_variazioni())
 #print(read_write_MF_portfolio())
 
 
