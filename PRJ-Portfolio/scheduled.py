@@ -42,7 +42,7 @@ if developerMode == 0:
   #print(f"Versione di ChromeDriver: {chromedriver_version}")
   port = Portfolio('1')
   port2 = Portfolio('2')
-  port3 = Portfolio('3')
+  #port3 = Portfolio('3')
   #scrivo il dato sul file analisi spese
   print(port.bankING)
   print(port.totUsci)
@@ -74,14 +74,14 @@ if developerMode == 0:
   log_insert1("Aggiornamento Tab Portafoglio 2","Fine",delta2_b,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_b - Fine - Aggiornamento Portafoglio 2")
 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Inizio - Aggiornamento Portafoglio 3")
+  #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Inizio - Aggiornamento Portafoglio 3")
   #log_insert1("Aggiornamento Tab Portafoglio","Inizio","","")
-  time2s_c = time.time()
+  #time2s_c = time.time()
   #initialTime=time2s   #START
-  print(port3.writePortfolio())
-  delta2_c = time.time() - time2s_c
-  log_insert1("Aggiornamento Tab Portafoglio 3","Fine",delta2_c,initialTime)
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Fine - Aggiornamento Portafoglio 3")
+  #print(port3.writePortfolio())
+  #delta2_c = time.time() - time2s_c
+  #log_insert1("Aggiornamento Tab Portafoglio 3","Fine",delta2_c,initialTime)
+  #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Fine - Aggiornamento Portafoglio 3")
 
   #creo calendar
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Inizio - Aggiornamento Calendar")
