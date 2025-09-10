@@ -153,17 +153,22 @@ def read_shortlist():
 def remove_phrase_at_end(phrase, num_car, text_remove):
   #Divido le frasi
   frasi = phrase.split(".")
-  # Rimuovi eventuali spazi vuoti o stringhe vuote dovute alla divisione
-  frasi = [frase.strip() for frase in frasi if frase.strip()]
-  # Prendi l'ultima frase
-  ultima_frase = frasi[-1]
-  #print(f"Ulitma frase è :{ultima_frase}")
-  #Tolgo la frase se 
-  if ultima_frase[:num_car]==text_remove:
-    descr = ". ".join(frasi[:-1])
-  else: 
-    descr=phrase
-  return descr
+  # print("stampo le frasi:")
+  # print(frasi)
+  print(f"Lunghezza {len(frasi)}")
+  if len(frasi) >1:
+    # Rimuovi eventuali spazi vuoti o stringhe vuote dovute alla divisione
+    frasi = [frase.strip() for frase in frasi if frase.strip()]
+    # Prendi l'ultima frase
+    ultima_frase = frasi[-1]
+    #print(f"Ulitma frase è :{ultima_frase}")
+    #Tolgo la frase se 
+    if ultima_frase[:num_car]==text_remove:
+      descr = ". ".join(frasi[:-1])
+    else: 
+      descr=phrase
+    return descr
+  return phrase
 
 def read_singl_stock(url,type_stock):
   r = requests.get(url) 
@@ -180,7 +185,7 @@ def read_singl_stock(url,type_stock):
     div = soup.find('div', class_='entry-content clear')
     if div:
       descrizione = div.find('p').text
-      #print(descrizione)
+      print(descrizione)
     #Tolgo la prima frase
     if descrizione[:9]=='In questa':
       posizione_punto = descrizione.find(".")
