@@ -70,6 +70,7 @@ logging.basicConfig(level=logging.INFO)
 logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 #FUNZIONI COMPLETE
 def getStockInfo(ticker):
+  print(f"Procedo con Ticker {ticker}")
   stock = yf.Ticker(ticker)
   #print(stock)
   #get all stock info
@@ -77,7 +78,7 @@ def getStockInfo(ticker):
   info = stock.get_info()
   #funzione rapida per le stock info ma molto scarna
   info3 = stock.fast_info
-  # print(info3)
+  #print(info3)
   #print(info3["previousClose"])
   #print(verifKey(info,'previousClose'))
   # print(info)

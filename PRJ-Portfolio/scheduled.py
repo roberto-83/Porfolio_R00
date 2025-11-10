@@ -62,7 +62,7 @@ if developerMode == 0:
   initialTime=time2s   #START
   print(port.writePortfolio())
   delta2 = time.time() - time2s
-  log_insert1("Aggiornamento Tab Portafoglio 1","Fine",delta2,initialTime)
+  log_insert1("1-12 Aggiornamento Tab Portafoglio 1","Fine",delta2,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_a - Fine - Aggiornamento Portafoglio 1")
 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_b - Inizio - Aggiornamento Portafoglio 2")
@@ -71,7 +71,7 @@ if developerMode == 0:
   #initialTime=time2s   #START
   print(port2.writePortfolio())
   delta2_b = time.time() - time2s_b
-  log_insert1("Aggiornamento Tab Portafoglio 2","Fine",delta2_b,initialTime)
+  log_insert1("2-12 Aggiornamento Tab Portafoglio 2","Fine",delta2_b,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_b - Fine - Aggiornamento Portafoglio 2")
 
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 2_c - Inizio - Aggiornamento Portafoglio 3")
@@ -90,7 +90,7 @@ if developerMode == 0:
   clTab = port.updateCalendarTab()
   print(clTab)
   delta3 = time.time() - time3s
-  log_insert1("Aggiornamento Tab Calendar","Fine",delta3,initialTime,clTab)
+  log_insert1("3-12 Aggiornamento Tab Calendar","Fine",delta3,initialTime,clTab)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 3 - Fine - Aggiornamento Calendar")
   #aggiorno rendimento
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Inizio - Aggiornamento Rendimento")
@@ -99,7 +99,7 @@ if developerMode == 0:
   cal_rend = caldRendimento()
   print(cal_rend)
   delta4 = time.time() - time4s
-  log_insert1("Aggiornamento Tab Rendimento","Fine",delta4,initialTime,cal_rend)
+  log_insert1("4-12 Aggiornamento Tab Rendimento","Fine",delta4,initialTime,cal_rend)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 4 - Fine - Aggiornamento Rendimento")
   #aggiorno andamento
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Inizio - Aggiornamento Andamento")
@@ -108,7 +108,7 @@ if developerMode == 0:
   port_and =port.calcAndamPort()
   print(port_and)
   delta5 = time.time() - time5s
-  log_insert1("Aggiornamento Tab Andamento","Fine",delta5,initialTime,port_and)
+  log_insert1("5-12 Aggiornamento Tab Andamento","Fine",delta5,initialTime,port_and)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 5 - Fine - Aggiornamento Andamento")
   #old watchlist
 
@@ -119,7 +119,7 @@ if developerMode == 0:
   port_set=port.portafSettori()
   print(port_set)
   delta7 = time.time() - time7s
-  log_insert1("Aggiornamento Tab Settori","Fine",delta7,initialTime,port_set)
+  log_insert1("6-12 Aggiornamento Tab Settori","Fine",delta7,initialTime,port_set)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 7 - Fine - Aggiornamento Settori")
   #aggiorno paesi
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Inizio - Aggiornamento Paesi")
@@ -128,7 +128,7 @@ if developerMode == 0:
   port_pae = port.portafPaesi()
   print(port_pae)
   delta8 = time.time() - time8s
-  log_insert1("Aggiornamento Tab Paesi","Fine",delta8,initialTime,port_pae)
+  log_insert1("7-12 Aggiornamento Tab Paesi","Fine",delta8,initialTime,port_pae)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Fine - Aggiornamento Paesi")
   #analisi portafoglio
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Inizio - Analisi Portafoglio")
@@ -136,7 +136,7 @@ if developerMode == 0:
   time9s = time.time()
   print(finalAnalysys('2010-01-01','1'))
   delta9 = time.time() - time9s
-  log_insert1("Analisi Portafoglio","Fine",delta9,initialTime)
+  log_insert1("8-12 Analisi Portafoglio","Fine",delta9,initialTime)
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 9 - Fine -  Analisi Portafoglio")
   #aggiorno watchlist
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Inizio - Aggiornamento Watchlist")
@@ -144,7 +144,7 @@ if developerMode == 0:
   time6s = time.time()
   print(port.whatchlist())
   delta6 = time.time() - time6s
-  log_insert1("Aggiornamento Tab Watchlist","Fine",delta6,initialTime) 
+  log_insert1("9-12 Aggiornamento Tab Watchlist","Fine",delta6,initialTime) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 6 - Fine - Aggiornamento Watchlist")
 
   #dati "operative trading"
@@ -155,7 +155,7 @@ if developerMode == 0:
   write_data = write_short_list()
   #print(write_economin_data())
   delta10 = time.time() - time10s
-  log_insert1("Aggiornamento Tab Oper Trading","Fine",delta10,initialTime,output_econ) 
+  log_insert1("10-12 Aggiornamento Tab Oper Trading","Fine",delta10,initialTime,output_econ) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 10 - Fine - Dati Operative Trading")
 
   #dati fed
@@ -165,7 +165,7 @@ if developerMode == 0:
   output_econ = write_economin_data()
   #print(write_economin_data())
   delta11 = time.time() - time11s
-  log_insert1("Aggiornamento Tab Macro","Fine",delta11,initialTime,output_econ) 
+  log_insert1("11-12 Aggiornamento Tab Macro","Fine",delta11,initialTime,output_econ) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Economici")
   #provo a vedere se c'è la libreria
   #portafogli milano finanza
@@ -175,7 +175,7 @@ if developerMode == 0:
   output_econ = read_write_MF_portfolio()
   #print(write_economin_data())
   delta12 = time.time() - time12s
-  log_insert1("Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
+  log_insert1("12-12 Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - MF Portafogli")
 
   
