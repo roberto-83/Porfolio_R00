@@ -169,14 +169,14 @@ if developerMode == 0:
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Economici")
   #provo a vedere se c'è la libreria
   #portafogli milano finanza
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Inizio - MF Portafogli")
-  time12s = time.time()
+  #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Inizio - MF Portafogli")
+  #time12s = time.time()
   #print(writeMacroDataHistory())
-  output_econ = read_write_MF_portfolio()
+  #output_econ = read_write_MF_portfolio()
   #print(write_economin_data())
-  delta12 = time.time() - time12s
-  log_insert1("12-12 Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
-  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - MF Portafogli")
+  #delta12 = time.time() - time12s
+  #log_insert1("12-12 Aggiornamento Tab MF Portf","Fine",delta12,initialTime,output_econ) 
+  #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - MF Portafogli")
 
   
 else:
