@@ -95,14 +95,19 @@ def getPriceETF(ticker):
   tickInfo = stock.info
   #print(tickInfo)
   curre = verifKey(tickInfo,'currency')
-  price1d = verifKey(tickInfo,'previousClose')
-  #livePrice = verifKey(tickInfo, 'currentPrice')
-  livePrice = verifKey(tickInfo, 'bid')
+  if ticker == 'GB00BLD4ZL17.SG':#Devo forzare perchè i dati non sono giusti..
+    price1d = verifKey(tickInfo,'regularMarketPreviousClose')
+    #livePrice = verifKey(tickInfo, 'currentPrice')
+    livePrice = verifKey(tickInfo, 'regularMarketPrice')
+  else:
+    price1d = verifKey(tickInfo,'previousClose')
+    #livePrice = verifKey(tickInfo, 'currentPrice')
+    livePrice = verifKey(tickInfo, 'bid')
   datePrice = datetime.today().strftime('%Y-%m-%d')
   output = [ticker, livePrice,datePrice,curre,price1d]
     
   return output
-#print(getPriceETF('WSPX.MI'))
+#print(getPriceETF('GB00BLD4ZL17.SG'))
 
 def getSummary(ticker):
   fund = Ticker(ticker)
