@@ -96,17 +96,17 @@ def getPriceETF(ticker):
   #print(tickInfo)
   curre = verifKey(tickInfo,'currency')
   #la api di yahoo sballa i prezzi bid e regular, faccio delle prove per capire come va meglio
-  
-  if ticker == 'GB00BLD4ZL17.SG' or ticker == 'CSSX5E.MI':#Devo forzare perchè i dati non sono giusti..
+  #faccio un test sballando la prima conduizione
+  if ticker == 'GB00BLD4ZL17.SG--TEST' or ticker == 'CSSX5E.MI--TEST':#Devo forzare perchè i dati non sono giusti..
     price1d = verifKey(tickInfo,'regularMarketPreviousClose')
     ##livePrice = verifKey(tickInfo, 'currentPrice')
     livePrice = verifKey(tickInfo, 'regularMarketPrice')
   else:
-    price1d = verifKey(tickInfo,'previousClose')
-    price1d_2 = verifKey(tickInfo,'regularMarketPreviousClose')
+    price1d_2 = verifKey(tickInfo,'previousClose')
+    price1d = verifKey(tickInfo,'regularMarketPreviousClose')
     #livePrice = verifKey(tickInfo, 'currentPrice')
-    livePrice = verifKey(tickInfo, 'bid')
-    livePrice_2 = verifKey(tickInfo, 'regularMarketPrice')#altro prezzo
+    livePrice_2 = verifKey(tickInfo, 'bid')
+    livePrice = verifKey(tickInfo, 'regularMarketPrice')#altro prezzo
     #print(f"Prezzo bid {livePrice} prezzo regularMarket {livePrice_2}")
   datePrice = datetime.today().strftime('%Y-%m-%d')
   output = [ticker, livePrice,datePrice,curre,price1d]
