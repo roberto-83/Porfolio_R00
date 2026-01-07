@@ -497,13 +497,15 @@ class Portfolio:
       dataFine = (datetime.strptime(todayCon, '%Y-%m-%d')+timedelta(days=3)).strftime('%Y-%m-%d')
       #trovo i prezzi
       prices = yf.download(row['Ticker'],dataInizio,dataFine,progress=False,auto_adjust=True) 
-      #print(prices)  
+      #print(prices)#questa  
+      if row['Ticker'] == 'GB00BLD4ZL17.SG':
+        print( yf.download(row['Ticker']))
       #aggiungo le date vuote
       prices1 = prices.asfreq('D')
       #copio i valori delle righe vuote dalla riga sopra
       #prices2 = prices1.fillna(method='ffill')
       prices2 = prices1.ffill()
-      #print(f"leggo ticker {row['Ticker']} alla data reale {dateRead1} e data inizio {dataInizio} fino a {dataFine}")
+      #print(f"leggo ticker {row['Ticker']} alla data reale {dateRead1} e data inizio {dataInizio} fino a {dataFine}")#questa 
       #print(prices2)
       prices3 = prices2.filter(items=[dateRead1], axis=0)
       #print(f"lunghezza {len(prices3)}")

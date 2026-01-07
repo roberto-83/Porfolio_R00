@@ -95,7 +95,7 @@ def getPriceETF(ticker):
   tickInfo = stock.info
   #print(tickInfo)
   curre = verifKey(tickInfo,'currency')
-  if ticker == 'GB00BLD4ZL17.SG':#Devo forzare perchè i dati non sono giusti..
+  if ticker == 'GB00BLD4ZL17.SG' or ticker == 'CSSX5E.MI':#Devo forzare perchè i dati non sono giusti..
     price1d = verifKey(tickInfo,'regularMarketPreviousClose')
     #livePrice = verifKey(tickInfo, 'currentPrice')
     livePrice = verifKey(tickInfo, 'regularMarketPrice')
@@ -107,7 +107,7 @@ def getPriceETF(ticker):
   output = [ticker, livePrice,datePrice,curre,price1d]
     
   return output
-#print(getPriceETF('GB00BLD4ZL17.SG'))
+#print(getPriceETF('CSSX5E.MI'))
 
 def getSummary(ticker):
   fund = Ticker(ticker)
