@@ -642,7 +642,7 @@ class Portfolio:
       prezzoMerc_vwce = prezzoMerc2_vwce.ffill()
       rendim=histDf.loc['total']['ctvMerc'] - histDf.loc['total']['TotInvest']
       rendimperc= (rendim * 100) / histDf.loc['total']['TotInvest']
-      print(f'Verifico se ci sono dati dopo bonifica per ticker {histDf["dataHist"].iloc[0]}')
+      print(f'YYYYYY-Verifico se ci sono dati dopo bonifica per ticker {histDf["dataHist"].iloc[0]}')
       print(prezzoMerc['Close'])
       mercato_df = prezzoMerc['Close'].iloc[0]
       mercato_df_vwce = prezzoMerc_vwce['Close'].iloc[0]

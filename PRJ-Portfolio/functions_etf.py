@@ -13,6 +13,7 @@ from datetime import datetime,timedelta
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -112,7 +113,7 @@ def getPriceETF(ticker):
   output = [ticker, livePrice,datePrice,curre,price1d]
     
   return output
-print(getPriceETF('BOOK.VI'))
+#print(getPriceETF('BOOK.VI'))
 
 def getSummary(ticker):
   fund = Ticker(ticker)
@@ -215,7 +216,7 @@ def testapi():
 ####https://extraetf.com/it/stock-profile/US79466L3024
 #########################################
 
-def listEtfCountries(isin):
+def listEtfCountries_OLD(isin):
   print("inizio lettura dati per listEtfCountries")
   if isin == 'IE00B579F325':#gold
     return pd.DataFrame({'isin': isin,'Country':'GOLD REGION','Peso_country':'100'},index=[0])
@@ -226,6 +227,14 @@ def listEtfCountries(isin):
     #sessions = count_chromium_sessions()
     #print(f"Numero di sessioni Chromium (headless) aperte: {sessions}")
     URL="https://extraetf.com/it/etf-profile/"+isin+"?tab=components"
+   
+    #log_path = "/content/chromedriver.log"
+
+
+    import sys
+    sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
+
+
     print(URL)
     chrome_options = Options()
     chrome_options.add_argument('--headless')  # Esegui Chrome in modalità headless
@@ -239,8 +248,15 @@ def listEtfCountries(isin):
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36")
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
+    service = Service(executable_path="/usr/bin/chromedriver")
 
     driverExt = webdriver.Chrome( options=chrome_options)
+    #ervice = Service(
+     # executable_path="/usr/bin/chromedriver", 
+     # log_output=log_path # In alcune versioni di Selenium si usa service_args=['--verbose']  
+     # )
+
     driverExt.get(URL)
     #print("5 sec wait")
     time.sleep(5)
@@ -257,7 +273,7 @@ def listEtfCountries(isin):
         weight = weight.replace('%','').strip()
         weight = weight.replace(',','.')
         print(f"Stato: '{country}' con il peso di {weight}")
-        driverExt.quit()
+        #driverExt.quit()
         if(len(country) > 0):
           listCountry.append([isin,country,weight])
         else:
@@ -277,7 +293,49 @@ def listEtfCountries(isin):
 
 
 
-#print(listEtfCountries('GB00BLD4ZL17'))
+#print(listEtfCountries('IE00B5BMR087'))
+
+def listEtfCountries(isin):
+  #qui ho scoperto API nascosta
+  #https://extraetf.com/api-v2/detail/?extraetf_locale=at&format=json&isin=IE00B5BMR087
+
+  print("inizio lettura dati per listEtfCountries")
+  if isin == 'IE00B579F325':#gold
+    return pd.DataFrame({'isin': isin,'Country':'GOLD REGION','Peso_country':'100'},index=[0])
+  elif isin == 'GB00BLD4ZL17':#bitcoin
+    return pd.DataFrame({'isin': isin,'Country':'BITCOIN REGION','Peso_country':'100'},index=[0])
+  else:
+  
+    URL ="https://extraetf.com/api-v2/detail/?extraetf_locale=at&format=json&isin="+isin
+   
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+
+    try:
+        response = requests.get(URL, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        print(data['results'][0]['portfolio_breakdown']['country_stocks_exposure'])
+        countries_list_=data['results'][0]['portfolio_breakdown']['country_stocks_exposure']
+        countries = pd.DataFrame(list(countries_list_.items()), columns=['Country', 'Peso_country'])
+        countries['isin'] = isin
+        countries = countries[['isin', 'Country', 'Peso_country']]
+    except Exception as e:
+        print(f"Errore: {e}")
+        return pd.DataFrame()
+ 
+    #converto in dataframe
+    #print(len(listCountry))
+    #countries = pd.DataFrame(listCountry, columns=['isin','Country','Peso_country'])
+    #print(len(countries))
+    #print(countries.to_string())
+    return countries
+
+
+
+
+#print(listEtfCountries('IE00B5BMR087'))
 
 #############################################
 #Sempre da extraEtf prendo il paese delle azioni
