@@ -294,6 +294,21 @@ def listEtfCountries_OLD(isin):
 
 
 #print(listEtfCountries('IE00B5BMR087'))
+def clean_country_names(name):
+    mapping = {
+        "Vereinigte Staaten (USA)": "STATI UNITI D'AMERICA",
+        "Vereinigtes Königreich (England)": "Regno Unito",
+        "Niederlande": "PAESI BASSI",
+        "Schweiz": "SVIZZERA",
+        "Irland": "IRLANDA",
+        "Deutschland": "GERMANIA",
+        "Frankreich": "FRANCIA",
+        "Japan": "GIAPPONE",
+        "China": "CINA",
+        "Spanien": "SPAGNA",
+        "Italien": "ITALIA"
+    }
+    return mapping.get(name, name) # Ritorna la traduzione o il nome originale se non in lista
 
 def listEtfCountries(isin):
   #qui ho scoperto API nascosta
@@ -309,7 +324,9 @@ def listEtfCountries(isin):
     URL ="https://extraetf.com/api-v2/detail/?extraetf_locale=it&format=json&isin="+isin
    
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "it-IT,it;q=0.9", # <--- AGGIUNGI QUESTA RIGA
+        "Referer": "https://extraetf.com/it/"
     }
 
     try:
@@ -317,8 +334,14 @@ def listEtfCountries(isin):
         response.raise_for_status()
         data = response.json()
         print(data['results'][0]['portfolio_breakdown']['country_stocks_exposure'])
-        countries_list_=data['results'][0]['portfolio_breakdown']['country_stocks_exposure']
-        countries = pd.DataFrame(list(countries_list_.items()), columns=['Country', 'Peso_country'])
+        #countries_list_=data['results'][0]['portfolio_breakdown']['country_stocks_exposure']
+        #countries = pd.DataFrame(list(countries_list_.items()), columns=['Country', 'Peso_country'])
+        # Estraiamo il dizionario originale
+        exposure_dict = data['results'][0]['portfolio_breakdown']['country_stocks_exposure']      
+        # Creiamo il DataFrame partendo dal dizionario
+        countries = pd.DataFrame(list(exposure_dict.items()), columns=['Country', 'Peso_country'])
+        # --- QUI APPLICHIAMO LA TRADUZIONE ---
+        countries['Country'] = countries['Country'].apply(clean_country_names)
         countries['isin'] = isin
         countries = countries[['isin', 'Country', 'Peso_country']]
     except Exception as e:
@@ -335,7 +358,7 @@ def listEtfCountries(isin):
 
 
 
-#print(listEtfCountries('IE00B5BMR087'))
+print(listEtfCountries('IE00B5BMR087'))
 
 #############################################
 #Sempre da extraEtf prendo il paese delle azioni
