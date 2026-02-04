@@ -358,7 +358,7 @@ def listEtfCountries(isin):
 
 
 
-print(listEtfCountries('IE00B5BMR087'))
+#print(listEtfCountries('IE00B5BMR087'))
 
 #############################################
 #Sempre da extraEtf prendo il paese delle azioni

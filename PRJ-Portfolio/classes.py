@@ -72,9 +72,9 @@ class Portfolio:
     transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
     #transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','prezzo acquisto','Spesa/incasso previsto'])
     #tolgo il punto su spesa e incasso
-    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace='\.',value='',regex=True)
+    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace=r'\.',value='',regex=True)
     #tolgo il punto su qta
-    transact['Quantità (real)'] = transact['Quantità (real)'].replace(to_replace='\.',value='',regex=True)
+    transact['Quantità (real)'] = transact['Quantità (real)'].replace(to_replace=r'\.',value='',regex=True)
     transact = transact.replace(to_replace=',',value='.', regex=True)
     transact = transact.replace(to_replace='€',value='', regex=True)
     transact = transact.sort_values(by=['Asset'])
@@ -91,8 +91,8 @@ class Portfolio:
     #print(transact[transact['Ticker'] == 'CSNDX.MI'])
     #print(transact[transact['Ticker'] == 'NKE.DE'])
     transact = transact[transact['Data operazione'] <= date ] 
-    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace='\.',value='',regex=True)
-    transact['Quantità (real)'] = transact['Quantità (real)'].replace(to_replace='\.',value='',regex=True)
+    transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace=r'\.',value='',regex=True)
+    transact['Quantità (real)'] = transact['Quantità (real)'].replace(to_replace=r'\.',value='',regex=True)
     transact = transact.replace(to_replace=',',value='.', regex=True)
     transact = transact.replace(to_replace='€',value='', regex=True)
     transactAcq = transact[transact['Tipo'] == 'ACQ']
@@ -114,7 +114,7 @@ class Portfolio:
     year = date[0:4]
     transact = read_range('Tabella!A:I',spese)
     transact = transact[transact['Anno'] == year] 
-    transact['Importo'] = transact['Importo'].replace(to_replace='\.',value='',regex=True)
+    transact['Importo'] = transact['Importo'].replace(to_replace=r'\.',value='',regex=True)
     transact = transact.replace(to_replace=',',value='.', regex=True)
     transact = transact.replace(to_replace='€',value='', regex=True)
     transact_out = transact[transact['Importo'].astype(float) <0]
@@ -1746,7 +1746,7 @@ def readTransTot(anno,mese,num_port):
   transact['Month'] = transact['Data operazione'].dt.month
   transact['Year'] = transact['Data operazione'].dt.year
   transact = transact.drop(columns=['Stato Database','SCADENZA','Dividendi','VALUTA','Chiave','Data operazione','prezzo acquisto','Spesa/incasso previsto'])
-  transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace='\.',value='',regex=True)
+  transact['Spesa/incasso effettivo'] = transact['Spesa/incasso effettivo'].replace(to_replace=r'\.',value='',regex=True)
   transact = transact.replace(to_replace=',',value='.', regex=True)
   transact = transact.replace(to_replace='€',value='', regex=True)
 
