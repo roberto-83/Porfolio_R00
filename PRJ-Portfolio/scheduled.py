@@ -124,7 +124,7 @@ if developerMode == 0:
   
   #aggiorno paesi
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 8 - Inizio - Aggiornamento Paesi")
-  log_insert1("Aggiornamento Tab Paesi","Inizio","","")
+  #log_insert1("7-12 Aggiornamento Tab Paesi","Inizio","","")
   time8s = time.time()
   port_pae = port.portafPaesi()
   print(port_pae)
