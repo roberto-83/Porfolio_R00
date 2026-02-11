@@ -102,15 +102,16 @@ class Portfolio:
     #print(f"Acquisti per banca {totAcq}")
     #print(f"Acquisti per banca {totVen}")
     netValPortBanca=totAcq-totVen
-    rowWrit=findRowSpes()
+    ###FERMO IL CALCOLO
+    ##rowWrit=findRowSpes()
     #scrivo il valore sul file delle uscite/entrate
-    write_range('Tabella!N'+str(rowWrit),[[netValPortBanca]],spese)
+    ##write_range('Tabella!N'+str(rowWrit),[[netValPortBanca]],spese)
 
    
     return netValPortBanca
   
   def countUsciteSpese(self,date):
-    print("Calcolo le sepse")
+    print("Calcolo i subtotali delle spese")
     year = date[0:4]
     transact = read_range('Tabella!A:I',spese)
     transact = transact[transact['Anno'] == year] 
@@ -119,6 +120,8 @@ class Portfolio:
     transact = transact.replace(to_replace='€',value='', regex=True)
     transact_out = transact[transact['Importo'].astype(float) <0]
     #uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
+
+    ######SOMMO LE USCITE
     totUscite1 = transact_out['Importo'].astype(float).sum()
     totUscite2= totUscite1 * -1
     totUscite = round(totUscite2,2)
@@ -126,15 +129,24 @@ class Portfolio:
     rowWrit=findRowSpes()
     print(f"scrivo sulla riga {rowWrit}")
     write_range('Tabella!M'+str(rowWrit),[[totUscite]],spese)
+
     ######SOMMO LE ENTRATE
     transact_in = transact[transact['Importo'].astype(float) >=0]
     #uscite = transact[transact['Entrate/Uscite'] == 'USCITE']
     totEntrate1 = transact_in['Importo'].astype(float).sum()
     totEntrate = round(totEntrate1,2)
     write_range('Tabella!L'+str(rowWrit),[[totEntrate]],spese)
+
+    ######SOMMO GLI INVESTIMENTI
+    transact_invest = transact[transact['Entrate/Uscite'] == 'INVESTIMENTI']
+    totInvest0 = transact_invest['Importo'].astype(float).sum()
+    totInvest = round(totInvest0,2)*-1
+    write_range('Tabella!N'+str(rowWrit),[[totInvest]],spese)
+
     ####SCRIVO FORMULA
     write_range('Tabella!P'+str(rowWrit),[['=M'+str(rowWrit)+'-(N'+str(rowWrit)+'-O'+str(rowWrit)+')']],spese)
     write_range('Tabella!Q'+str(rowWrit),[['=L'+str(rowWrit)+'-P'+str(rowWrit)]],spese)
+    print(f'Totale entrate {totEntrate}, Totale uscite {totUscite}, Totale investimenti {totInvest}')
     return 'ok'
 ################################################################################
 ##### TABELLA DATI LIVE PORTAFOGLIO
