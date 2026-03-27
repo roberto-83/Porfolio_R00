@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 from datetime import datetime,timedelta
+from requests.models import DEFAULT_REDIRECT_LIMIT
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -17,6 +18,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import tempfile
+#import cloudscraper
 
 from settings import * #importa variabili globali
 
@@ -473,7 +475,7 @@ def getBotData(isin_val):
 #print(getDividBtp('IT0005273013'))
 
 
-def investing_data(isin, data):
+def investing_data_OLD(isin, data):
   print(f"##########cambiamo sito per i dati storici per isin {isin} alla data {data}")
   if isin =="IT0005273013":
     URL_1="https://it.investing.com/rates-bonds/btp-tf-3,45-mz48-eur-historical-data"
@@ -548,12 +550,142 @@ def investing_data(isin, data):
   print(df)
   return df
 
+
+
+def investing_data_ERRORE(isin, data):
+  print(f"##########cambiamo sito per i dati storici per isin {isin} alla data {data}")
+  if isin =="IT0005273013":
+    URL_1="https://it.investing.com/rates-bonds/btp-tf-3,45-mz48-eur-historical-data"
+  elif isin =="IT0005534141":
+    URL_1="https://it.investing.com/rates-bonds/it0005534141-historical-data"
+  elif isin =="ES0000012J15":
+    URL_1="https://it.investing.com/rates-bonds/es0000012j15-historical-data"
+  elif isin =="DE0001102416":
+    URL_1="https://it.investing.com/rates-bonds/bund-tf-0,25-fb27-eur-historical-data"
+  elif isin =="XS1934867547":
+    URL_1="https://it.investing.com/rates-bonds/xs1934867547-historical-data"
+  else:
+    URL_1=""
+  print(f"apro link {URL_1}")
+  headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,all;q=0.8",
+    "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+  }
+  scraper = cloudscraper.create_scraper()
+  response = scraper.get(URL_1, headers=headers)
+  #response = requests.get(URL_1, headers=headers)
+  if response.status_code != 200:
+      print(f"Errore nella richiesta: {response.status_code}")
+      return None
+
+  soup = BeautifulSoup(response.content, 'html.parser')
+
+  # Trova la tabella contenente i dati storici
+  table = soup.find('table', {'class': 'freeze-column-w-1 w-full overflow-x-auto text-xs leading-4'})
+
+  if not table:
+      print("Tabella dei dati storici non trovata.")
+      return None
+
+  # Estrai le intestazioni delle colonne
+  headers = [th.get_text(strip=True) for th in table.find_all('th')]
+
+  # Estrai le righe dei dati
+  rows = []
+  for tr in table.find_all('tr')[1:]:
+      cells = [td.get_text(strip=True) for td in tr.find_all('td')]
+      if len(cells) == len(headers):
+          rows.append(cells)
+
+  # Crea il DataFrame
+  df = pd.DataFrame(rows, columns=headers)
+  df = df[['Data', 'Ultimo']]
+  
+  # Converti la colonna Data in datetime con il formato corretto
+  df['Data'] = pd.to_datetime(df['Data'], format='%d.%m.%Y', errors='coerce')
+  df = df.rename(columns={'Data': 'Date','Ultimo':'Close'})
+  df['Close'] = df['Close'].str.replace(',', '.', regex=False).astype(float)
+
+  ####### Ora uso il df per trovare il valore alla data 
+  print(f"sto confrontando con data {data}")
+  i=0
+  while i <= 12:
+    print(f"Loop numero {i}")
+    #verifico se la data è presente
+    print(f"cerco data {datetime.strptime(data, '%Y-%m-%d').strftime('%d/%m/%Y')}")
+    #if len(histpriceExt[histpriceExt['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%Y-%m-%d')]) == 1:
+    if len(df[df['Date'] == datetime.strptime(data, "%Y-%m-%d").strftime('%d/%m/%Y')]) == 1:
+      print('Presente')
+      break
+
+    i += 1
+  #print('Output funzione:')
+  #print(histpriceExt)
+  print(df)
+  return df
+  
 #print(investing_data('IT0005534141','2025-05-27'))
 
+####################
+#LEggo i dati da https://www.ariva.de/IT0005273013/kurse/historische-kurse
+####################
 
+def investing_data(isin,data):
+    print('inizio')
+    # Ariva usa l'ISIN direttamente nell'URL
+    url = f"https://www.ariva.de/{isin}/historische_kurse"
+    
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0",
+        "Referer": "https://www.google.com"
+    }
 
+    try:
+        # Nota: Ariva potrebbe richiedere una sessione per i dati storici estesi
+        # ma per gli ultimi 30 giorni solitamente basta la GET
+        response = requests.get(url, headers=headers, timeout=10)
+        print(f"Risposta server {response}")
+        if response.status_code != 200:
+            print(f"Errore Ariva: {response.status_code}")
+            return None
+            
+        # pandas.read_html trova tutte le tabelle nella pagina
+        tables_all = pd.read_html(response.text, decimal=',', thousands='.')
+        #print('stampo intero oggetto')
+        #print(tables_all)
+        #print('stampo solo il primo valore')
+        #print(tables_all[0])
+        #print('stampo secondo valore')
+        #print(tables_all[1])
+        #print('-------------')
+        tables = tables_all[0]
+        #print(tables.columns)
+        df=tables[[0, 1]].copy()
+        df = df.rename(columns={0: 'Date', 1: 'Close'})
+        df=df.drop(0)
+        df['Close']=df['Close'].str.replace('%','',regex=False) \
+                               .str.replace('.','',regex=False) \
+                               .str.replace(',','.',regex=False).astype(float)
+        df['Date']=pd.to_datetime(df['Date'], format='%y%m%d',errors='coerce')
+        #print(df)
+        df['Isin']=isin
+        #filtro df per la data passata come parametro
+        df_result= df[df['Date'] == data]
+    
+        return df_result        
+        #return None
+    except Exception as e:
+        print(f"Errore: {e}")
+        return None
 
-
+#print(investing_data('IT0005273013'))
 
 
 
