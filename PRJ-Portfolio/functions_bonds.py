@@ -651,7 +651,8 @@ def investing_data(isin,data):
         # Nota: Ariva potrebbe richiedere una sessione per i dati storici estesi
         # ma per gli ultimi 30 giorni solitamente basta la GET
         response = requests.get(url, headers=headers, timeout=10)
-        print(f"Risposta server {response}")
+        print(f"Nuova funzione - Risposta server {response}")
+        print(f"Link da raggiungere {url} e data {data}")
         if response.status_code != 200:
             print(f"Errore Ariva: {response.status_code}")
             return None
@@ -660,8 +661,8 @@ def investing_data(isin,data):
         tables_all = pd.read_html(response.text, decimal=',', thousands='.')
         #print('stampo intero oggetto')
         #print(tables_all)
-        #print('stampo solo il primo valore')
-        #print(tables_all[0])
+        print('stampo solo il primo valore')
+        print(tables_all[0])
         #print('stampo secondo valore')
         #print(tables_all[1])
         #print('-------------')
@@ -673,7 +674,8 @@ def investing_data(isin,data):
         df['Close']=df['Close'].str.replace('%','',regex=False) \
                                .str.replace('.','',regex=False) \
                                .str.replace(',','.',regex=False).astype(float)
-        df['Date']=pd.to_datetime(df['Date'], format='%y%m%d',errors='coerce')
+        df['Date']=pd.to_datetime(df['Date'], format='%d%m%y',errors='coerce')
+        ##print("stampo DF dopo elaborazione")
         #print(df)
         df['Isin']=isin
         #filtro df per la data passata come parametro
