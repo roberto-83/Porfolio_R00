@@ -656,7 +656,8 @@ def investing_data(isin,data):
         if response.status_code != 200:
             print(f"Errore Ariva: {response.status_code}")
             return None
-            
+        
+        
         # pandas.read_html trova tutte le tabelle nella pagina
         tables_all = pd.read_html(response.text, decimal=',', thousands='.')
         #print('stampo intero oggetto')
@@ -675,11 +676,17 @@ def investing_data(isin,data):
                                .str.replace('.','',regex=False) \
                                .str.replace(',','.',regex=False).astype(float)
         df['Date']=pd.to_datetime(df['Date'], format='%d%m%y',errors='coerce')
-        ##print("stampo DF dopo elaborazione")
-        #print(df)
+        print("stampo DF dopo elaborazione")
+        print(df)
         df['Isin']=isin
+        #riempio i dati mancanti
+        df = df.set_index('Date')
+        full_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
+        df = df.reindex(full_range)
+        df['Close'] = df['Close'].ffill()
+        df = df.rename_axis('Date').reset_index()
         #filtro df per la data passata come parametro
-        df_result= df[df['Date'] == data]
+        df_result = df[df['Date'] == data]
     
         return df_result        
         #return None
@@ -687,7 +694,7 @@ def investing_data(isin,data):
         print(f"Errore: {e}")
         return None
 
-#print(investing_data('IT0005273013'))
+#print(investing_data('IT0005273013','2026-03-28'))
 
 
 
