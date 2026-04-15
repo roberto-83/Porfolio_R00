@@ -419,6 +419,7 @@ def getBtpData(isin_val):
             df = ({'isin' : isin , 'info' : info, 'stor' : stor, 'desc':desc, 'curr' : curr, 'pric' : pric, 'yeld' :yeld, 'scad' : scad, 'cedo':dataCedola})
             break
   return df
+#print(getBtpData('IT0005534141'))
 
 def getDividBtp(URL,scad):
   #df = getBtpData(isin_val)
