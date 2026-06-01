@@ -76,12 +76,12 @@ def getStockInfo(ticker):
   #get all stock info
   #info = stock.info
   info = stock.get_info()
-  print('###### Scrivo le info estese della stock')
-  print(info)
+  #print('###### Scrivo le info estese della stock')
+  #print(info)
   #funzione rapida per le stock info ma molto scarna
   info3 = stock.fast_info
-  print('###### Ora le info compatte')
-  print(info3)
+  #print('###### Ora le info compatte')
+  #print(info3)
   #print(info3["previousClose"])
   #print(verifKey(info,'previousClose'))
   # print(info)

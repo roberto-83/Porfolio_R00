@@ -20,7 +20,7 @@ import time
 import yahooquery
 from yahooquery import Ticker
 from yahooread import readYahooSite
-from fred_data import writeMacroData,writeMacroDataHistory
+#from fred_data import writeMacroData,writeMacroDataHistory
 from investing_read import write_economin_data
 from read_operative_trading import all_stocks,write_short_list
 from read_MF_portf import read_write_MF_portfolio
