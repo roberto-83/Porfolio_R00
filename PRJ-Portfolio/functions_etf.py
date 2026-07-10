@@ -319,6 +319,8 @@ def listEtfCountries(isin):
     return pd.DataFrame({'isin': isin,'Country':'GOLD REGION','Peso_country':'100'},index=[0])
   elif isin == 'GB00BLD4ZL17':#bitcoin
     return pd.DataFrame({'isin': isin,'Country':'BITCOIN REGION','Peso_country':'100'},index=[0])
+  elif isin == 'JE00B78CGV99':#petrolio brent
+    return pd.DataFrame({'isin': isin,'Country':'OIL REGION','Peso_country':'100'},index=[0])
   elif isin == 'LU2951555585':#etf su future DBMFE
     return pd.DataFrame({'isin': isin,'Country':'WORLD','Peso_country':'100'},index=[0])
   else:
