@@ -136,14 +136,15 @@ def read_shortlist():
         # print(f"Tabella {i+1}:")
         # print(df.head())
     final_df = pd.concat(dataframes, ignore_index=True)
+    #print('XXXXXXXXXXX stampo XXXX')
     #print(final_df.to_string())
     return final_df
   else:
     print("❌ Login fallito o accesso negato alla pagina.")
     return pd.DataFrame()
 
-#print(read_shortlist())
- 
+##print(read_shortlist())
+
 
 
 
@@ -328,6 +329,8 @@ def write_short_list():
   if readlastDate('tab_pnc') == 1:
     if not tab1.empty:
       list_data = tab1.values.tolist()
+      #print('Scrivi da qui')
+      #print(list_data)
       appendRow('tab_pnc!A:C',list_data,newPrj)
       CalcoloMediana = cal_mediana()
       CalcoloMediana_PNC = cal_mediana_PNC()
@@ -337,7 +340,7 @@ def write_short_list():
       return "KO"
   else:
     return "NOT NECESSARY"
-
+#print(write_short_list())
 
 def all_stocks():
   todayDate = datetime.today().strftime('%d/%m/%Y')
@@ -369,6 +372,7 @@ def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
   all_range = read_range('tab_op_tr!A:E',newPrj)
   all_range = all_range.drop('Descrizione', axis=1)
   all_range['Rating']=all_range['Rating'].str.replace(",",".")
+  all_range['Rating']=pd.to_numeric(all_range['Rating'], errors='coerce')
   #print(all_range.to_string())
   #voglio un dataframe che riporti le prime azioni che hanno una mediana alta
   #negli ultimi n giorni
@@ -381,12 +385,16 @@ def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
   #print(mediana_df.to_string())
   df_azioni_uniche_con_mediana = mediana_df.groupby('Stock').tail(1).reset_index(drop=True)
   df_azioni_uniche_con_mediana = df_azioni_uniche_con_mediana.sort_values(by=['Mediana_5gg'], ascending=False)
-  #print(df_azioni_uniche_con_mediana.to_string())
+
   df_to_print=prime_10_righe = df_azioni_uniche_con_mediana.head(10)
   df_to_print['Data'] = todayDate
+  print('---------')
+  print(df_to_print.to_string())
+
   list_data = df_to_print.values.tolist()
   write_range('tab_op_tr!M2:R11',list_data,newPrj)
   return'OK'
+#print(cal_mediana())
 
 def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   todayDate = datetime.today().strftime('%d/%m/%Y')
@@ -394,6 +402,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   #all_range = all_range.drop('Descrizione', axis=1)
   all_range.drop(columns=['Rating','Descrizione','Target Price','Posizioni Nette Corte'], inplace=True)
   all_range['PNC Perc']=all_range['PNC Perc'].str.replace(",",".")
+  all_range['PNC Perc']=pd.to_numeric(all_range['PNC Perc'], errors='coerce')
   #print(all_range.to_string())
   #voglio un dataframe che riporti le prime azioni che hanno una mediana alta
   #negli ultimi n giorni
@@ -409,6 +418,8 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   #print(df_azioni_uniche_con_mediana.to_string())
   df_to_print=prime_10_righe = df_azioni_uniche_con_mediana.head(10)
   df_to_print['Data'] = todayDate
+  #print('-----')
+  #print(df_to_print.to_string())
   list_data = df_to_print.values.tolist()
   write_range('tab_op_tr!T2:Y11',list_data,newPrj)
   return'OK'
