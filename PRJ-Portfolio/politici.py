@@ -59,15 +59,74 @@ def get_all_senate_data():
           print(df.head())
           
           #ora leggo quello che è già scritto 
-          fulldata = read_range('tab_politici!A:P',newPrj)
-          print(fulldata)
+          df_storico = read_range('tab_politici!A:P',newPrj)
+          print('---- Stampo dataframe attuale ----')
+          print(df_storico.to_string())
+          print('---- Fine Stampa dataframe attuale ----')
+          #Se il foglio è vuoto, inizializziamo un DataFrame vuoto con le stesse colonne del nuovo
+          if df_storico.empty:
+              print("[*] Il foglio Google è vuoto. Tutto il DF scaricato verrà trattato come delta.")
+              df_storico = pd.DataFrame(columns=df.columns)
+          else:
+              print(f"[*] Letti {len(df_storico)} record esistenti dal foglio.")
+          # 3. Allineamento dei tipi e normalizzazione
+          # Per sicurezza convertiamo tutto in stringhe normalizzate (senza spazi superflui)
+          # in modo che il confronto non fallisca per discrepanze microscopiche di formattazione.
+          df_clean = df.astype(str).apply(lambda x: x.str.strip())
+          df_storico_clean = df_storico.astype(str).apply(lambda x: x.str.strip())
+          # Selezioniamo le colonne chiave su cui basare l'unicità del record.
+          colonne_chiave = ['transactionDate', 'representative', 'symbol', 'type']
+          # Controlliamo che le colonne chiave esistano in entrambi i dataframe prima di procedere
+          colonne_confronto = [col for col in colonne_chiave if col in df_clean.columns and col in df_storico_clean.columns]
+
+          if not df_storico_clean.empty and colonne_confronto:
+              # Eseguiamo un merge "left outer" tenendo traccia della provenienza delle righe
+              merge_df = pd.merge(
+                  df_clean, 
+                  df_storico_clean[colonne_confronto], 
+                  on=colonne_confronto, 
+                  how='left', 
+                  indicator=True
+              )
+              
+              # Estraiamo solo le righe che esistono esclusivamente nel DataFrame appena scaricato (il delta)
+              delta_df = df[merge_df['_merge'] == 'left_only'].copy()
+          else:
+              # Se lo storico è vuoto, tutto il df scaricato è un delta da appendere
+              delta_df = df.copy()
+
+          print(f"[*] Calcolo completato. Righe totali scaricate: {len(df)} | Nuove righe (Delta): {len(delta_df)}")
+
+          # 4. Scrittura del solo delta su Google Sheet
+          if not delta_df.empty:
+              # 1. Convertiamo la colonna in formato datetime per poter effettuare un ordinamento corretto
+              delta_df['transactionDate'] = pd.to_datetime(delta_df['transactionDate'], errors='coerce')
+              
+              # 2. Ordiniamo il delta in base alla data della transazione in modo CRESCENTE (dalla più vecchia alla più recente)
+              # Le date non valide (NaT) vengono messe alla fine
+              delta_df = delta_df.sort_values(by='transactionDate', ascending=True, na_position='last')
+              
+              # 3. Riconvertiamo la colonna nel formato stringa 'YYYY-MM-DD' per memorizzarla in modo pulito sul foglio
+              delta_df['transactionDate'] = delta_df['transactionDate'].dt.strftime('%Y-%m-%d').fillna("")
+              # Sostituiamo i NaN con stringhe vuote per evitare che causino errori di sintassi nell'API di Google Sheets
+              delta_df = delta_df.fillna("")
+              
+              # Convertiamo il dataframe in lista di liste per la scrittura
+              list_data = delta_df.values.tolist()
+              
+              print(f"[*] Tentativo di append di {len(list_data)} nuove righe...")
+              appendRow('tab_politici!A:P', list_data, newPrj)
+              print("[+] Append completato con successo.")
+          else:
+              print("[-] Nessun nuovo dato da scrivere. Il foglio è già aggiornato.")
+
           #--confronta con df
           #--trova delta
           #--appendi solo delta
           list_data = df.values.tolist()
           #print('Scrivi da qui')
           #print(list_data)
-          appendRow('tab_politici!A:P',list_data,newPrj)
+          #appendRow('tab_politici!A:P',list_data,newPrj)
     else:
         print(f"[!] Errore: {response.status_code}")
         print("Dettagli errore dal server:", response.text)
