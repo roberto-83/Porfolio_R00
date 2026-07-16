@@ -31,7 +31,7 @@ def get_all_house_data():
         "Accept": "application/json"
     }
 
-    print("[*] Esecuzione richiesta mascherata...")
+    #print("[*] Esecuzione richiesta mascherata...")
     response = requests.get(base_url, params=params, headers=headers, timeout=15)
 
     print(f"Stato della risposta: {response.status_code}")
@@ -43,7 +43,7 @@ def get_all_house_data():
       if dati:
           #print("Esempio dati:", dati[0])
           df = pd.DataFrame(dati)
-          print(df.head())
+          #print(df.head())
           
           #ora leggo quello che è già scritto 
           df_storico = read_range('tab_politici!A:P',newPrj)
