@@ -40,79 +40,65 @@ def get_all_house_data():
       dati = response.json()
       print(f"[+] Connessione riuscita! Scaricati {len(dati)} record.")
       # Mostra il primo record per verifica
-      if dati:
-          #print("Esempio dati:", dati[0])
-          df = pd.DataFrame(dati)
-          #print(df.head())
-          #1 ora leggo quello che è già scritto 
-          df_storico = read_range('tab_politici!A:P',newPrj)
+    if dati:
+          # 1. Creiamo il DataFrame dai nuovi dati API
+          df_nuovo = pd.DataFrame(dati)
+          
+          # 2. Leggiamo lo storico esistente dal Google Sheet
+          df_storico = read_range('tab_politici!A:P', newPrj)
           print('---- Stampo dataframe attuale ----')
           print(df_storico.to_string())
           print('---- Fine Stampa dataframe attuale ----')
-          #Se il foglio è vuoto, inizializziamo un DataFrame vuoto con le stesse colonne del nuovo
+          
+          # Gestiamo il caso in cui il foglio sia vuoto
           if df_storico.empty:
-              print("[*] Il foglio Google è vuoto. Tutto il DF scaricato verrà trattato come delta.")
-              df_storico = pd.DataFrame(columns=df.columns)
+              print("[*] Il foglio Google è vuoto. Procedo con i soli dati scaricati.")
+              df_unificato = df_nuovo.copy()
           else:
-              print(f"[*] Letti {len(df_storico)} record esistenti dal foglio.")
-          # 3. Allineamento dei tipi e normalizzazione
-          # Per sicurezza convertiamo tutto in stringhe normalizzate (senza spazi superflui)
-          # in modo che il confronto non fallisca per discrepanze microscopiche di formattazione.
-          df_clean = df.astype(str).apply(lambda x: x.str.strip())
-          df_storico_clean = df_storico.astype(str).apply(lambda x: x.str.strip())
-          # Selezioniamo le colonne chiave su cui basare l'unicità del record.
+              print(f"[*] Letti {len(df_storico)} record esistenti dal foglio. Unifico i dati...")
+              # Concateniamo lo storico e il nuovo df
+              df_unificato = pd.concat([df_storico, df_nuovo], ignore_index=True)
+
+          # 3. Pulizia e normalizzazione delle date per un ordinamento preciso
+          # Convertiamo temporaneamente in datetime per ordinare cronologicamente
+          df_unificato['transactionDate'] = pd.to_datetime(df_unificato['transactionDate'], errors='coerce')
+          
+          # Ordiniamo l'intero set in base alla data della transazione in modo CRESCENTE (dal più vecchio al più recente)
+          df_unificato = df_unificato.sort_values(by='transactionDate', ascending=True, na_position='last')
+          
+          # Ripristiniamo la data in formato stringa standard YYYY-MM-DD
+          df_unificato['transactionDate'] = df_unificato['transactionDate'].dt.strftime('%Y-%m-%d').fillna("")
+
+          # 4. Rimozione dei duplicati
+          # Definiamo le colonne chiave. Se un politico fa la stessa identica operazione (tipo) sullo stesso titolo (symbol) lo stesso giorno, è un duplicato.
           colonne_chiave = ['transactionDate', 'representative', 'symbol', 'type']
-          # Controlliamo che le colonne chiave esistano in entrambi i dataframe prima di procedere
-          colonne_confronto = [col for col in colonne_chiave if col in df_clean.columns and col in df_storico_clean.columns]
+          # Verifichiamo quali colonne chiave sono effettivamente presenti nel DF unificato
+          colonne_confronto = [col for col in colonne_chiave if col in df_unificato.columns]
+          
+          # Rimuoviamo i duplicati mantenendo solo la prima occorrenza (che ora è ordinata cronologicamente)
+          righe_prima = len(df_unificato)
+          df_unificato = df_unificato.drop_duplicates(subset=colonne_confronto, keep='first')
+          righe_dopo = len(df_unificato)
+          
+          print(f"[*] Rimozione duplicati completata: rimosse {righe_prima - righe_dopo} righe duplicate.")
+          
+          # Sostituiamo i NaN rimanenti con stringhe vuote per evitare conflitti con le API di Google
+          df_unificato = df_unificato.fillna("")
 
-          if not df_storico_clean.empty and colonne_confronto:
-              # Eseguiamo un merge "left outer" tenendo traccia della provenienza delle righe
-              merge_df = pd.merge(
-                  df_clean, 
-                  df_storico_clean[colonne_confronto], 
-                  on=colonne_confronto, 
-                  how='left', 
-                  indicator=True
-              )
-              
-              # Estraiamo solo le righe che esistono esclusivamente nel DataFrame appena scaricato (il delta)
-              delta_df = df[merge_df['_merge'] == 'left_only'].copy()
-          else:
-              # Se lo storico è vuoto, tutto il df scaricato è un delta da appendere
-              delta_df = df.copy()
-
-          print(f"[*] Calcolo completato. Righe totali scaricate: {len(df)} | Nuove righe (Delta): {len(delta_df)}")
-
-          # 4. Scrittura del solo delta su Google Sheet
-          if not delta_df.empty:
-              # 1. Convertiamo la colonna in formato datetime per poter effettuare un ordinamento corretto
-              delta_df['transactionDate'] = pd.to_datetime(delta_df['transactionDate'], errors='coerce')
-              
-              # 2. Ordiniamo il delta in base alla data della transazione in modo CRESCENTE (dalla più vecchia alla più recente)
-              # Le date non valide (NaT) vengono messe alla fine
-              delta_df = delta_df.sort_values(by='transactionDate', ascending=True, na_position='last')
-              
-              # 3. Riconvertiamo la colonna nel formato stringa 'YYYY-MM-DD' per memorizzarla in modo pulito sul foglio
-              delta_df['transactionDate'] = delta_df['transactionDate'].dt.strftime('%Y-%m-%d').fillna("")
-              # Sostituiamo i NaN con stringhe vuote per evitare che causino errori di sintassi nell'API di Google Sheets
-              delta_df = delta_df.fillna("")
-              
-              # Convertiamo il dataframe in lista di liste per la scrittura
-              list_data = delta_df.values.tolist()
-              
-              print(f"[*] Tentativo di append di {len(list_data)} nuove righe...")
-              appendRow('tab_politici!A:P', list_data, newPrj)
-              print("[+] Append completato con successo.")
-          else:
-              print("[-] Nessun nuovo dato da scrivere. Il foglio è già aggiornato.")
-
-          #--confronta con df
-          #--trova delta
-          #--appendi solo delta
-          #list_data = df.values.tolist()
-          #print('Scrivi da qui')
-          #print(list_data)
-          #appendRow('tab_politici!A:P',list_data,newPrj)
+          # 5. Sovrascrittura su Google Sheet
+          # Convertiamo l'intero DataFrame unificato, ordinato e pulito in una lista di liste
+          listPrint = df_unificato.values.tolist()
+          
+          # Calcoliamo l'indice dell'ultima riga per definire l'intervallo di scrittura
+          # (+2 perché gli indici delle righe di Google Sheets partono da 1 e la riga 1 è riservata alle intestazioni)
+          lastRowSt = str(len(listPrint) + 1)
+          dest_range = f'tab_politici!A2:P{lastRowSt}'
+          
+          print(f"[*] Scrittura di {len(listPrint)} righe totali sull'intervallo {dest_range}...")
+          
+          # Utilizziamo write_range per sovrascrivere l'intera tabella a partire dalla riga 2
+          write_range(dest_range, listPrint, newPrj)
+          print("[+] Scrittura e riordinamento completati con successo.")
     else:
         print(f"[!] Errore: {response.status_code}")
         print("Dettagli errore dal server:", response.text)
