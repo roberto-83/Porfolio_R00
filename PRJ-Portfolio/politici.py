@@ -20,9 +20,12 @@ def get_all_house_data():
     #url = "https://financialmodelingprep.com/stable/senate-latest?page=0&limit=25&apikey=e8031887778ab76659fbf1423e804a29"
     #base_url = "https://financialmodelingprep.com/stable/senate-latest"
     base_url = "https://financialmodelingprep.com/stable/house-latest"
+    #params = {
+    #  "page": 0,
+    #  "limit": 25,
+    #  "apikey": API_KEY
+    #}
     params = {
-      "page": 0,
-      "limit": 25,
       "apikey": API_KEY
     }
 
@@ -106,4 +109,4 @@ def get_all_house_data():
         print("Dettagli errore dal server:", response.text)
 
 
-print(get_all_house_data())
+#print(get_all_house_data())
