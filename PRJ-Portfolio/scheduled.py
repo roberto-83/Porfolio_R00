@@ -10,7 +10,7 @@ from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
 from analisiPort import analisiPort,gcolabAnalysis,finalAnalysys,readMyPort
-from politici.py import get_all_senate_data
+from politici.py import get_all_house_data
 import yfinance as yf
 from functions_sheets import read_range,appendRow,delete_range
 from functions_etf import readHoldings,testapiFinnhub
@@ -156,7 +156,7 @@ if developerMode == 0:
   #print(writeMacroDataHistory())
   output_econ = all_stocks()
   write_data = write_short_list()
-  senato = get_all_senate_data()
+  senato = get_all_house_data()
   #print(write_economin_data())
   delta10 = time.time() - time10s
   log_insert1("10-12 Aggiornamento Tab Oper Trading","Fine",delta10,initialTime,output_econ) 

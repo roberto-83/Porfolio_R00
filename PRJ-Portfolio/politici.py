@@ -13,23 +13,10 @@ import datetime
 from datetime import datetime,timedelta
 import time
 
-def readactual():
-  
-  if(len(fulldata) == 0):
-    status = 1 #proseguo
-  else:
-    dateSheet = fulldata['Data'].iloc[-1]
-    print(f"ultima data del foglio {tab} è {dateSheet} mentre oggi è {todayDate}")
-    if dateSheet == todayDate :
-      status = 0 #non faccio nulla
-    else:
-      status = 1 #proseguo
-  return status
-
-def get_all_senate_data():
+def get_all_house_data():
     API_KEY = "e8031887778ab76659fbf1423e804a29"
     #base_url = "https://financialmodelingprep.com/api/v4/stable/house-latest" # Verifica la versione esatta dell'endpoint (v4 o stable)
-    url = "https://financialmodelingprep.com/stable/senate-latest?page=0&limit=25&apikey=e8031887778ab76659fbf1423e804a29"
+    #url = "https://financialmodelingprep.com/stable/senate-latest?page=0&limit=25&apikey=e8031887778ab76659fbf1423e804a29"
     #base_url = "https://financialmodelingprep.com/stable/senate-latest"
     base_url = "https://financialmodelingprep.com/stable/house-latest"
     params = {
@@ -48,7 +35,7 @@ def get_all_senate_data():
     response = requests.get(base_url, params=params, headers=headers, timeout=15)
 
     print(f"Stato della risposta: {response.status_code}")
-    print(response)
+    #print(response)
     if response.status_code == 200:
       dati = response.json()
       print(f"[+] Connessione riuscita! Scaricati {len(dati)} record.")
@@ -123,7 +110,7 @@ def get_all_senate_data():
           #--confronta con df
           #--trova delta
           #--appendi solo delta
-          list_data = df.values.tolist()
+          #list_data = df.values.tolist()
           #print('Scrivi da qui')
           #print(list_data)
           #appendRow('tab_politici!A:P',list_data,newPrj)
@@ -132,4 +119,4 @@ def get_all_senate_data():
         print("Dettagli errore dal server:", response.text)
 
 
-print(get_all_senate_data())
+#print(get_all_house_data())
