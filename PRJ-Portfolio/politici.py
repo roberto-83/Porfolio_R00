@@ -14,6 +14,7 @@ from datetime import datetime,timedelta
 import time
 
 def get_all_house_data():
+    print(" ----- Inizio a leggere i dati delle transazioni della camera americana ----")
     API_KEY = "e8031887778ab76659fbf1423e804a29"
     #base_url = "https://financialmodelingprep.com/api/v4/stable/house-latest" # Verifica la versione esatta dell'endpoint (v4 o stable)
     #url = "https://financialmodelingprep.com/stable/senate-latest?page=0&limit=25&apikey=e8031887778ab76659fbf1423e804a29"
@@ -84,7 +85,9 @@ def get_all_house_data():
           
           # Sostituiamo i NaN rimanenti con stringhe vuote per evitare conflitti con le API di Google
           df_unificato = df_unificato.fillna("")
-
+          print('---- Stampo dataframe da scrivere ----')
+          print(df_unificato.to_string())
+          print('---- Fine Stampa dataframe da scrivere ----')
           # 5. Sovrascrittura su Google Sheet
           # Convertiamo l'intero DataFrame unificato, ordinato e pulito in una lista di liste
           listPrint = df_unificato.values.tolist()
@@ -103,4 +106,4 @@ def get_all_house_data():
         print("Dettagli errore dal server:", response.text)
 
 
-#print(get_all_house_data())
+print(get_all_house_data())
