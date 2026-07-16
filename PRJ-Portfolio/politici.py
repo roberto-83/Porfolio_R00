@@ -44,8 +44,7 @@ def get_all_house_data():
           #print("Esempio dati:", dati[0])
           df = pd.DataFrame(dati)
           #print(df.head())
-          
-          #ora leggo quello che è già scritto 
+          #1 ora leggo quello che è già scritto 
           df_storico = read_range('tab_politici!A:P',newPrj)
           print('---- Stampo dataframe attuale ----')
           print(df_storico.to_string())
