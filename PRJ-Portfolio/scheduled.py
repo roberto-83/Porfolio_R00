@@ -10,7 +10,7 @@ from functions_stocks import getStockInfo
 from functions_stocks import histData
 from datetime import datetime
 from analisiPort import analisiPort,gcolabAnalysis,finalAnalysys,readMyPort
-from politici.py import get_all_house_data
+from politici import get_all_house_data
 import yfinance as yf
 from functions_sheets import read_range,appendRow,delete_range
 from functions_etf import readHoldings,testapiFinnhub
