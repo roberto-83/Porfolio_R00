@@ -95,7 +95,6 @@ def get_all_house_data():
           dest_range = f'tab_politici!A2:P{lastRowSt}'
           
           print(f"[*] Scrittura di {len(listPrint)} righe totali sull'intervallo {dest_range}...")
-          
           # Utilizziamo write_range per sovrascrivere l'intera tabella a partire dalla riga 2
           write_range(dest_range, listPrint, newPrj)
           print("[+] Scrittura e riordinamento completati con successo.")
