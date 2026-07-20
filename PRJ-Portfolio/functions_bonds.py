@@ -639,7 +639,7 @@ def investing_data_ERRORE(isin, data):
 ####################
 
 def investing_data(isin,data):
-    print('inizio')
+    print(f'inizio a leggere i dati del isin {isin} del giorno {data}')
     # Ariva usa l'ISIN direttamente nell'URL
     url = f"https://www.ariva.de/{isin}/historische_kurse"
     
@@ -682,12 +682,28 @@ def investing_data(isin,data):
         df['Isin']=isin
         #riempio i dati mancanti
         df = df.set_index('Date')
-        full_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
+        # --- CORREZIONE CRITICA ---
+        # Convertiamo la data cercata in formato datetime per il confronto
+        target_date = pd.to_datetime(data)
+         # Il punto finale del calendario deve essere il valore massimo tra l'ultima data sul sito 
+        # e la data effettiva che il tuo sistema sta richiedendo (es. il sabato o la domenica)
+        end_range = max(df.index.max(), target_date)
+        
+        # Generiamo il range estendendolo fino alla data richiesta
+        full_range = pd.date_range(start=df.index.min(), end=end_range, freq='D')
+
+        #full_range = pd.date_range(start=df.index.min(), end=df.index.max(), freq='D')
         df = df.reindex(full_range)
         df['Close'] = df['Close'].ffill()
+        df['Isin'] = df['Isin'].bfill().ffill()
         df = df.rename_axis('Date').reset_index()
+        print("stampo prima del filtro")
+        print(df.to_string())
         #filtro df per la data passata come parametro
-        df_result = df[df['Date'] == data]
+        #df_result = df[df['Date'] == data]
+        df_result = df[df['Date'] == target_date]
+        #print("stampo dopo del filtro")
+        #print(df_result.to_string())
     
         return df_result        
         #return None
@@ -695,7 +711,7 @@ def investing_data(isin,data):
         print(f"Errore: {e}")
         return None
 
-#print(investing_data('IT0005273013','2026-03-28'))
+print(investing_data('IT0005273013','2026-07-17'))
 
 
 

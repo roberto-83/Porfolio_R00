@@ -489,7 +489,10 @@ class Portfolio:
       histTot = investing_data(row['Isin'],dateRead)
       print('Output read euronext')
       print(histTot.to_string())
+      #if histTot is None or histTot.empty:
+
       histPriceDf = histTot[histTot['Date'] == dateRead]
+      #se è lunedi e chiedo i dati di sabato questo df è vuoto
       if len(histPriceDf) >0 :
         histPrice = histPriceDf['Close'].values[0]
       else:
@@ -611,6 +614,7 @@ class Portfolio:
       while i <= diffdate:
         #dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
         dateSearch = (datetime.strptime(lastDate, "%Y-%m-%d")+timedelta(days=i)).strftime('%Y-%m-%d')
+        print(f"cerco la data {dateSearch}")
         histDf = Portfolio.histDf(self,dateSearch)
         #print(histDf)
         numRowsHistDf = len(histDf)
