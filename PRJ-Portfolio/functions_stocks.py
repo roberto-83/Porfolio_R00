@@ -3,6 +3,7 @@ import datetime
 from datetime import datetime,timedelta
 from settings import * #importa variabili globali
 from functions_sheets import read_range
+from concurrent.futures import ThreadPoolExecutor
 
 #yfinance
 def testReadDataYf(tick):
@@ -312,6 +313,68 @@ def verifKey(dict,val):
     return dict[val] 
   else:
     return '0'
+
+
+def fetch_yfinance_info(ticker):
+    """Scarica e normalizza i dati da Yahoo Finance in modo sicuro per Azioni e Crypto."""
+    print(f"Parallel fetch per Ticker Yahoo: {ticker}")
+    try:
+        stock = yf.Ticker(ticker)
+        info = stock.get_info()
+        info3 = stock.fast_info
+        
+        # Gestione fallback per il prezzo di chiusura precedente
+        if verifKey(info, 'previousClose') == '0':
+            prevClosePrice = 0.000001 if info3.get("previousClose") is None else info3["previousClose"]
+        else:
+            prevClosePrice = verifKey(info, 'previousClose')
+
+        qType = verifKey(info3, "quoteType") if verifKey(info, 'quoteType') == '0' else verifKey(info, 'quoteType')
+        if qType == "CRYPTOCURRENCY" or "BTC" in ticker or "ETH" in ticker or "-EUR" in ticker: 
+            qType = "CRYPTO"
+        
+        current_price = info3.get("last_price") if verifKey(info, 'currentPrice') == '0' else verifKey(info, 'currentPrice')
+        if current_price is None or current_price == '0' or current_price == 0:
+            current_price = prevClosePrice    
+        # Costruiamo il dizionario standardizzato
+        return ticker, {
+            "quoteType": qType,
+            "shortName": verifKey(info, 'shortName') if verifKey(info, 'shortName') != '0' else ticker,
+            "currency": info3.get("currency") if verifKey(info, 'currency') == '0' else verifKey(info, 'currency'),
+            "currentPrice": current_price,
+            "previousClose": prevClosePrice,
+            "fiftyTwoWeekLow": verifKey(info, 'fiftyTwoWeekLow'),
+            "fiftyTwoWeekHigh": verifKey(info, 'fiftyTwoWeekHigh'),
+            "regularMarketOpen": info3.get("open") if verifKey(info, 'regularMarketOpen') == '0' else verifKey(info, 'regularMarketOpen'),
+            # Inserisci qui di seguito tutti i campi estesi (da info) che scrivi nei metadati della watchlist
+            "country": verifKey(info, 'country'), "sector": verifKey(info, 'sector'), "industry": verifKey(info, 'industry'),
+            "longName": verifKey(info, 'longName'), "beta": verifKey(info, 'beta'), "trailingPE": verifKey(info, 'trailingPE'),
+            "forwardPE": verifKey(info, 'forwardPE'), "priceToSalesTrailing12Months": verifKey(info, 'priceToSalesTrailing12Months'),
+            "bookValue": verifKey(info, 'bookValue'), "priceToBook": verifKey(info, 'priceToBook'), "trailingEps": verifKey(info, 'trailingEps'),
+            "forwardEps": verifKey(info, 'forwardEps'), "pegRatio": verifKey(info, 'pegRatio'), "trailingPegRatio": verifKey(info, 'trailingPegRatio'),
+            "bid": verifKey(info, 'bid'), "dividRate": verifKey(info, 'dividRate'), "dividYield": verifKey(info, 'dividYield'),
+            "lastDividendValue": verifKey(info, 'lastDividendValue'), "lastDividendDate": verifKey(info, 'lastDividendDate'),
+            "exdividDate": verifKey(info, 'exdividDate'), "payoutratio": verifKey(info, 'payoutratio'),
+            "fiftyDayAverage": info3.get("fiftyDayAverage") if verifKey(info, 'fiftyDayAverage') == '0' else verifKey(info, 'fiftyDayAverage'),
+            "52WeekChange": verifKey(info, '52WeekChange'), "twoHundredDayAverage": verifKey(info, 'twoHundredDayAverage'),
+            "ebitda": verifKey(info, 'ebitda'), "freeCashflow": verifKey(info, 'freeCashflow'), "operatingCashflow": verifKey(info, 'operatingCashflow'),
+            "enterpriseValue": verifKey(info, 'enterpriseValue'), "profitMargins": verifKey(info, 'profitMargins'),
+            "grossMargins": verifKey(info, 'grossMargins'), "ebitdaMargins": verifKey(info, 'ebitdaMargins'),
+            "totalCashPerShare": verifKey(info, 'totalCashPerShare'), "revenuePerShare": verifKey(info, 'revenuePerShare'),
+            "debtToEquity": verifKey(info, 'debtToEquity'), "returnOnAssets": verifKey(info, 'returnOnAssets'),
+            "returnOnEquity": verifKey(info, 'returnOnEquity'), "earningsGrowth": verifKey(info, 'earningsGrowth'),
+            "revenueGrowth": verifKey(info, 'revenueGrowth'), "enterpriseToRevenue": verifKey(info, 'enterpriseToRevenue'),
+            "enterpriseToEbitda": verifKey(info, 'enterpriseToEbitda'), "earningsQuarterlyGrowth": verifKey(info, 'earningsQuarterlyGrowth'),
+            "quickRatio": verifKey(info, 'quickRatio'), "currentRatio": verifKey(info, 'currentRatio'),
+            "targetHighPrice": verifKey(info, 'targetHighPrice'), "targetLowPrice": verifKey(info, 'targetLowPrice'),
+            "targetMeanPrice": verifKey(info, 'targetMeanPrice'), "targetMedianPrice": verifKey(info, 'targetMedianPrice'),
+            "recommendationMean": verifKey(info, 'recommendationMean'), "recommendationKey": verifKey(info, 'recommendationKey'),
+            "marketCap": info3.get("marketCap") if verifKey(info, 'marketCap') == '0' else verifKey(info, 'marketCap'),
+            "numberOfAnalystOpinions": verifKey(info, 'numberOfAnalystOpinions')
+        }
+    except Exception as e:
+        print(f"Errore Yahoo Finance per {ticker}: {e}")
+        return ticker, None
 #print(getStockInfo('AHLA.DE'))
 #print(getStockInfo('RACE.MI'))
 #print(getStockInfo('MSF.DE'))

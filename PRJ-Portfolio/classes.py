@@ -6,7 +6,7 @@ from functions_sheets import delete_range,appendRow
 from functions_bonds import getBtpData
 from functions_bonds import getBotData,readEuronextREV2,investing_data
 from functions_stocks import getStockInfo
-from functions_stocks import verifKey,findRowSpes
+from functions_stocks import verifKey,findRowSpes,fetch_yfinance_info
 from functions_etf import sectorsEtf,sectorsMultipEtf
 from functions_etf import getPriceETF
 from functions_etf import getSummary,listEtfCountries,listStocksCountries,stockCountr
@@ -23,7 +23,7 @@ import calendar
 from yahooquery import Ticker
 from yahooread import readYahooSite
 import subprocess
-
+from concurrent.futures import ThreadPoolExecutor
 #from IPython.display import display
 
 from yfinance.utils import empty_earnings_dates_df
@@ -1435,7 +1435,7 @@ class Portfolio:
       infoTick=[isin,tick,'','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','','']
     return infoTick
 
-  def whatchlist(self):
+  def whatchlist_OLD(self):
     #loop sulla pagina tab_whatchlist
     tab_watch = read_range('tab_watchlist!A:R',newPrj)
     #modifico il dataframe mettendo i dati aggiornati
@@ -1501,7 +1501,158 @@ class Portfolio:
     #scrivo le nuove
     write_range('tab_watchlist!A2:AS'+str(numRow),listPrin,newPrj)
     return 'OK'
+  
+  def whatchlist(self):
+    # Loop sulla pagina tab_watchlist
+    tab_watch = read_range('tab_watchlist!A:R', newPrj)
+    listPrin = []
+    
+    # --- ISOLAMENTO ED ESTRAZIONE PARALLELA SOLO PER STRUMENTI YAHOO ---
+    # Escludiamo BTP e BOT dal download massivo di Yahoo Finance
+    ticker_yahoo = tab_watch[~tab_watch['Asset'].isin(['BTP', 'BOT'])]['Ticker'].dropna().unique().tolist()
+    
+    mappa_info_yahoo = {}
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = [executor.submit(fetch_yfinance_info, t) for t in ticker_yahoo if t and str(t) != 'None']
+        for future in futures:
+            ticker, info = future.result()
+            if info:
+                mappa_info_yahoo[ticker] = info
+    # -----------------------------------------------------------------
 
+    # Funzione di supporto locale per convertire in float in totale sicurezza ed evitare TypeError
+    def safe_float(val):
+        if val is None or str(val).strip() == '' or str(val).lower() == 'none' or str(val) == '0':
+            return 0.0
+        try:
+            return float(str(val).replace(',', '.'))
+        except ValueError:
+            return 0.0
+
+    # Loop sui ticker della tabella
+    for i in tab_watch.index:
+        asset = tab_watch['Asset'][i]
+        isin = tab_watch['ISIN'][i]
+        tick = tab_watch['Ticker'][i]
+        ordin = tab_watch['Ordine'][i]
+        av = tab_watch['A/V'][i]
+        qta = tab_watch['QTA'][i]
+        tot = tab_watch['TOT'][i]
+        dOrdine = tab_watch['Data Ordine'][i]
+        
+        if str(ordin) != 'None' and str(ordin) != "":
+            ordin = ordin.replace(',', '.')
+        else:
+            ordin = "0"
+
+        print(f"Read info of {tick} che è un {asset} con isin {isin}")
+        
+        # Inizializziamo la struttura array posizionale identica a quella storica
+        tickInfo = ["0" for _ in range(40)]
+        
+        # --- SUDDIVISIONE FLUSSO COMPATIBILE ---
+        if asset == 'BTP' or asset == 'BOT':
+            # Gestione nativa BTP tramite il tuo scraping su Ariva.de
+            df_btp = investing_data(isin, Portfolio.todayDate) 
+            if df_btp is not None and not df_btp.empty:
+                tickInfo[2] = f"BTP ISIN {isin}"                # shortName fittizio
+                tickInfo[3] = asset
+                tickInfo[4] = df_btp['Close'].iloc[-1]          # Prezzo corrente
+                tickInfo[14] = df_btp['Close'].iloc[-1]         # Fallback previousClose
+                tickInfo[15] = "0"                              # No 52w low nativo da tabella
+                tickInfo[16] = "0"                              # No 52w high nativo da tabella
+                tickInfo[5] = "EUR"
+            else:
+                print(f"Impossibile recuperare dati storici per BTP {isin}. Salto riga.")
+                continue
+                
+        else:
+            # Gestione Azioni, ETF, ETC e Crypto tramite il dizionario pre-scaricato
+            info_diz = mappa_info_yahoo.get(tick)
+            if not info_diz:
+                print(f"Dati non trovati su Yahoo per il ticker {tick}. Salto riga.")
+                continue
+            
+            # Mappatura accurata degli indici numerici utilizzati dal tuo Portfolio.getDescr
+            tickInfo[2] = info_diz.get('shortName', '')
+            tickInfo[3] = info_diz.get('quoteType', '')
+            tickInfo[4] = info_diz.get('currentPrice', 0)
+            tickInfo[5] = info_diz.get('currency', 'EUR')
+            tickInfo[6] = info_diz.get('country', '')
+            tickInfo[7] = info_diz.get('sector', '')
+            tickInfo[8] = info_diz.get('industry', '')
+            tickInfo[9] = info_diz.get('longName', '')
+            tickInfo[10] = info_diz.get('beta', '0')
+            tickInfo[11] = info_diz.get('trailingPE', '0')
+            tickInfo[12] = info_diz.get('forwardPE', '0')
+            tickInfo[13] = info_diz.get('priceToSalesTrailing12Months', '0')
+            tickInfo[14] = info_diz.get('previousClose', 0)
+            tickInfo[15] = info_diz.get('fiftyTwoWeekLow', 0)
+            tickInfo[16] = info_diz.get('fiftyTwoWeekHigh', 0)
+            
+            # Riempimento automatico indici estesi per evitare IndexError nel listPrin.append (dal 18 al 35)
+            chiavi_estese = [
+                'bookValue', 'priceToBook', 'trailingEps', 'forwardEps', 'pegRatio', 'trailingPegRatio',
+                'bid', 'regularMarketOpen', 'dividRate', 'dividYield', 'lastDividendValue', 'lastDividendDate',
+                'exdividDate', 'payoutratio', 'fiftyDayAverage', '52WeekChange', 'twoHundredDayAverage', 'ebitda'
+            ]
+            for idx, chiave in enumerate(chiavi_estese, start=18):
+                tickInfo[idx] = info_diz.get(chiave, '0')
+
+        # --- BLOCCO DI CALCOLO SCHERMATO DA ERRORE NONETYPE ---
+        print(f"stampo ordin {ordin} per {tick} e prezzo {tickInfo[4]} , chiusura precedente {tickInfo[14]}")
+        
+        p_current = safe_float(tickInfo[4])
+        p_prev = safe_float(tickInfo[14])
+        p_low52 = safe_float(tickInfo[15])
+        p_high52 = safe_float(tickInfo[16])
+        f_ordin = safe_float(ordin)
+
+        if p_current > 0:
+            percPrezz = (f_ordin - p_current) / p_current
+        else:
+            percPrezz = 0.0
+            
+        # Calcolo 52 WEEK corretto senza rischio di TypeError
+        if asset in ['BTP', 'BOT', 'CRYPTO', 'CURRENCY']:
+            fiftyTwoWeek = ''
+            fiftyTwoWeekPerc = ''
+            deltaIeri = 0.0
+            if p_prev > 0 and p_current > 0:
+                deltaIeri = round((p_current - p_prev) / p_prev, 4)
+        elif p_low52 > 0 and p_high52 > 0 and p_current > 0:
+            fiftyTwoWeek = f"{p_low52} - {p_high52} ( {round((p_low52 + p_high52) / 2, 2)} )"
+            if (p_high52 - p_low52) != 0:
+                fiftyTwoWeekPerc = (p_current - p_low52) / (p_high52 - p_low52)
+            else:
+                fiftyTwoWeekPerc = 0.0
+            deltaIeri = round((p_current - p_prev) / p_prev, 4) if p_prev > 0 else 0.0
+        else:
+            fiftyTwoWeek = ''
+            fiftyTwoWeekPerc = ''
+            deltaIeri = 0.0
+            
+        priceLiveWatch = changeFormatNumberPrint(p_current)
+        priceYestWatch = changeFormatNumberPrint(p_prev)
+        priceOrder = changeFormatNumberPrint(f_ordin)
+        
+        # Append finale mantenendo intatta la tua matrice di tracciamento A:AS
+        listPrin.append([
+            Portfolio.todayDateHour, asset, isin, tick, tickInfo[2], priceLiveWatch, priceYestWatch, priceOrder,
+            percPrezz, av, qta, tot, dOrdine, fiftyTwoWeek, fiftyTwoWeekPerc, deltaIeri, tab_watch['NOTE'][i], tickInfo[3],
+            tickInfo[5], tickInfo[6], tickInfo[7], tickInfo[8], tickInfo[9], tickInfo[10], tickInfo[11], tickInfo[12], tickInfo[13],
+            tickInfo[18], tickInfo[19], tickInfo[20], tickInfo[21], tickInfo[22], tickInfo[23], tickInfo[24], tickInfo[25],
+            tickInfo[26], tickInfo[27], tickInfo[28], tickInfo[29], tickInfo[30], tickInfo[31], tickInfo[32], tickInfo[33], tickInfo[34], tickInfo[35]
+        ])
+
+    numRow = len(listPrin) + 1
+    
+    # Cancello vecchie righe
+    delete_range('tab_watchlist!A2:AS1250', newPrj)
+    # Scrivo le nuove righe aggiornate
+    write_range('tab_watchlist!A2:AS' + str(numRow), listPrin, newPrj)
+    
+    return 'OK'
 ################################################################################
 ##### NEWS VARIE
 ################################################################################
