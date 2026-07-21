@@ -126,3 +126,96 @@ def get_all_house_data():
 
 
 #print(get_all_house_data())
+
+#funzione che mi trova i titoli piu acquistati e piu venduti
+def process_and_write_top_politicians_analysis():
+    print("----- Inizio elaborazione Top 10 Acquisti e Vendite (ultimi 30 giorni) -----")
+    
+    # 1. Lettura dati dal foglio Google (colonne A:Q)
+    df = read_range('tab_politici!A:Q', newPrj)
+    
+    if df.empty:
+        print("[!] Il DataFrame letto dal foglio Google è vuoto. Interrompo l'elaborazione.")
+        return
+
+    # 2. Convertiamo transactionDate e filtriamo per gli ultimi 30 giorni
+    df['transactionDate'] = pd.to_datetime(df['transactionDate'], errors='coerce')
+    data_limite = datetime.now() - timedelta(days=30)
+    
+    df_30g = df[df['transactionDate'] >= data_limite].copy()
+    
+    if df_30g.empty:
+        print("[!] Nessuna transazione trovata negli ultimi 30 giorni.")
+        return
+
+    # 3. Pulizia e conversione di AMOUNT MAX in numerico
+    df_30g['AMOUNT MAX'] = pd.to_numeric(df_30g['AMOUNT MAX'], errors='coerce').fillna(0)
+
+    # 4. Calcolo dell'importo netto (Positivo per Purchase, Negativo per Sale)
+    def calc_net_amount(row):
+        t_type = str(row.get('type', '')).lower()
+        amount = row['AMOUNT MAX']
+        if 'purchase' in t_type:
+            return amount
+        elif 'sale' in t_type:
+            return -amount
+        return 0
+
+    df_30g['net_amount'] = df_30g.apply(calc_net_amount, axis=1)
+
+    # 5. Aggregazione per asset (raggruppiamo su assetDescription e assetType)
+    # Calcoliamo:
+    # - office: conteggio di politici distinti (o righe)
+    # - net_amount: somma con segno (+ acquisti, - vendite)
+    df_grouped = df_30g.groupby(['assetType', 'assetDescription']).agg(
+        num_politici=('office', 'nunique'),  # 'nunique' per contare i politici unici
+        somma_delta=('net_amount', 'sum')
+    ).reset_index()
+
+    # Timestamp di esecuzione da inserire come prima colonna
+    current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    df_grouped.insert(0, 'timestamp', current_timestamp)
+
+    # Reinstalliamo l'ordine corretto delle colonne richieste:
+    # [timestamp, assetType, assetDescription, num_politici, somma_delta]
+    df_grouped = df_grouped[['timestamp', 'assetType', 'assetDescription', 'num_politici', 'somma_delta']]
+
+    # -------------------------------------------------------------------------
+    # 6. TOP 10 ASSET PIÙ COMPRATI (somma_delta > 0, ordinati decrescenti)
+    # -------------------------------------------------------------------------
+    top_buy = df_grouped[df_grouped['somma_delta'] > 0].sort_values(
+        by='somma_delta', ascending=False
+    ).head(10)
+
+    # -------------------------------------------------------------------------
+    # 7. TOP 10 ASSET PIÙ VENDUTI (somma_delta < 0, ordinati crescenti)
+    # -------------------------------------------------------------------------
+    top_sell = df_grouped[df_grouped['somma_delta'] < 0].sort_values(
+        by='somma_delta', ascending=True
+    ).head(10)
+
+    # -------------------------------------------------------------------------
+    # 8. Scrittura su Google Sheets
+    # -------------------------------------------------------------------------
+    
+    # --- Scrittura Top 10 Acquisti (Colonne S:W) ---
+    if not top_buy.empty:
+        list_print_buy = top_buy.values.tolist()
+        last_row_buy = str(len(list_print_buy) + 1)
+        dest_range_buy = f'tab_politici!S2:W{last_row_buy}'
+        print(f"[*] Scrittura Top 10 Acquisti ({len(list_print_buy)} righe) su {dest_range_buy}...")
+        write_range(dest_range_buy, list_print_buy, newPrj)
+    else:
+        print("[*] Nessun acquisto netto registrato negli ultimi 30 giorni.")
+
+    # --- Scrittura Top 10 Vendite (Colonne Y:AC) ---
+    if not top_sell.empty:
+        list_print_sell = top_sell.values.tolist()
+        last_row_sell = str(len(list_print_sell) + 1)
+        dest_range_sell = f'tab_politici!Y2:AC{last_row_sell}'
+        print(f"[*] Scrittura Top 10 Vendite ({len(list_print_sell)} righe) su {dest_range_sell}...")
+        write_range(dest_range_sell, list_print_sell, newPrj)
+    else:
+        print("[*] Nessuna vendita netta registrata negli ultimi 30 giorni.")
+
+    print("[+] Elaborazione completata con successo.")
