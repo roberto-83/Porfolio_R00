@@ -12,7 +12,7 @@ from settings import * #importa variabili globali
 import datetime
 from datetime import datetime,timedelta
 import time
-
+import re
 def extract_max_amount(val):
     if not isinstance(val, str) or not val.strip():
         return None
