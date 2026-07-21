@@ -13,6 +13,20 @@ import datetime
 from datetime import datetime,timedelta
 import time
 
+def extract_max_amount(val):
+    if not isinstance(val, str) or not val.strip():
+        return None
+    # Se il valore contiene un intervallo (es. "$1,001 - $15,000")
+    if '-' in val:
+        right_part = val.split('-')[-1]
+    else:
+        # Gestisce casi senza intervallo (es. "> $50,000,000")
+        right_part = val
+    
+    # Rimuove tutto ciò che non è un numero
+    clean_num = re.sub(r'[^\d]', '', right_part)
+    return float(clean_num) if clean_num else None
+
 def get_all_house_data():
     print(" ----- Inizio a leggere i dati delle transazioni della camera americana ----")
     API_KEY = "e8031887778ab76659fbf1423e804a29"
@@ -75,7 +89,7 @@ def get_all_house_data():
 
           # 4. Rimozione dei duplicati
           # Definiamo le colonne chiave. Se un politico fa la stessa identica operazione (tipo) sullo stesso titolo (symbol) lo stesso giorno, è un duplicato.
-          colonne_chiave = ['transactionDate', 'representative', 'symbol', 'type']
+          colonne_chiave = ['transactionDate', 'representative', 'symbol', 'type','amount']
           # Verifichiamo quali colonne chiave sono effettivamente presenti nel DF unificato
           colonne_confronto = [col for col in colonne_chiave if col in df_unificato.columns]
           
@@ -91,6 +105,8 @@ def get_all_house_data():
           print('---- Stampo dataframe da scrivere ----')
           print(df_unificato.to_string())
           print('---- Fine Stampa dataframe da scrivere ----')
+          #Aggiungo la colonna
+          df_unificato['AMOUNT MAX'] = df_unificato['amount'].apply(extract_max_amount)
           # 5. Sovrascrittura su Google Sheet
           # Convertiamo l'intero DataFrame unificato, ordinato e pulito in una lista di liste
           listPrint = df_unificato.values.tolist()
@@ -98,7 +114,7 @@ def get_all_house_data():
           # Calcoliamo l'indice dell'ultima riga per definire l'intervallo di scrittura
           # (+2 perché gli indici delle righe di Google Sheets partono da 1 e la riga 1 è riservata alle intestazioni)
           lastRowSt = str(len(listPrint) + 1)
-          dest_range = f'tab_politici!A2:P{lastRowSt}'
+          dest_range = f'tab_politici!A2:Q{lastRowSt}'
           
           print(f"[*] Scrittura di {len(listPrint)} righe totali sull'intervallo {dest_range}...")
           # Utilizziamo write_range per sovrascrivere l'intera tabella a partire dalla riga 2
