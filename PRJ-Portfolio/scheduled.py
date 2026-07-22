@@ -167,7 +167,7 @@ if developerMode == 0:
   senato = get_all_house_data()
   senato_analisi = process_and_write_top_politicians_analysis()
   delta11 = time.time() - time11s
-  log_insert1("11-12 Aggiornamento Tab Politici","Fine",delta11,initialTime,senato)
+  log_insert1("11-12 Aggiornamento Tab Politici","Fine",delta11,initialTime,'OK')
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Politici")
   #dati fed
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Inizio - Dati Economici")
