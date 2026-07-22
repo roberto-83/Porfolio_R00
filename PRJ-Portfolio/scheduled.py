@@ -156,13 +156,19 @@ if developerMode == 0:
   #print(writeMacroDataHistory())
   output_econ = all_stocks()
   write_data = write_short_list()
-  senato = get_all_house_data()
-  senato_analisi = process_and_write_top_politicians_analysis()
+ 
   #print(write_economin_data())
   delta10 = time.time() - time10s
   log_insert1("10-12 Aggiornamento Tab Oper Trading","Fine",delta10,initialTime,output_econ) 
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 10 - Fine - Dati Operative Trading")
 
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Inizio - Dati Politici")
+  time11s = time.time()
+  senato = get_all_house_data()
+  senato_analisi = process_and_write_top_politicians_analysis()
+  delta11 = time.time() - time11s
+  log_insert1("11-12 Aggiornamento Tab Politici","Fine",delta11,initialTime,senato)
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Politici")
   #dati fed
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Inizio - Dati Economici")
   #time11s = time.time()
