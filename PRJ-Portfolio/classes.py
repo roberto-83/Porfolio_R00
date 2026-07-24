@@ -450,8 +450,8 @@ class Portfolio:
       portfin0 = pd.concat(frames, ignore_index=True)
     #ordino dataframe per id portaf e asset e composizione
     portFinal = portfin0.sort_values(by=['Num Port', 'Asset', 'peso'])
-    #print('Stampa 03')
-    #print(portFinal.to_string())
+    print('###### Stampa Portfolio')
+    print(portFinal.to_string())
     ################# End multiple portfolio
     #trasformo in lista
     listPrint = portFinal.values.tolist()
@@ -1640,7 +1640,7 @@ class Portfolio:
         listPrin.append([
             Portfolio.todayDateHour, asset, isin, tick, tickInfo[2], priceLiveWatch, priceYestWatch, priceOrder,
             percPrezz, av, qta, tot, dOrdine, fiftyTwoWeek, fiftyTwoWeekPerc, deltaIeri, tab_watch['NOTE'][i], tickInfo[3],
-            tickInfo[5], tickInfo[6], tickInfo[7], tickInfo[8], tickInfo[9], tickInfo[10], tickInfo[11], tickInfo[12], tickInfo[13],
+            tickInfo[5], tickInfo[6], tickInfo[7], tickInfo[8], tickInfo[10], tickInfo[11], tickInfo[12], tickInfo[13], tickInfo[14],
             tickInfo[18], tickInfo[19], tickInfo[20], tickInfo[21], tickInfo[22], tickInfo[23], tickInfo[24], tickInfo[25],
             tickInfo[26], tickInfo[27], tickInfo[28], tickInfo[29], tickInfo[30], tickInfo[31], tickInfo[32], tickInfo[33], tickInfo[34], tickInfo[35]
         ])
