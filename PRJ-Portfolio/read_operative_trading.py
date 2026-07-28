@@ -446,9 +446,9 @@ def cal_mediana():
 
     # 6. Definizione descrizione della pendenza
     conditions = [df_last["Pendenza"] > 0, df_last["Pendenza"] == 0]
-    choices = ["sale", "stabile"]
+    choices = ["Sale", "Stabile"]
     df_last["Pendenza_Desc"] = np.select(
-        conditions, choices, default="scende"
+        conditions, choices, default="Scende"
     )
 
     # In caso di dati mancanti (es. meno di 5 giorni di storico)
@@ -468,7 +468,7 @@ def cal_mediana():
     # (Data, Tipo, Stock, Rating, Rating_-1, Rating_-2, Rating_-3, Rating_-4, Pendenza, Pendenza_Desc, Mediana_10gg, Media_10gg)
     cols_order = [
         "Data",
-        "Tipo",
+        "Type",
         "Stock",
         "Rating",
         "Rating_-1",
@@ -482,8 +482,8 @@ def cal_mediana():
     ]
 
     # Verifica presenza della colonna 'Tipo', altrimenti riempimento di sicurezza
-    if "Tipo" not in top10.columns:
-        top10["Tipo"] = "N/D"
+    if "Type" not in top10.columns:
+        top10["Type"] = "N/D"
 
     df_final = top10[cols_order].fillna("")
 
@@ -492,7 +492,7 @@ def cal_mediana():
     write_range("tab_op_tr!M2:X11", list_data, newPrj)
 
     return "OK"
-print(cal_mediana())
+#print(cal_mediana())
 
 def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   todayDate = datetime.today().strftime('%d/%m/%Y')
