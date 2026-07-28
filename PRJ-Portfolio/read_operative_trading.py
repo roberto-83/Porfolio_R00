@@ -395,7 +395,107 @@ def cal_mediana_OLD():#calcolo i valori mediani negli ultimi 5 gg
   write_range('tab_op_tr!M2:R11',list_data,newPrj)
   return'OK'
 #print(cal_mediana())
+import numpy as np
+import pandas as pd
 
+
+def cal_mediana():
+    # 1. Lettura e pulizia dati
+    all_range = read_range("tab_op_tr!A:E", newPrj)
+    all_range = all_range.drop("Descrizione", axis=1, errors="ignore")
+
+    all_range["Rating"] = (
+        all_range["Rating"].astype(str).str.replace(",", ".")
+    )
+    all_range["Rating"] = pd.to_numeric(all_range["Rating"], errors="coerce")
+
+    # Parsing della data e ordinamento rigoroso
+    all_range["Data"] = pd.to_datetime(
+        all_range["Data"], dayfirst=True, errors="coerce"
+    )
+    all_range = all_range.dropna(subset=["Rating", "Data"]).sort_values(
+        by=["Stock", "Data"], ascending=True
+    )
+
+    # 2. Generazione dei Lag posizionali (gli ultimi 4 valori storici per stock)
+    grouped = all_range.groupby("Stock")["Rating"]
+    all_range["Rating_-1"] = grouped.shift(1)
+    all_range["Rating_-2"] = grouped.shift(2)
+    all_range["Rating_-3"] = grouped.shift(3)
+    all_range["Rating_-4"] = grouped.shift(4)
+
+    # 3. Calcolo Statistiche su finestra mobile di 10 elementi
+    # Usiamo il rolling diretto senza sovrascrivere indici in modo rischioso
+    all_range["Mediana_10gg"] = (
+        grouped.rolling(window=10, min_periods=1).median().values
+    )
+    all_range["Media_10gg"] = (
+        grouped.rolling(window=10, min_periods=1).mean().values
+    )
+
+    # 4. Estrazione dell'ultimo record disponibile per ciascun titolo
+    df_last = all_range.groupby("Stock").tail(1).copy()
+
+    # 5. Calcolo della pendenza sui 5 punti (Rating_-4 -> Rating)
+    # Vettore y: [y0, y1, y2, y3, y4]
+    y0 = df_last["Rating_-4"]
+    y1 = df_last["Rating_-3"]
+    y2 = df_last["Rating_-2"]
+    y3 = df_last["Rating_-1"]
+    y4 = df_last["Rating"]
+
+    # Formula vettoriale della pendenza per x = [0, 1, 2, 3, 4]
+    df_last["Pendenza"] = (2 * y4 + y3 - y1 - 2 * y0) / 10.0
+
+    # 6. Definizione descrizione della pendenza
+    conditions = [df_last["Pendenza"] > 0, df_last["Pendenza"] == 0]
+    choices = ["sale", "stabile"]
+    df_last["Pendenza_Desc"] = np.select(
+        conditions, choices, default="scende"
+    )
+
+    # In caso di dati mancanti (es. meno di 5 giorni di storico)
+    df_last["Pendenza"] = df_last["Pendenza"].fillna(0)
+    df_last["Pendenza_Desc"] = df_last["Pendenza_Desc"].where(
+        df_last["Rating_-4"].notna(), "N/D"
+    )
+
+    # 7. Ordinamento per Mediana e selezione Prime 10
+    df_sorted = df_last.sort_values(by=["Mediana_10gg"], ascending=False)
+    top10 = df_sorted.head(10).copy()
+
+    # Formattazione data per l'output finale
+    top10["Data"] = top10["Data"].dt.strftime("%d/%m/%Y")
+
+    # 8. Riordinamento colonne secondo le specifiche richieste:
+    # (Data, Tipo, Stock, Rating, Rating_-1, Rating_-2, Rating_-3, Rating_-4, Pendenza, Pendenza_Desc, Mediana_10gg, Media_10gg)
+    cols_order = [
+        "Data",
+        "Tipo",
+        "Stock",
+        "Rating",
+        "Rating_-1",
+        "Rating_-2",
+        "Rating_-3",
+        "Rating_-4",
+        "Pendenza",
+        "Pendenza_Desc",
+        "Mediana_10gg",
+        "Media_10gg",
+    ]
+
+    # Verifica presenza della colonna 'Tipo', altrimenti riempimento di sicurezza
+    if "Tipo" not in top10.columns:
+        top10["Tipo"] = "N/D"
+
+    df_final = top10[cols_order].fillna("")
+
+    # 9. Scrittura su Google Sheet (da M2 ad X11 per 12 colonne totali)
+    list_data = df_final.values.tolist()
+    write_range("tab_op_tr!M2:X11", list_data, newPrj)
+
+    return "OK"
+    
 def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   todayDate = datetime.today().strftime('%d/%m/%Y')
   all_range = read_range('tab_op_tr!A:H',newPrj)
