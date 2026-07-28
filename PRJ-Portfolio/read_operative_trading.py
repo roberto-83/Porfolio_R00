@@ -421,7 +421,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   #print('-----')
   #print(df_to_print.to_string())
   list_data = df_to_print.values.tolist()
-  write_range('tab_op_tr!T2:Y11',list_data,newPrj)
+  write_range('tab_op_tr!Y2:AD11',list_data,newPrj)
   return'OK'
 #print(cal_mediana_PNC())
 #print(cal_mediana())
