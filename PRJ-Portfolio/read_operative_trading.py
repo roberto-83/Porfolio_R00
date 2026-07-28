@@ -367,7 +367,7 @@ def all_stocks():
 ####################################################
 # ANALISI DATO
 ####################################################
-def cal_mediana():#calcolo i valori mediani negli ultimi 5 gg
+def cal_mediana_OLD():#calcolo i valori mediani negli ultimi 5 gg
   todayDate = datetime.today().strftime('%d/%m/%Y')
   all_range = read_range('tab_op_tr!A:E',newPrj)
   all_range = all_range.drop('Descrizione', axis=1)
