@@ -6,7 +6,7 @@ from datetime import datetime,timedelta
 import time
 import requests 
 import pandas as pd
-
+import numpy as np
 #leggo i dati dal sito https://www.operativetrading.it/analisi-tecnica-azioni-italia/
 
 #Leggo lista di azioni dalle due tabelle con il relativo link
@@ -395,9 +395,6 @@ def cal_mediana_OLD():#calcolo i valori mediani negli ultimi 5 gg
   write_range('tab_op_tr!M2:R11',list_data,newPrj)
   return'OK'
 #print(cal_mediana())
-import numpy as np
-import pandas as pd
-
 
 def cal_mediana():
     # 1. Lettura e pulizia dati
@@ -495,7 +492,7 @@ def cal_mediana():
     write_range("tab_op_tr!M2:X11", list_data, newPrj)
 
     return "OK"
-    
+
 def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   todayDate = datetime.today().strftime('%d/%m/%Y')
   all_range = read_range('tab_op_tr!A:H',newPrj)
@@ -521,7 +518,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   #print('-----')
   #print(df_to_print.to_string())
   list_data = df_to_print.values.tolist()
-  write_range('tab_op_tr!Y2:AD11',list_data,newPrj)
+  write_range('tab_op_tr!Z2:AE11',list_data,newPrj)
   return'OK'
 #print(cal_mediana_PNC())
 #print(cal_mediana())
