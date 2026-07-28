@@ -492,6 +492,7 @@ def cal_mediana():
     write_range("tab_op_tr!M2:X11", list_data, newPrj)
 
     return "OK"
+print(cal_mediana())
 
 def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   todayDate = datetime.today().strftime('%d/%m/%Y')
@@ -520,7 +521,7 @@ def cal_mediana_PNC():#calcolo i valori mediani negli ultimi 5 gg
   list_data = df_to_print.values.tolist()
   write_range('tab_op_tr!Z2:AE11',list_data,newPrj)
   return'OK'
-#print(cal_mediana_PNC())
+print(cal_mediana_PNC())
 #print(cal_mediana())
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-A2A/"))
 #print(read_singl_stock("https://www.operativetrading.it/analisi-tecnica-brunello-cucinelli/"))
