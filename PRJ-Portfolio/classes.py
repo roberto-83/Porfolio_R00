@@ -743,7 +743,88 @@ class Portfolio:
     else:
       return importo
 
-  def calcDataPortREV2(self, df,num_port):
+  def calcDataPortREV2(self, df, num_port):
+    # 1. Filtro sul portafoglio richiesto per evitare sovrapposizioni tra portafogli distinti
+    df_filt = df[df['Num Portfolio'] == num_port].copy()
+    
+    # 2. ISIN unici del solo portafoglio filtrato
+    dfUnique = df_filt['ISIN'].dropna().unique()
+    
+    listAll = []
+    
+    for isin in dfUnique:
+        # Isolamento transazioni per il singolo ISIN
+        tab = df_filt[df_filt["ISIN"] == isin].copy()
+        
+        # Ordinamento cronologico fondamentale per la corretta sequenza ACQ/VEN
+        if 'Data' in tab.columns:
+            tab['Data'] = pd.to_datetime(tab['Data'])
+            tab = tab.sort_values('Data')
+            
+        current_qta = 0.0
+        current_pmc_puro = 0.0
+        tot_costi = 0.0
+        tot_divid = 0.0
+        
+        asset_type = tab['Asset'].iloc[0] if 'Asset' in tab.columns else ''
+        ticker = tab['Ticker'].iloc[0] if 'Ticker' in tab.columns else ''
+        
+        # 3. Iterazione cronologica sulle operazioni
+        for _, row in tab.iterrows():
+            tipo = str(row['Tipo']).upper()
+            qta_row = float(row['Quantità (real)']) if pd.notnull(row['Quantità (real)']) else 0.0
+            spesa_incasso = float(row['Spesa/incasso effettivo']) if pd.notnull(row['Spesa/incasso effettivo']) else 0.0
+            costo_row = float(row['Costi']) if pd.notnull(row['Costi']) else 0.0
+            
+            tot_costi += costo_row
+            
+            if tipo == 'DIVID':
+                tot_divid += spesa_incasso
+                
+            elif tipo == 'ACQ':
+                # Calcolo costo netto d'acquisto
+                prezzo_acq_unitario = (spesa_incasso - costo_row) / qta_row if qta_row > 0 else 0.0
+                
+                # Ricalcolo PMC pesato sulla posizione residua prima del nuovo acquisto
+                nuova_qta = current_qta + qta_row
+                if nuova_qta > 0:
+                    current_pmc_puro = ((current_qta * current_pmc_puro) + (qta_row * prezzo_acq_unitario)) / nuova_qta
+                current_qta = nuova_qta
+                
+            elif tipo == 'VEN':
+                # La vendita scarica la quantità residua; il PMC della giacenza rimane invariato
+                current_qta -= qta_row
+                if current_qta <= 0:
+                    current_qta = 0.0
+                    current_pmc_puro = 0.0
+
+        # 4. Inserimento nel report se c'è posizione ancora aperta
+        if current_qta > 0.01:
+            if asset_type == 'BTP':
+                prezPond = current_pmc_puro * 100  # Espressione del prezzo BTP in percentuale/base 100
+                totInv = current_qta * prezPond / 100
+            else:
+                prezPond = current_pmc_puro
+                totInv = current_qta * prezPond
+                
+            listAll.append([
+                isin,
+                ticker,
+                asset_type,
+                round(current_qta, 4),
+                round(prezPond, 4),
+                round(tot_divid, 4),
+                round(totInv, 4),
+                tot_costi
+            ])
+            
+    dfFinal = pd.DataFrame(
+        listAll,
+        columns=['Isin', 'Ticker', 'Asset', 'Qta', 'PrezzoPond', 'Divid', 'TotInvest', 'Costi']
+    )
+    return dfFinal
+
+  def calcDataPortREV2_OLD_MIA(self, df,num_port):
 
     df_filt = df[df['Num Portfolio'] == num_port]
     #prendo solo gli isin
