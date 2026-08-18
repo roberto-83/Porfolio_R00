@@ -52,6 +52,8 @@ class Portfolio:
     print(f"## 2 - Calcoli su transazioni")
     #prima parte portafoglio con gli isin validi ad oggi
     self.actPort = Portfolio.calcDataPortREV2(self, self.transact,num_port)
+    print("#####################---########## Secondo portafoglio")
+    print(Portfolio.calcDataPortREV2(self, self.transact,2).to_string())
     print(f"## 3 - Leggo i dati da tabella tab_isin")
     self.tabIsin = Portfolio.gtDataFromTabIsinREV2(self)
     print(f"## 4 - Portafoglio completo")
@@ -158,16 +160,23 @@ class Portfolio:
     if row['Asset'] == 'P2P':
       liveprice = float(row['TotInvest'])+float(row['Divid'])
     elif row['Asset'] == 'BTP' or row['Asset'] == 'BOT':
-      price=getBtpData(row['Isin'])
-      liveprice = float(price['pric'])
+      if row['Ticker'] in ('BOT-14LG23'):
+        liveprice='0'
+        price = '0'
+      else:
+        price=getBtpData(row['Isin'])
+        liveprice = float(price['pric'])
     elif row['Asset'] == 'ETF-AZIONI' or row['Asset'] == 'ETC':
       price=getPriceETF(row['Ticker'])
       #print(price)
       liveprice=price[1]
     elif row['Asset'] == 'AZIONI':
       print(f"prezzo di {row['Ticker']}")
-      infoStock = getStockInfo(row['Ticker'])
-      liveprice=infoStock['currentPrice']
+      if row['Ticker'] in ('CRES.MI'):
+        liveprice='0'
+      else:
+        infoStock = getStockInfo(row['Ticker'])
+        liveprice=infoStock['currentPrice']
     else:
       liveprice='0'
     #cambio valuta
@@ -185,7 +194,7 @@ class Portfolio:
 
   def getDelta(row):
     print(f"Leggo il prezzo di {row['Ticker']}, asset {row['Asset']}")
-    if row['Asset'] == 'AZIONI':
+    if row['Asset'] == 'AZIONI' and row['Ticker'] not in ('CRES.MI'):
       infoStock = getStockInfo(row['Ticker'])
       #price1d = infoStock['prevClose']
       price1d = infoStock['previousClose']

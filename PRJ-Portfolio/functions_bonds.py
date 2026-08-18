@@ -711,7 +711,7 @@ def investing_data(isin,data):
         print(f"Errore: {e}")
         return None
 
-print(investing_data('IT0005273013','2026-07-17'))
+#print(investing_data('IT0005273013','2026-07-17'))
 
 
 

@@ -83,7 +83,7 @@ def getStockInfo(ticker):
   info3 = stock.fast_info
   #print('###### Ora le info compatte')
   #print(info3)
-  #print(info3["previousClose"])
+  #print(info3["quoteType"])
   #print(verifKey(info,'previousClose'))
   # print(info)
   #print(info2)
@@ -96,10 +96,10 @@ def getStockInfo(ticker):
   else:
     prevClosePrice = verifKey(info,'previousClose')
   #print(f"TEST 01 currency {verifKey(info3,'quoteType')}")
-  print(f"TEST 02 currency {verifKey(info,'quoteType')}")
+  print(f"TEST 02 Tipo di quotazione: {verifKey(info,'quoteType')}")
 
   #Creo dizionario filtrato
-  qType = verifKey(info3,"quoteType") if verifKey(info,'quoteType') == '0' else verifKey(info,'quoteType')
+  qType = verifKey(info3,"quoteType") if verifKey(info3,'quoteType') == '0' else verifKey(info,'quoteType')
   if qType == "CRYPTOCURRENCY" : qType = "CRYPTO"
   stockInfo = {
   #GENERIC
@@ -174,6 +174,7 @@ def getStockInfo(ticker):
   "marketCap": info3["marketCap"] if verifKey(info,'marketCap') == '0' else verifKey(info,'marketCap'),
   "numberOfAnalystOpinions": verifKey(info,'numberOfAnalystOpinions')
   }
+  #print(stockInfo)
   return stockInfo
 
 
