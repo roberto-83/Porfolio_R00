@@ -460,6 +460,8 @@ class Portfolio:
     #ordino dataframe per id portaf e asset e composizione
     portFinal = portfin0.sort_values(by=['Num Port', 'Asset', 'peso'])
     print('###### Stampa Portfolio')
+    ticker_da_rimuovere = ['CRES.MI']
+    portFinal = portFinal[~portFinal['Ticker'].isin(ticker_da_rimuovere)]
     print(portFinal.to_string())
     ################# End multiple portfolio
     #trasformo in lista
@@ -752,7 +754,7 @@ class Portfolio:
     else:
       return importo
 
-  def calcDataPortREV2(self, df, num_port):
+  def calcDataPortREV2_GEMINI(self, df, num_port):
     # 1. Filtro sul portafoglio richiesto per evitare sovrapposizioni tra portafogli distinti
     df_filt = df[df['Num Portfolio'] == num_port].copy()
     
@@ -833,7 +835,7 @@ class Portfolio:
     )
     return dfFinal
 
-  def calcDataPortREV2_OLD_MIA(self, df,num_port):
+  def calcDataPortREV2(self, df,num_port):
 
     df_filt = df[df['Num Portfolio'] == num_port]
     #prendo solo gli isin
