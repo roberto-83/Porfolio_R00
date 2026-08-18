@@ -802,13 +802,13 @@ class Portfolio:
                     current_pmc_puro = ((current_qta * current_pmc_puro) + (qta_row * prezzo_acq_unitario)) / nuova_qta
                 current_qta = nuova_qta
                 
-            elif tipo == 'VEN':
+            elif tipo == 'VEND':
                 # La vendita scarica la quantità residua; il PMC della giacenza rimane invariato
                 current_qta -= qta_row
                 if current_qta <= 0:
                     current_qta = 0.0
                     current_pmc_puro = 0.0
-
+        #print(f"Per ticker current_qta")
         # 4. Inserimento nel report se c'è posizione ancora aperta
         if current_qta > 0.01:
             if asset_type == 'BTP':
