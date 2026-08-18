@@ -755,37 +755,62 @@ class Portfolio:
       return importo
 
   def calcDataPortREV2_GEMINI(self, df, num_port):
-    # 1. Filtro sul portafoglio richiesto per evitare sovrapposizioni tra portafogli distinti
+    import pandas as pd
+    import numpy as np
+
+    # Helper per convertire stringhe numeriche italiane ("3.000,00" -> 3000.0)
+    def parse_num(val):
+        if pd.isnull(val):
+            return 0.0
+        if isinstance(val, (int, float)):
+            return float(val)
+        val_str = str(val).strip()
+        if not val_str:
+            return 0.0
+        # Gestione formato italiano (punto per migliaia, virgola per decimali)
+        if ',' in val_str and '.' in val_str:
+            val_str = val_str.replace('.', '').replace(',', '.')
+        elif ',' in val_str:
+            val_str = val_str.replace(',', '.')
+        try:
+            return float(val_str)
+        except ValueError:
+            return 0.0
+    #leggo da 0 
+    df = read_range('tab_transazioni!A1:Q',newPrj)
+    colonne_da_eliminare = ['Chiave', 'prezzo acquisto', 'Spesa/incasso previsto', 'VALUTA','Dividendi','SCADENZA','Stato Database']
+    df = df.drop(columns=colonne_da_eliminare)
+
+    # 1. Filtro sul portafoglio
     df_filt = df[df['Num Portfolio'] == num_port].copy()
-    
-    # 2. ISIN unici del solo portafoglio filtrato
     dfUnique = df_filt['ISIN'].dropna().unique()
     
     listAll = []
     
     for isin in dfUnique:
-        # Isolamento transazioni per il singolo ISIN
         tab = df_filt[df_filt["ISIN"] == isin].copy()
-        
-        # Ordinamento cronologico fondamentale per la corretta sequenza ACQ/VEN
-        if 'Data' in tab.columns:
-            tab['Data'] = pd.to_datetime(tab['Data'])
-            tab = tab.sort_values('Data')
-            
+
+        # 2. Ordinamento cronologico con supporto per date italiane (GG/MM/AAAA)
+        if 'Data operazione' in tab.columns:
+            tab['Data_dt'] = pd.to_datetime(tab['Data operazione'], dayfirst=True, errors='coerce')
+            tab = tab.sort_values('Data_dt')
+        #print("-------------------------")
+        #print(isin)
+        #print(tab.to_string()) ###VERIFICA STE DATE..........   
+        #print("-------------------------")
         current_qta = 0.0
         current_pmc_puro = 0.0
         tot_costi = 0.0
         tot_divid = 0.0
         
-        asset_type = tab['Asset'].iloc[0] if 'Asset' in tab.columns else ''
-        ticker = tab['Ticker'].iloc[0] if 'Ticker' in tab.columns else ''
+        asset_type = str(tab['Asset'].iloc[0]).strip() if 'Asset' in tab.columns else ''
+        ticker = str(tab['Ticker'].iloc[0]).strip() if 'Ticker' in tab.columns else ''
         
-        # 3. Iterazione cronologica sulle operazioni
         for _, row in tab.iterrows():
-            tipo = str(row['Tipo']).upper()
-            qta_row = float(row['Quantità (real)']) if pd.notnull(row['Quantità (real)']) else 0.0
-            spesa_incasso = float(row['Spesa/incasso effettivo']) if pd.notnull(row['Spesa/incasso effettivo']) else 0.0
-            costo_row = float(row['Costi']) if pd.notnull(row['Costi']) else 0.0
+            tipo = str(row['Tipo']).upper().strip()
+            raw_qta = parse_num(row['Quantità (real)'])
+            spesa_incasso = parse_num(row['Spesa/incasso effettivo'])
+            costo_row = parse_num(row['Costi'])
             
             tot_costi += costo_row
             
@@ -793,26 +818,27 @@ class Portfolio:
                 tot_divid += spesa_incasso
                 
             elif tipo == 'ACQ':
-                # Calcolo costo netto d'acquisto
-                prezzo_acq_unitario = (spesa_incasso - costo_row) / qta_row if qta_row > 0 else 0.0
+                qta_acq = abs(raw_qta)
+                prezzo_acq_unitario = (spesa_incasso - costo_row) / qta_acq if qta_acq > 0 else 0.0
                 
-                # Ricalcolo PMC pesato sulla posizione residua prima del nuovo acquisto
-                nuova_qta = current_qta + qta_row
+                nuova_qta = round(current_qta + qta_acq, 4)
                 if nuova_qta > 0:
-                    current_pmc_puro = ((current_qta * current_pmc_puro) + (qta_row * prezzo_acq_unitario)) / nuova_qta
+                    current_pmc_puro = ((current_qta * current_pmc_puro) + (qta_acq * prezzo_acq_unitario)) / nuova_qta
                 current_qta = nuova_qta
                 
             elif tipo == 'VEND':
-                # La vendita scarica la quantità residua; il PMC della giacenza rimane invariato
-                current_qta -= qta_row
-                if current_qta <= 0:
+                qta_vend = abs(raw_qta)
+                current_qta = round(current_qta - qta_vend, 4)
+                
+                # Tolleranza per chiusura posizione
+                if current_qta <= 0.001:
                     current_qta = 0.0
                     current_pmc_puro = 0.0
-        #print(f"Per ticker current_qta")
-        # 4. Inserimento nel report se c'è posizione ancora aperta
-        if current_qta > 0.01:
+
+        # Mantiene in output SOLO le posizioni con quantità apertamente > 0
+        if current_qta > 0.001:
             if asset_type == 'BTP':
-                prezPond = current_pmc_puro * 100  # Espressione del prezzo BTP in percentuale/base 100
+                prezPond = current_pmc_puro * 100
                 totInv = current_qta * prezPond / 100
             else:
                 prezPond = current_pmc_puro
