@@ -1678,7 +1678,9 @@ class Portfolio:
         dOrdine = tab_watch['Data Ordine'][i]
         
         if str(ordin) != 'None' and str(ordin) != "":
-            ordin = ordin.replace(',', '.')
+            #ordin = ordin.replace(',', '.')
+            ordin = float(str(ordin).replace(',', '.'))
+
         else:
             ordin = "0"
 
