@@ -7,6 +7,7 @@ import time
 import requests 
 import pandas as pd
 import numpy as np
+from io import StringIO
 #leggo i dati dal sito https://www.operativetrading.it/analisi-tecnica-azioni-italia/
 
 #Leggo lista di azioni dalle due tabelle con il relativo link
@@ -127,7 +128,8 @@ def read_shortlist():
     # 6. Converti le tabelle in DataFrame pandas
     dataframes = []
     for i, table in enumerate(tables[:4]):  # prendiamo le prime 4 tabelle
-        df = pd.read_html(str(table))[0]
+        #df = pd.read_html(str(table))[0]
+        df = pd.read_html(StringIO(str(table)))[0]
         df['Data'] = todayDate
         df['Type'] = list_name_table[i]
         df.columns.values[0] = "Titolo"
