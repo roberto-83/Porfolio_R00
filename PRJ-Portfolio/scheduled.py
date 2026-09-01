@@ -13,6 +13,7 @@ from analisiPort import analisiPort,gcolabAnalysis,finalAnalysys,readMyPort
 from politici import get_all_house_data,process_and_write_top_politicians_analysis
 import yfinance as yf
 from functions_sheets import read_range,appendRow,delete_range
+from functions_options import optionsCalc
 from functions_etf import readHoldings,testapiFinnhub
 from settings import * #importa variabili globali
 from manage_logs import log_insert,log_insert1
@@ -169,6 +170,14 @@ if developerMode == 0:
   delta11 = time.time() - time11s
   log_insert1("11-12 Aggiornamento Tab Politici","Fine",delta11,initialTime,'OK')
   print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Fine - Dati Politici")
+
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Inizio - Dati Opzioni")
+  time12s = time.time()
+  opzioni = optionsCalc()
+  delta12 = time.time() - time12s
+  log_insert1("12-12 Aggiornamento Tab Opzioni","Fine",delta12,initialTime,'OK')
+  print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 12 - Fine - Dati Opzioni")
+
   #dati fed
   #print(f"{datetime.now(pytz.timezone('Europe/Rome')).strftime('%d/%m/%Y %H:%M:%S')} FASE 11 - Inizio - Dati Economici")
   #time11s = time.time()
