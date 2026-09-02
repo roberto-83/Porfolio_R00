@@ -917,10 +917,47 @@ def analyzeOptions(
 
         if chain is None:
 
-            raise ValueError(
-                f"Strike {strike_effettivo} "
-                f"non trovato nella pagina Borsa Italiana."
-            )
+          print(
+                f"Strike {strike_effettivo} non trovato per "
+                f"{TICKER_YAHOO}. Restituisco tutti i valori a 0."
+          )
+
+           return {
+                "ticker": TICKER_YAHOO,
+                "strike": strike_effettivo,
+                "call_put": cp,
+                "scadenza": expiry,
+                "giorni_scadenza": 0,
+
+                "spot": 0,
+
+                "bid": 0,
+                "ask": 0,
+                "mid": 0,
+
+                "iv_bid": 0,
+                "iv_mid": 0,
+                "iv_ask": 0,
+
+                "risk_free": 0,
+                "dividend_yield": 0,
+
+                "historical_volatility": {
+                    30: 0,
+                    60: 0,
+                    120: 0,
+                    252: 0
+                },
+
+                "fair_values": {
+                    30: 0,
+                    60: 0,
+                    120: 0,
+                    252: 0
+                },
+
+                "giudizio": 0
+            }
 
         # ============================================================
         # PREZZI OPZIONE
