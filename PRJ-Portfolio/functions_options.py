@@ -131,7 +131,57 @@ def analyzeOptions(
             dayfirst=True
         )
 
+    #FUnzione per reinterpretare il giudizio
+    def get_hv_riferimento(hv, giorni):
+    
+        punti = [
+            (30, hv.get(30)),
+            (60, hv.get(60)),
+            (120, hv.get(120)),
+            (252, hv.get(252))
+        ]
 
+        # Tengo solo valori validi
+        punti_validi = [
+            (giorni_hv, valore)
+            for giorni_hv, valore in punti
+            if valore is not None and not np.isnan(valore)
+        ]
+
+        if not punti_validi:
+            return np.nan
+
+        # Se siamo prima della prima finestra disponibile
+        if giorni <= punti_validi[0][0]:
+            return punti_validi[0][1]
+
+        # Se siamo dopo l'ultima finestra disponibile
+        if giorni >= punti_validi[-1][0]:
+            return punti_validi[-1][1]
+
+        # Interpolazione
+        for i in range(len(punti_validi) - 1):
+
+            giorni_1, hv_1 = punti_validi[i]
+            giorni_2, hv_2 = punti_validi[i + 1]
+
+            if giorni_1 <= giorni <= giorni_2:
+
+                peso = (
+                    giorni - giorni_1
+                ) / (
+                    giorni_2 - giorni_1
+                )
+
+                hv_riferimento = (
+                    hv_1
+                    +
+                    (hv_2 - hv_1) * peso
+                )
+
+                return hv_riferimento
+
+        return np.nan
     # ============================================================
     # SCARICA LA CATENA DA BORSA ITALIANA
     # ============================================================
@@ -531,7 +581,58 @@ def analyzeOptions(
             )
 
         return result
+    def get_hv_riferimento(hv, giorni):
+        """
+        Calcola la volatilità storica di riferimento in funzione
+        dei giorni mancanti alla scadenza.
 
+        Usa interpolazione lineare tra le finestre HV disponibili:
+        30 -> 60 -> 120 -> 252 giorni.
+        """
+
+        punti = [
+            (30, hv.get(30)),
+            (60, hv.get(60)),
+            (120, hv.get(120)),
+            (252, hv.get(252))
+        ]
+
+        # Mantiene solo i valori validi
+        punti_validi = [
+            (giorni_hv, valore)
+            for giorni_hv, valore in punti
+            if valore is not None and not np.isnan(valore)
+        ]
+
+        if not punti_validi:
+            return np.nan
+
+        # Se la scadenza è prima del primo punto disponibile
+        if giorni <= punti_validi[0][0]:
+            return punti_validi[0][1]
+
+        # Se la scadenza è oltre l'ultimo punto disponibile
+        if giorni >= punti_validi[-1][0]:
+            return punti_validi[-1][1]
+
+        # Interpolazione lineare tra i due punti più vicini
+        for i in range(len(punti_validi) - 1):
+
+            giorni_1, hv_1 = punti_validi[i]
+            giorni_2, hv_2 = punti_validi[i + 1]
+
+            if giorni_1 <= giorni <= giorni_2:
+
+                peso = (giorni - giorni_1) / (giorni_2 - giorni_1)
+
+                hv_riferimento = (
+                    hv_1 +
+                    (hv_2 - hv_1) * peso
+                )
+
+                return hv_riferimento
+
+        return np.nan
 
     # ============================================================
     # BLACK-SCHOLES
@@ -922,7 +1023,7 @@ def analyzeOptions(
                 f"{TICKER_YAHOO}. Restituisco tutti i valori a 0."
           )
 
-           return {
+          return {
                 "ticker": TICKER_YAHOO,
                 "strike": strike_effettivo,
                 "call_put": cp,
@@ -1037,69 +1138,42 @@ def analyzeOptions(
 
             fair_values[window] = fair
 
-        # ============================================================
-        # GIUDIZIO
-        # ============================================================
+        # ---------------------------------------------------------
+        # HV DI RIFERIMENTO IN FUNZIONE DEI GIORNI ALLA SCADENZA
+        # ---------------------------------------------------------
 
-        valid_hv = [
-            x
-            for x in hv.values()
-            if not np.isnan(x)
-        ]
+        hv_riferimento = get_hv_riferimento(hv, T_days)
+
+        # ---------------------------------------------------------
+        # GIUDIZIO IV vs HV DI RIFERIMENTO
+        # ---------------------------------------------------------
 
         if (
-            len(valid_hv) > 0
+            not np.isnan(hv_riferimento)
             and not np.isnan(iv_mid)
         ):
 
-            median_hv = np.median(
-                valid_hv
-            )
-
-            difference = (
-                iv_mid - median_hv
-            )
+            difference = iv_mid - hv_riferimento
 
             if difference > 0.10:
-
-                giudizio = (
-                    "IV MOLTO superiore alla "
-                    "volatilità storica."
-                )
+                giudizio = "IV MOLTO superiore alla volatilità storica."
 
             elif difference > 0.05:
-
-                giudizio = (
-                    "IV superiore alla "
-                    "volatilità storica."
-                )
+                giudizio = "IV superiore alla volatilità storica."
 
             elif difference < -0.10:
-
-                giudizio = (
-                    "IV MOLTO inferiore alla "
-                    "volatilità storica."
-                )
+                giudizio = "IV MOLTO inferiore alla volatilità storica."
 
             elif difference < -0.05:
-
-                giudizio = (
-                    "IV inferiore alla "
-                    "volatilità storica."
-                )
+                giudizio = "IV inferiore alla volatilità storica."
 
             else:
-
-                giudizio = (
-                    "IV abbastanza vicina alla "
-                    "volatilità storica."
-                )
+                giudizio = "IV abbastanza vicina alla volatilità storica."
 
         else:
 
-            giudizio = (
-                "Dati insufficienti per il confronto."
-            )
+            giudizio = "Dati insufficienti per il confronto."
+        
 
         # ============================================================
         # RISULTATO
@@ -1107,56 +1181,24 @@ def analyzeOptions(
 
         risultato = {
 
-            "ticker":
-                TICKER_YAHOO,
-
-            "strike":
-                strike_effettivo,
-
-            "call_put":
-                cp,
-
-            "scadenza":
-                expiry,
-
-            "giorni_scadenza":
-                T_days,
-
-            "spot":
-                S,
-
-            "bid":
-                bid,
-
-            "ask":
-                ask,
-
-            "mid":
-                mid,
-
-            "iv_bid":
-                iv_bid,
-
-            "iv_mid":
-                iv_mid,
-
-            "iv_ask":
-                iv_ask,
-
-            "risk_free":
-                RISK_FREE_RATE,
-
-            "dividend_yield":
-                q,
-
-            "historical_volatility":
-                hv,
-
-            "fair_values":
-                fair_values,
-
-            "giudizio":
-                giudizio
+            "ticker":TICKER_YAHOO,
+            "strike":strike_effettivo,
+            "call_put":cp,
+            "scadenza":expiry,
+            "giorni_scadenza":T_days,
+            "spot":S,
+            "bid":bid,
+            "ask":ask,
+            "mid":mid,
+            "iv_bid":iv_bid,
+            "iv_mid":iv_mid,
+            "iv_ask":iv_ask,
+            "risk_free":RISK_FREE_RATE,
+            "dividend_yield":q,
+            "historical_volatility": hv,
+            "fair_values":fair_values,
+            "giudizio": giudizio,
+            "hv_riferimento": hv_riferimento
         }
 
         # ============================================================
@@ -1209,642 +1251,8 @@ def analyzeOptions(
         )
 
         return risultato
+  return analizza_opzione()
 
-
-    def analizza_opzione_OLD2():
-
-        cp = C_P.upper()
-
-        if cp not in ["CALL", "PUT"]:
-            raise ValueError(
-                "C_P deve essere CALL oppure PUT"
-            )
-
-        # ============================================================
-        # SCADENZA
-        # ============================================================
-
-        expiry = parse_scadenza(
-            SCADENZA
-        )
-
-        today = pd.Timestamp.now(
-            tz="Europe/Rome"
-        ).tz_localize(None)
-
-        T_days = (
-            expiry - today
-        ).days
-
-        if T_days <= 0:
-            raise ValueError(
-                "La scadenza è nel passato."
-            )
-
-        T = T_days / 365.25
-
-        # ============================================================
-        # YAHOO FINANCE
-        # Recupero SPOT prima di determinare lo strike
-        # ============================================================
-
-        stock, hist = scarica_storico_yahoo(
-            TICKER_YAHOO
-        )
-
-        S = get_spot(
-            hist
-        )
-
-        print()
-        print("=" * 70)
-        print("ANALISI OPZIONE")
-        print("=" * 70)
-
-        print(
-            f"Ticker : {TICKER_YAHOO}"
-        )
-
-        print(
-            f"Spot   : {S}"
-        )
-
-        print(
-            f"Strike iniziale : {STRIKE_PRICE}"
-        )
-
-        # ============================================================
-        # DIVIDEND YIELD
-        # ============================================================
-
-        q = get_dividend_yield(
-            stock
-        )
-
-        # ============================================================
-        # BORSA ITALIANA
-        # Scarico la catena delle opzioni
-        # ============================================================
-
-        html = scarica_option_chain(
-            URL_BORSA,
-            TICKER_YAHOO.replace(".MI", ""),
-            SCADENZA
-        )
-
-        # ============================================================
-        # DETERMINAZIONE STRIKE
-        # ============================================================
-
-        # Controllo se lo strike è:
-        #
-        # - None
-        # - NaN
-        # - 0
-        #
-        # In questi casi lo determino automaticamente.
-
-        strike_automatico = (
-            STRIKE_PRICE is None
-            or pd.isna(STRIKE_PRICE)
-            or STRIKE_PRICE == 0
-        )
-
-        if strike_automatico:
-
-            print()
-            print(
-                "Strike non specificato."
-            )
-
-            print(
-                f"Cerco il primo strike sotto lo spot {S}..."
-            )
-
-            STRIKE_PRICE = trova_strike_sotto_spot(
-                html,
-                S
-            )
-
-            if STRIKE_PRICE is None:
-
-                raise ValueError(
-                    f"Nessuno strike disponibile "
-                    f"sotto lo spot {S} "
-                    f"per {TICKER_YAHOO} "
-                    f"con scadenza {SCADENZA}."
-                )
-
-            print(
-                f"Strike automatico selezionato: "
-                f"{STRIKE_PRICE}"
-            )
-
-        else:
-
-            print()
-            print(
-                f"Strike inserito manualmente: "
-                f"{STRIKE_PRICE}"
-            )
-
-        # ============================================================
-        # RICERCA DELLA RIGA DELLO STRIKE
-        # ============================================================
-
-        chain = trova_riga_strike(
-            html,
-            STRIKE_PRICE
-        )
-
-        if chain is None:
-
-            raise ValueError(
-                f"Strike {STRIKE_PRICE} "
-                f"non trovato nella pagina Borsa Italiana."
-            )
-
-        # ============================================================
-        # PREZZI OPZIONE
-        # ============================================================
-
-        option_prices = scegli_prezzo_opzione(
-            chain,
-            cp
-        )
-
-        bid = option_prices["bid"]
-
-        ask = option_prices["ask"]
-
-        mid = option_prices["mid"]
-
-        # ============================================================
-        # VOLATILITÀ STORICA
-        # ============================================================
-
-        hv = calcola_historical_volatility(
-            hist,
-            HV_WINDOWS
-        )
-
-        # ============================================================
-        # VOLATILITÀ IMPLICITA
-        # ============================================================
-
-        iv_bid = implied_volatility(
-            bid,
-            S,
-            STRIKE_PRICE,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
-        iv_mid = implied_volatility(
-            mid,
-            S,
-            STRIKE_PRICE,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
-        iv_ask = implied_volatility(
-            ask,
-            S,
-            STRIKE_PRICE,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
-        # ============================================================
-        # FAIR VALUE
-        # ============================================================
-
-        fair_values = {}
-
-        for window, value in hv.items():
-
-            fair = fair_value_from_hv(
-                S,
-                STRIKE_PRICE,
-                T,
-                RISK_FREE_RATE,
-                q,
-                value,
-                cp
-            )
-
-            fair_values[window] = fair
-
-        # ============================================================
-        # GIUDIZIO
-        # ============================================================
-
-        valid_hv = [
-            x
-            for x in hv.values()
-            if not np.isnan(x)
-        ]
-
-        if (
-            len(valid_hv) > 0
-            and not np.isnan(iv_mid)
-        ):
-
-            median_hv = np.median(
-                valid_hv
-            )
-
-            difference = (
-                iv_mid - median_hv
-            )
-
-            if difference > 0.10:
-
-                giudizio = (
-                    "IV MOLTO superiore alla "
-                    "volatilità storica."
-                )
-
-            elif difference > 0.05:
-
-                giudizio = (
-                    "IV superiore alla "
-                    "volatilità storica."
-                )
-
-            elif difference < -0.10:
-
-                giudizio = (
-                    "IV MOLTO inferiore alla "
-                    "volatilità storica."
-                )
-
-            elif difference < -0.05:
-
-                giudizio = (
-                    "IV inferiore alla "
-                    "volatilità storica."
-                )
-
-            else:
-
-                giudizio = (
-                    "IV abbastanza vicina alla "
-                    "volatilità storica."
-                )
-
-        else:
-
-            giudizio = (
-                "Dati insufficienti per il confronto."
-            )
-
-        # ============================================================
-        # RISULTATO
-        # ============================================================
-
-        risultato = {
-
-            "ticker":
-                TICKER_YAHOO,
-
-            "strike":
-                STRIKE_PRICE,
-
-            "call_put":
-                cp,
-
-            "scadenza":
-                expiry,
-
-            "giorni_scadenza":
-                T_days,
-
-            "spot":
-                S,
-
-            "bid":
-                bid,
-
-            "ask":
-                ask,
-
-            "mid":
-                mid,
-
-            "iv_bid":
-                iv_bid,
-
-            "iv_mid":
-                iv_mid,
-
-            "iv_ask":
-                iv_ask,
-
-            "risk_free":
-                RISK_FREE_RATE,
-
-            "dividend_yield":
-                q,
-
-            "historical_volatility":
-                hv,
-
-            "fair_values":
-                fair_values,
-
-            "giudizio":
-                giudizio
-        }
-
-        # ============================================================
-        # DEBUG FINALE
-        # ============================================================
-
-        print()
-        print(
-            f"Ticker : {TICKER_YAHOO}"
-        )
-
-        print(
-            f"Spot   : {S}"
-        )
-
-        print(
-            f"Strike : {STRIKE_PRICE}"
-        )
-
-        print(
-            f"Tipo   : {cp}"
-        )
-
-        print(
-            f"Scad.  : {expiry}"
-        )
-
-        print(
-            f"BID    : {bid}"
-        )
-
-        print(
-            f"ASK    : {ask}"
-        )
-
-        print(
-            f"MID    : {mid}"
-        )
-
-        print(
-            f"IV MID : {iv_mid}"
-        )
-
-        print(
-            f"Giudizio : {giudizio}"
-        )
-
-        return risultato
-
-
-    def analizza_opzione_OLD():
-        cp = C_P.upper()
-
-        if cp not in ["CALL", "PUT"]:
-            raise ValueError("C_P deve essere CALL oppure PUT")
-
-        expiry = parse_scadenza(SCADENZA)
-
-        today = pd.Timestamp.now(
-            tz="Europe/Rome"
-        ).tz_localize(None)
-
-        T_days = (expiry - today).days
-
-        if T_days <= 0:
-            raise ValueError(
-                "La scadenza è nel passato."
-            )
-
-        T = T_days / 365.25
-
-        # --------------------------------------------------------
-        # BORSA ITALIANA
-        # --------------------------------------------------------
-
-        chain = trova_riga_strike(
-            html,
-            STRIKE_PRICE
-        )
-        html = scarica_option_chain(
-            URL_BORSA,
-            TICKER_YAHOO.replace(".MI", ""),
-            SCADENZA
-        )
-        #print(html)
-
-
-        if chain is None:
-
-            raise ValueError(
-                f"Strike {STRIKE_PRICE} "
-                f"non trovato nella pagina Borsa Italiana."
-            )
-
-        option_prices = scegli_prezzo_opzione(
-            chain,
-            cp
-        )
-
-        bid = option_prices["bid"]
-        ask = option_prices["ask"]
-        mid = option_prices["mid"]
-
-        # --------------------------------------------------------
-        # YAHOO
-        # --------------------------------------------------------
-
-        stock, hist = scarica_storico_yahoo(
-            TICKER_YAHOO
-        )
-
-        S = get_spot(hist)
-
-        # --------------------------------------------------------
-        # DIVIDEND
-        # --------------------------------------------------------
-
-        q = get_dividend_yield(
-            stock
-        )
-
-        # --------------------------------------------------------
-        # HV
-        # --------------------------------------------------------
-
-        hv = calcola_historical_volatility(
-            hist,
-            HV_WINDOWS
-        )
-
-        # --------------------------------------------------------
-        # IV
-        # --------------------------------------------------------
-
-        iv_bid = implied_volatility(
-            bid,
-            S,
-            STRIKE_PRICE,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
-        iv_mid = implied_volatility(
-            mid,
-            S,
-            STRIKE_PRICE,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
-        iv_ask = implied_volatility(
-            ask,
-            S,
-            STRIKE_PRICE,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
-        # --------------------------------------------------------
-        # FAIR VALUE
-        # --------------------------------------------------------
-
-        fair_values = {}
-
-        for window, value in hv.items():
-
-            fair = fair_value_from_hv(
-                S,
-                STRIKE_PRICE,
-                T,
-                RISK_FREE_RATE,
-                q,
-                value,
-                cp
-            )
-
-            fair_values[window] = fair
-
-        # --------------------------------------------------------
-        # GIUDIZIO
-        # --------------------------------------------------------
-
-        valid_hv = [
-            x
-            for x in hv.values()
-            if not np.isnan(x)
-        ]
-
-        if (
-            len(valid_hv) > 0
-            and not np.isnan(iv_mid)
-        ):
-
-            median_hv = np.median(
-                valid_hv
-            )
-
-            difference = (
-                iv_mid - median_hv
-            )
-
-            if difference > 0.10:
-
-                giudizio = (
-                    "IV MOLTO superiore alla "
-                    "volatilità storica."
-                )
-
-            elif difference > 0.05:
-
-                giudizio = (
-                    "IV superiore alla "
-                    "volatilità storica."
-                )
-
-            elif difference < -0.10:
-
-                giudizio = (
-                    "IV MOLTO inferiore alla "
-                    "volatilità storica."
-                )
-
-            elif difference < -0.05:
-
-                giudizio = (
-                    "IV inferiore alla "
-                    "volatilità storica."
-                )
-
-            else:
-
-                giudizio = (
-                    "IV abbastanza vicina alla "
-                    "volatilità storica."
-                )
-
-        else:
-
-            giudizio = (
-                "Dati insufficienti per il confronto."
-            )
-
-        # --------------------------------------------------------
-        # RISULTATO
-        # --------------------------------------------------------
-
-        risultato = {
-
-            "ticker": TICKER_YAHOO,
-            "strike": STRIKE_PRICE,
-            "call_put": cp,
-            "scadenza": expiry,
-            "giorni_scadenza": T_days,
-
-            "spot": S,
-
-            "bid": bid,
-            "ask": ask,
-            "mid": mid,
-
-            "iv_bid": iv_bid,
-            "iv_mid": iv_mid,
-            "iv_ask": iv_ask,
-
-            "risk_free": RISK_FREE_RATE,
-            "dividend_yield": q,
-
-            "historical_volatility": hv,
-            "fair_values": fair_values,
-
-            "giudizio": giudizio
-        }
-
-        return risultato
-
-    # Eseguo l'analisi
-    return analizza_opzione()
 
 
 # ============================================================
@@ -1957,8 +1365,7 @@ def process_ticker_row(row):
         "FAIR_VALUE_252":
             result["fair_values"].get(252),
 
-        "GIUDIZIO":
-            result["giudizio"]
+        "GIUDIZIO":result["giudizio"]
     }
 
     return output
