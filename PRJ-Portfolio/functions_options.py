@@ -401,9 +401,45 @@ def analyzeOptions(
         print("!!! STRIKE NON TROVATO !!!")
         print("Strike cercato:", strike_target)
         return None
-        
+    
     def trova_strike_sotto_spot(html, spot):
 
+        strike_disponibili = []
+        tutti_i_numeri = []
+
+        soup = BeautifulSoup(html, "html.parser")
+
+        for table in soup.find_all("table"):
+            for row in table.find_all("tr"):
+                for cell in row.find_all(["td", "th"]):
+
+                    testo = cell.get_text(" ", strip=True)
+
+                    n = parse_number(testo)
+
+                    if n is not None:
+                        tutti_i_numeri.append(n)
+
+                        if n < spot:
+                            strike_disponibili.append(n)
+
+        print(f"SPOT: {spot}")
+        print(f"TUTTI I NUMERI LETTI: {tutti_i_numeri}")
+        print(f"NUMERI SOTTO LO SPOT: {strike_disponibili}")
+
+        if not strike_disponibili:
+            print(f"!!! NESSUNO STRIKE SOTTO LO SPOT {spot} !!!")
+            return None
+
+        strike = max(strike_disponibili)
+
+        print(f"STRIKE AUTOMATICO SELEZIONATO: {strike}")
+
+        return strike
+
+    def trova_strike_sotto_spot_OLD(html, spot):
+          strike_disponibili = []
+          tutti_i_numeri = []
           soup = BeautifulSoup(
               html,
               "html.parser"
@@ -437,6 +473,9 @@ def analyzeOptions(
                       if n < spot:
                           strike_disponibili.append(n)
 
+          print(f"SPOT: {spot}")
+          print(f"TUTTI I NUMERI LETTI: {tutti_i_numeri}")
+          print(f"NUMERI SOTTO LO SPOT: {strike_disponibili}")
           if not strike_disponibili:
 
               print(
@@ -986,13 +1025,41 @@ def analyzeOptions(
             )
 
             if strike_effettivo is None:
-
-                raise ValueError(
-                    f"Nessuno strike disponibile "
-                    f"sotto lo spot {S} "
-                    f"per {TICKER_YAHOO} "
-                    f"con scadenza {SCADENZA}."
+                print(
+                    f"!!! Nessuno strike disponibile sotto lo spot {S} "
+                    f"per {TICKER_YAHOO} con scadenza {expiry} !!!"
                 )
+
+                return {
+                    "ticker": TICKER_YAHOO,
+                    "strike": 0,
+                    "call_put": cp,
+                    "scadenza": expiry,
+                    "giorni_scadenza": 0,
+                    "spot": 0,
+                    "bid": 0,
+                    "ask": 0,
+                    "mid": 0,
+                    "iv_bid": 0,
+                    "iv_mid": 0,
+                    "iv_ask": 0,
+                    "risk_free": 0,
+                    "dividend_yield": 0,
+                    "historical_volatility": {
+                        30: 0,
+                        60: 0,
+                        120: 0,
+                        252: 0
+                    },
+                    "fair_values": {
+                        30: 0,
+                        60: 0,
+                        120: 0,
+                        252: 0
+                    },
+                    "giudizio": 0,
+                    "hv_riferimento": 0
+                }
 
             print(
                 f"Strike automatico selezionato: "
@@ -1251,7 +1318,7 @@ def analyzeOptions(
         )
 
         return risultato
-  return analizza_opzione()
+    return analizza_opzione()
 
 
 
@@ -1467,6 +1534,19 @@ def optionsCalc():
 
 #df_finale = optionsCalc()
 #print(df_finale)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
