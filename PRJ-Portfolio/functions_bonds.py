@@ -660,7 +660,8 @@ def investing_data(isin,data):
         
         
         # pandas.read_html trova tutte le tabelle nella pagina
-        tables_all = pd.read_html(response.text, decimal=',', thousands='.')
+        tables_all = pd.read_html(StringIO(response.text), decimal=',', thousands='.')
+        #tables_all = pd.read_html(response.text, decimal=',', thousands='.')#@OLD VERISON PANDAS
         #print('stampo intero oggetto')
         #print(tables_all)
         print('stampo solo il primo valore')
