@@ -1713,69 +1713,29 @@ def analyzeOptions(
                 else hv_riferimento,
 
             "bs_price_hv":
-                indicatori[
-                    "bs_price_hv"
+                indicatori["bs_price_hv"
                 ],
 
             "vol_edge":
-                indicatori[
-                    "vol_edge"
-                ],
+                indicatori["vol_edge"],
 
             "iv_hv_diff":
-                indicatori[
-                    "iv_hv_diff"
-                ],
+                indicatori["iv_hv_diff"],
 
             "iv_hv_ratio":
-                indicatori[
-                    "iv_hv_ratio"
-                ],
+                indicatori["iv_hv_ratio"],
 
             "price_edge_pct":
-                indicatori[
-                    "price_edge_pct"
-                ],
+                indicatori["price_edge_pct"],
 
-            "spread":
-                indicatori[
-                    "spread"
-                ],
-
-            "spread_pct":
-                indicatori[
-                    "spread_pct"
-                ],
-
-            "log_moneyness":
-                indicatori[
-                    "log_moneyness"
-                ],
-
-            "expected_move_hv":
-                indicatori[
-                    "expected_move_hv"
-                ],
-
-            "expected_move_iv":
-                indicatori[
-                    "expected_move_iv"
-                ],
-
-            "long_edge_pct":
-                indicatori[
-                    "long_edge_pct"
-                ],
-
-            "short_edge_pct":
-                indicatori[
-                    "short_edge_pct"
-                ],
-
-            "opportunity_score":
-                indicatori[
-                    "opportunity_score"
-                ]
+            "spread":indicatori["spread"],
+            "spread_pct":indicatori["spread_pct"],
+            "log_moneyness":indicatori["log_moneyness"],
+            "expected_move_hv":indicatori["expected_move_hv"],
+            "expected_move_iv":indicatori["expected_move_iv"],
+            "long_edge_pct":indicatori["long_edge_pct"],
+            "short_edge_pct":indicatori["short_edge_pct"],
+            "opportunity_score":indicatori["opportunity_score"]
         }
 
 
@@ -1788,112 +1748,32 @@ def analyzeOptions(
         print("RISULTATO ANALISI")
         print("=" * 70)
 
-        print(
-            f"Ticker : {TICKER_YAHOO}"
-        )
-
-        print(
-            f"Spot   : {S}"
-        )
-
-        print(
-            f"Strike : {strike_effettivo}"
-        )
-
-        print(
-            f"Tipo   : {cp}"
-        )
-
-        print(
-            f"Scad.  : {expiry}"
-        )
-
-        print(
-            f"BID    : {bid}"
-        )
-
-        print(
-            f"ASK    : {ask}"
-        )
-
-        print(
-            f"MID    : {mid}"
-        )
-
-        print(
-            f"IV MID : {iv_mid}"
-        )
-
-        print(
-            f"HV RIF : {hv_riferimento}"
-        )
-
-        print(
-            f"VOL EDGE : "
-            f"{indicatori['vol_edge']}"
-        )
-
-        print(
-            f"IV-HV  : "
-            f"{indicatori['iv_hv_diff']}"
-        )
-
-        print(
-            f"IV/HV  : "
-            f"{indicatori['iv_hv_ratio']}"
-        )
-
-        print(
-            f"Spread % : "
-            f"{indicatori['spread_pct']}"
-        )
-
-        print(
-            f"BS HV : "
-            f"{indicatori['bs_price_hv']}"
-        )
-
-        print(
-            f"Price Edge % : "
-            f"{indicatori['price_edge_pct']}"
-        )
-
-        print(
-            f"Long Edge % : "
-            f"{indicatori['long_edge_pct']}"
-        )
-
-        print(
-            f"Short Edge % : "
-            f"{indicatori['short_edge_pct']}"
-        )
-
-        print(
-            f"Expected Move HV : "
-            f"{indicatori['expected_move_hv']}"
-        )
-
-        print(
-            f"Expected Move IV : "
-            f"{indicatori['expected_move_iv']}"
-        )
-
-        print(
-            f"Opportunity Score : "
-            f"{indicatori['opportunity_score']}"
-        )
-
-        print(
-            f"Giudizio : "
-            f"{giudizio}"
-        )
-
+        print(f"Ticker : {TICKER_YAHOO}")
+        print(f"Spot : {S}" )
+        print(f"Strike : {strike_effettivo}")
+        print(f"Tipo   : {cp}")
+        print(f"Scad.  : {expiry}")
+        print(f"BID    : {bid}")
+        print(f"ASK    : {ask}")
+        print(f"MID    : {mid}")
+        print(f"IV MID : {iv_mid}")
+        print(f"HV RIF : {hv_riferimento}")
+        print(f"VOL EDGE : {indicatori['vol_edge']}")
+        print(f"IV-HV  : {indicatori['iv_hv_diff']}")
+        print(f"IV/HV  :{indicatori['iv_hv_ratio']}")
+        print(f"Spread % : {indicatori['spread_pct']}")
+        print(f"BS HV : {indicatori['bs_price_hv']}")
+        print(f"Price Edge % : {indicatori['price_edge_pct']}")
+        print(f"Long Edge % : {indicatori['long_edge_pct']}")
+        print(f"Short Edge % : {indicatori['short_edge_pct']}")
+        print(f"Expected Move HV : {indicatori['expected_move_hv']}")
+        print(f"Expected Move IV : {indicatori['expected_move_iv']}")
+        print(f"Opportunity Score :{indicatori['opportunity_score']}")
+        print(f"Giudizio :{giudizio}")
 
         return risultato
 
-
     return analizza_opzione()
-
 
 
 # ============================================================
@@ -2024,8 +1904,7 @@ def optionsCalc():
     listTicker["PREZZO STRIKE CALL"] = (
         listTicker["PREZZO STRIKE CALL"]
         .astype(str)
-        .str.replace(",",            ".",
-            regex=False
+        .str.replace(",",".",regex=False
         )
     )
 
