@@ -180,15 +180,15 @@ def implied_volatility(market_price,S,K,T,r,q,option_type    ):
 # FAIR VALUE / BS CON HV
 # ============================================================
 
-    def fair_value_from_hv(S,K,T,r,q,hv,option_type):
+def fair_value_from_hv(S,K,T,r,q,hv,option_type):
 
-        if hv is None:
-            return np.nan
+    if hv is None:
+      return np.nan
 
-        if np.isnan(hv):
-            return np.nan
+    if np.isnan(hv):
+      return np.nan
 
-        return black_scholes_price(S,K,T,r,q,hv,option_type)
+    return black_scholes_price(S,K,T,r,q,hv,option_type)
 
 ###FUNZIONE PRINCIPALE
 def analyzeOptions(
@@ -2024,9 +2024,7 @@ def optionsCalc():
     listTicker["PREZZO STRIKE CALL"] = (
         listTicker["PREZZO STRIKE CALL"]
         .astype(str)
-        .str.replace(
-            ",",
-            ".",
+        .str.replace(",",            ".",
             regex=False
         )
     )
