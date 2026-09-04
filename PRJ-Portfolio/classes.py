@@ -16,6 +16,7 @@ import pandas as pd
 import datetime
 from datetime import datetime,timedelta
 import time
+import math
 import re
 import pytz
 import numpy as np
@@ -1783,6 +1784,13 @@ class Portfolio:
             tickInfo[18], tickInfo[19], tickInfo[20], tickInfo[21], tickInfo[22], tickInfo[23], tickInfo[24], tickInfo[25],
             tickInfo[26], tickInfo[27], tickInfo[28], tickInfo[29], tickInfo[30], tickInfo[31], tickInfo[32], tickInfo[33], tickInfo[34], tickInfo[35]
         ])
+
+    # Sostituzione inline su lista di liste
+    listPrin = [
+        [0 if (isinstance(x, float) and math.isnan(x)) else x for x in sublist]
+        for sublist in listPrin
+    ]
+    
     #stampo quello che sto per scrivere
     print(listPrin)
 
