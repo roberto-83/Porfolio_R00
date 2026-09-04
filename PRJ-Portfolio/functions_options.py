@@ -1010,86 +1010,89 @@ def analyzeOptions(
 
 
         # ========================================================
-        # OPPORTUNITY SCORE
-        #
-        # 40% -> IV/HV
-        # 40% -> Price Edge
-        # 20% -> Liquidità
+        # OPPORTUNITY SCORE - LONG CALL
+        # 40% -> Convenienza IV rispetto HV
+        # 30% -> Prezzo rispetto Fair Value HV
+        # 15% -> Liquidità
+        # 15% -> Potenziale movimento
         # ========================================================
 
         score_components = []
 
-
         # --------------------------------------------------------
-        # VOLATILITY EDGE
-        # --------------------------------------------------------
-
-        if not np.isnan(
-            indicatori["iv_hv_diff"]
-        ):
-
-            vol_score = min(
-                abs(
-                    indicatori["iv_hv_diff"]
-                ) / 0.20,
-                1.0
-            )
-
-            score_components.append(
-                vol_score * 40
-            )
-
-
-        # --------------------------------------------------------
-        # PRICE EDGE
+        # CONVENIENZA VOLATILITÀ
+        # IV < HV = positivo
+        # IV > HV = negativo
         # --------------------------------------------------------
 
-        if not np.isnan(
-            indicatori["price_edge_pct"]
-        ):
+        if not np.isnan(indicatori["iv_hv_diff"]):
 
-            price_score = min(
-                abs(
-                    indicatori["price_edge_pct"]
-                ) / 0.30,
-                1.0
+            vol_score = max(
+                0,
+                min(
+                    1 - indicatori["iv_hv_diff"] / 0.20,
+                    1
+                )
             )
 
-            score_components.append(
-                price_score * 40
+            score_components.append(vol_score * 40)
+
+        # --------------------------------------------------------
+        # CONVENIENZA PREZZO
+        # prezzo sotto Fair Value = positivo
+        # prezzo sopra Fair Value = negativo
+        # --------------------------------------------------------
+
+        if not np.isnan(indicatori["price_edge_pct"]):
+
+            price_score = max(
+                0,
+                min(
+                    1 - indicatori["price_edge_pct"] / 0.30,
+                    1
+                )
             )
 
+            score_components.append(price_score * 30)
 
         # --------------------------------------------------------
         # LIQUIDITÀ
         # --------------------------------------------------------
 
-        if not np.isnan(
-            indicatori["spread_pct"]
-        ):
+        if not np.isnan(indicatori["spread_pct"]):
 
             liquidity_score = max(
                 0,
+                1 - indicatori["spread_pct"] / 0.10
+            )
+
+            score_components.append(liquidity_score * 15)
+
+        # --------------------------------------------------------
+        # POTENZIALE MOVIMENTO
+        # --------------------------------------------------------
+
+        if (
+            not np.isnan(indicatori["expected_move_hv"])
+            and S > 0
+        ):
+
+            move_pct = (
+                indicatori["expected_move_hv"] / S
+            )
+
+            move_score = min(
+                move_pct / 0.30,
                 1
-                -
-                (
-                    indicatori["spread_pct"]
-                    / 0.10
-                )
             )
 
-            score_components.append(
-                liquidity_score * 20
-            )
-
+            score_components.append(move_score * 15)
 
         if score_components:
-
-            indicatori["opportunity_score"] = min(
-                sum(score_components),
-                100
+            indicatori["opportunity_score"] = round(
+                min(sum(score_components), 100),
+                1
             )
-
 
         return indicatori
 
@@ -1275,51 +1278,26 @@ def analyzeOptions(
                     },
 
                     "giudizio": 0,
-
                     "hv_riferimento": 0,
-
                     "iv_hv_diff": 0,
-
                     "vol_edge": 0,
-
                     "iv_hv_ratio": 0,
-
                     "spread": 0,
                     "spread_pct": 0,
-
                     "log_moneyness": 0,
-
                     "bs_price_hv": 0,
-
                     "price_edge_pct": 0,
-
                     "expected_move_hv": 0,
-
                     "expected_move_iv": 0,
-
                     "long_edge_pct": 0,
-
                     "short_edge_pct": 0,
-
                     "opportunity_score": 0
                 }
 
 
-            print(
-                "Strike automatico "
-                f"selezionato: "
-                f"{strike_effettivo}"
-            )
-
+            print("Strike automatico selezionato: {strike_effettivo}")
         else:
-
-            print()
-
-            print(
-                "Strike inserito "
-                f"manualmente: "
-                f"{strike_effettivo}"
-            )
+            print("Strike inserito manualmente: {strike_effettivo}")
 
 
         # ========================================================
@@ -1334,55 +1312,23 @@ def analyzeOptions(
 
         if chain is None:
 
-            print(
-                f"Strike {strike_effettivo} "
-                f"non trovato per "
-                f"{TICKER_YAHOO}."
-            )
+            print(f"Strike {strike_effettivo} non trovato per {TICKER_YAHOO}.")
 
             return {
-
                 "ticker": TICKER_YAHOO,
-
-                "strike":
-                    strike_effettivo,
-
-                "call_put":
-                    cp,
-
-                "scadenza":
-                    expiry,
-
-                "giorni_scadenza":
-                    0,
-
-                "spot":
-                    0,
-
-                "bid":
-                    0,
-
-                "ask":
-                    0,
-
-                "mid":
-                    0,
-
-                "iv_bid":
-                    0,
-
-                "iv_mid":
-                    0,
-
-                "iv_ask":
-                    0,
-
-                "risk_free":
-                    0,
-
-                "dividend_yield":
-                    0,
-
+                "strike":strike_effettivo,
+                "call_put":cp,
+                "scadenza":expiry,
+                "giorni_scadenza":0,
+                "spot":0,
+                "bid":0,
+                "ask":0,
+                "mid":0,
+                "iv_bid":0,
+                "iv_mid":0,
+                "iv_ask":0,
+                "risk_free":0,
+                "dividend_yield":0,
                 "historical_volatility": {
 
                     30: 0,
@@ -1399,54 +1345,21 @@ def analyzeOptions(
                     252: 0
                 },
 
-                "giudizio":
-                    0,
-
-                "hv_riferimento":
-                    0,
-
-                "iv_hv_diff":
-                    0,
-
-                # ------------------------------------------------
-                # AGGIUNTO
-                # ------------------------------------------------
-
-                "vol_edge":
-                    0,
-
-                "iv_hv_ratio":
-                    0,
-
-                "spread":
-                    0,
-
-                "spread_pct":
-                    0,
-
-                "log_moneyness":
-                    0,
-
-                "bs_price_hv":
-                    0,
-
-                "price_edge_pct":
-                    0,
-
-                "expected_move_hv":
-                    0,
-
-                "expected_move_iv":
-                    0,
-
-                "long_edge_pct":
-                    0,
-
-                "short_edge_pct":
-                    0,
-
-                "opportunity_score":
-                    0
+                "giudizio":0,
+                "hv_riferimento":0,
+                "iv_hv_diff":0,
+                "vol_edge":0,
+                "iv_hv_ratio":0,
+                "spread":0,
+                "spread_pct":0,
+                "log_moneyness":0,
+                "bs_price_hv":0,
+                "price_edge_pct":0,
+                "expected_move_hv":0,
+                "expected_move_iv":0,
+                "long_edge_pct":0,
+                "short_edge_pct":0,
+                "opportunity_score": 0
             }
 
 
@@ -1455,16 +1368,11 @@ def analyzeOptions(
         # ========================================================
 
         option_prices = (
-            scegli_prezzo_opzione(
-                chain,
-                cp
-            )
+            scegli_prezzo_opzione(chain,cp)
         )
 
         bid = option_prices["bid"]
-
         ask = option_prices["ask"]
-
         mid = option_prices["mid"]
 
 
@@ -1473,10 +1381,7 @@ def analyzeOptions(
         # ========================================================
 
         hv = (
-            calcola_historical_volatility(
-                hist,
-                HV_WINDOWS
-            )
+            calcola_historical_volatility( hist, HV_WINDOWS)
         )
 
 
@@ -1484,36 +1389,11 @@ def analyzeOptions(
         # VOLATILITÀ IMPLICITA
         # ========================================================
 
-        iv_bid = implied_volatility(
-            bid,
-            S,
-            strike_effettivo,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
+        iv_bid = implied_volatility(bid, S, strike_effettivo, T, RISK_FREE_RATE, q, cp)
 
-        iv_mid = implied_volatility(
-            mid,
-            S,
-            strike_effettivo,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
+        iv_mid = implied_volatility(mid,S,strike_effettivo,T,RISK_FREE_RATE,q,cp)
 
-        iv_ask = implied_volatility(
-            ask,
-            S,
-            strike_effettivo,
-            T,
-            RISK_FREE_RATE,
-            q,
-            cp
-        )
-
+        iv_ask = implied_volatility(ask,S, strike_effettivo,T,RISK_FREE_RATE,q,cp)
 
         # ========================================================
         # FAIR VALUE PER LE VARIE HV
@@ -1524,15 +1404,7 @@ def analyzeOptions(
         for window, value in hv.items():
 
             fair = (
-                fair_value_from_hv(
-                    S,
-                    strike_effettivo,
-                    T,
-                    RISK_FREE_RATE,
-                    q,
-                    value,
-                    cp
-                )
+                fair_value_from_hv(S,strike_effettivo,T,RISK_FREE_RATE,q,value,cp)
             )
 
             fair_values[window] = fair
@@ -1556,92 +1428,42 @@ def analyzeOptions(
 
         indicatori = (
             calcola_indicatori_opzione(
-
                 S=S,
-
                 K=strike_effettivo,
-
                 T=T,
-
                 bid=bid,
-
                 ask=ask,
-
                 mid=mid,
-
                 iv_mid=iv_mid,
-
-                hv_riferimento=
-                    hv_riferimento,
-
+                hv_riferimento=hv_riferimento,
                 r=RISK_FREE_RATE,
-
                 q=q,
-
                 option_type=cp
             )
         )
-
 
         # ========================================================
         # GIUDIZIO IV VS HV
         # ========================================================
 
         if (
-            not np.isnan(
-                hv_riferimento
-            )
-            and not np.isnan(
-                iv_mid
-            )
+            not np.isnan(hv_riferimento)
+            and not np.isnan(iv_mid)
         ):
 
-            difference = (
-                iv_mid
-                - hv_riferimento
-            )
-
+            difference = (iv_mid- hv_riferimento)
             if difference > 0.10:
-
-                giudizio = (
-                    "IV MOLTO superiore "
-                    "alla volatilità storica."
-                )
-
+                giudizio = ("IV MOLTO superiore alla volatilità storica.")
             elif difference > 0.05:
-
-                giudizio = (
-                    "IV superiore "
-                    "alla volatilità storica."
-                )
-
+                giudizio = ("IV superiore alla volatilità storica.")
             elif difference < -0.10:
-
-                giudizio = (
-                    "IV MOLTO inferiore "
-                    "alla volatilità storica."
-                )
-
+                giudizio = ("IV MOLTO inferiore alla volatilità storica.")
             elif difference < -0.05:
-
-                giudizio = (
-                    "IV inferiore "
-                    "alla volatilità storica."
-                )
-
+                giudizio = ("IV inferiore alla volatilità storica.")
             else:
-
-                giudizio = (
-                    "IV abbastanza vicina "
-                    "alla volatilità storica."
-                )
-
+                giudizio = ("IV abbastanza vicina alla volatilità storica.")
         else:
-
-            giudizio = (
-                "Dati insufficienti "
-                "per il confronto."
-            )
+            giudizio = ("Dati insufficienti per il confronto.")
 
 
         # ========================================================
@@ -1650,56 +1472,23 @@ def analyzeOptions(
 
         risultato = {
 
-            "ticker":
-                TICKER_YAHOO,
-
-            "strike":
-                strike_effettivo,
-
-            "call_put":
-                cp,
-
-            "scadenza":
-                expiry,
-
-            "giorni_scadenza":
-                T_days,
-
-            "spot":
-                S,
-
-            "bid":
-                bid,
-
-            "ask":
-                ask,
-
-            "mid":
-                mid,
-
-            "iv_bid":
-                iv_bid,
-
-            "iv_mid":
-                iv_mid,
-
-            "iv_ask":
-                iv_ask,
-
-            "risk_free":
-                RISK_FREE_RATE,
-
-            "dividend_yield":
-                q,
-
-            "historical_volatility":
-                hv,
-
-            "fair_values":
-                fair_values,
-
-            "giudizio":
-                giudizio,
+            "ticker": TICKER_YAHOO,
+            "strike": strike_effettivo,
+            "call_put": cp,
+            "scadenza": expiry,
+            "giorni_scadenza": T_days,
+            "spot": S,
+            "bid": bid,
+            "ask": ask,
+            "mid":mid,
+            "iv_bid":iv_bid,
+            "iv_mid": iv_mid,
+            "iv_ask":iv_ask,
+            "risk_free":RISK_FREE_RATE,
+            "dividend_yield": q,
+            "historical_volatility": hv,
+            "fair_values":fair_values,
+            "giudizio":giudizio,
 
             # ====================================================
             # INDICATORI
@@ -1712,22 +1501,11 @@ def analyzeOptions(
                 in indicatori
                 else hv_riferimento,
 
-            "bs_price_hv":
-                indicatori["bs_price_hv"
-                ],
-
-            "vol_edge":
-                indicatori["vol_edge"],
-
-            "iv_hv_diff":
-                indicatori["iv_hv_diff"],
-
-            "iv_hv_ratio":
-                indicatori["iv_hv_ratio"],
-
-            "price_edge_pct":
-                indicatori["price_edge_pct"],
-
+            "bs_price_hv":indicatori["bs_price_hv"],
+            "vol_edge":indicatori["vol_edge"],
+            "iv_hv_diff":indicatori["iv_hv_diff"],
+            "iv_hv_ratio":indicatori["iv_hv_ratio"],
+            "price_edge_pct":indicatori["price_edge_pct"],
             "spread":indicatori["spread"],
             "spread_pct":indicatori["spread_pct"],
             "log_moneyness":indicatori["log_moneyness"],
@@ -1958,18 +1736,12 @@ def optionsCalc():
 
     listTicker["DATA"] = pd.Timestamp.now(tz="Europe/Rome")
 
-    # ============================================================
-    # 7. STAMPO IL RISULTATO FINALE
-    # ============================================================
-
     print()
     print("=" * 70)
     print("DATAFRAME FINALE")
     print("=" * 70)
 
-    print(
-        listTicker.to_string()
-    )
+    print(listTicker.to_string())
     #Rimuovo i NaN mettendoli a zero
     listTicker.fillna(0, inplace=True)
     #cambio formato data
@@ -1985,10 +1757,6 @@ def optionsCalc():
       listPrint,
       newPrj
     )
-
-    # ============================================================
-    # 8. RESTITUISCO IL DATAFRAME
-    # ============================================================
 
     #return listTicker
     return "OK"
