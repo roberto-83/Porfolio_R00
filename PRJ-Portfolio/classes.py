@@ -595,6 +595,7 @@ class Portfolio:
     portHist['HistPriceEur']=portHist['HistPrice']
     #calcolo controvalore mercato
     portHist['ctvMerc']=portHist.apply(Portfolio.getHistctvMerc,axis=1 )
+    
 
     #tolgo currency
     #portHist.drop(['CURRENCY','ISIN-JOIN'], axis=1,  inplace=True)
@@ -604,41 +605,117 @@ class Portfolio:
   
    #Tabella tab_calendar
   def updateCalendarTab(self):
-    #leggo il calendar e prendo ultima data
+    ##1-leggo il calendar e prendo ultima data
     lastDateDf=read_range('tab_calendar!A:K',newPrj)
     lastDate = lastDateDf['Data'].iloc[-1]
+    #mi salvo l'ultima riga di oggi per poter confrontare i valori
+    df_last_date = lastDateDf[lastDateDf['Data'] == lastDate]
+    df_last_date = df_last_date[['Data','Ticker','Valore Mercato']]
+    
+    #print("----dati di oggi----")
+    #print(df_last_date)
     #lunghezza DF = righe compilate nel foglio+1 perchè c'è intestazione+1perch
     numRows = len(lastDateDf) + 1 
-    #oggi e ieri
+    #2- Cerco la data di oggi e ieri solo per avre un confronto 
     today = Portfolio.todayDate
     yesterday = (datetime.now()+timedelta(days=-1)).strftime('%Y-%m-%d')
     #differenza tra ultima data e ieri
     diffdate = (datetime.strptime(yesterday, "%Y-%m-%d") - datetime.strptime(lastDate, "%Y-%m-%d")).days
     print(f"differenza tra ultima data {lastDate} e ieri {yesterday} è {diffdate} condizione {lastDate < yesterday}")
-    ### Foglio tab_caltot , mi prendo ultima riga###
+    ### Foglio tab_caltot , mi prendo il nuemro dell'ultima riga###
     tabCalTot=read_range('tab_caltot!A:A',newPrj)
     rowToWr = len(tabCalTot)
     #if(lastDate < yesterday):
     if(diffdate>0):
-      print('Procedo')
+      print('Esistono dati da elaborare per cui procedo con elaborazione')
       #loop da 0 a diffdate 
       i=1
       startRow = numRows+1
       while i <= diffdate:
-        #dateSearch = (datetime.strptime(lastDate, "%d/%m/%Y")+timedelta(days=i)).strftime('%d/%m/%Y')
+        #Ora la data da cercare è quella DOPO l'utima che leggo nel foglio
         dateSearch = (datetime.strptime(lastDate, "%Y-%m-%d")+timedelta(days=i)).strftime('%Y-%m-%d')
-        print(f"cerco la data {dateSearch}")
+        print(f"Cerco i dati del portafoglio per questa data {dateSearch}")
+        #faccio ricerca dei prezzi per quella data 
         histDf = Portfolio.histDf(self,dateSearch)
-        #print(histDf)
-        numRowsHistDf = len(histDf)
+        
+        
+        ####### qui inizio a calcolre i vari pesi del portafoglio per trasformarlo in unb etf
+        #devo prendere la data precedente a quella per cui sto analizzando lo storico
+        dateSearchMinusOne = (datetime.strptime(dateSearch, "%Y-%m-%d")+timedelta(days=-1)).strftime('%Y-%m-%d')
+        print(f"Cerco i dati storici del giorno {dateSearchMinusOne}")
+       
+
+        ##leggo il calendar tab ed estraggo solo ultimo riga  
+        lastPortf=read_range('tab_caltot!A:M',newPrj)
+        #lastPortfDate = lastPortf['Data'].iloc[-1]
+        #mi salvo l'ultima riga di oggi per poter confrontare i valori
+        df_Port_last_date = lastPortf[lastPortf['Data'] == dateSearchMinusOne]
+        df_Port_last_date = df_Port_last_date[['Data','Valore Mercato','valore mercato senza BTP']]
+
+        print("---------STAMPO HIST DF --------")
+        print(histDf)
+        print("---------STAMPO HIST DF DI IERI --------")
+        df_last_date = df_last_date.rename(columns= {'Valore Mercato':'ctvMerc'})
+        print(df_last_date)
+        print("---------STAMPO INTERO PORTAF di IERI --------")
+        print(df_Port_last_date)
+        #MERGE DEI DUE
+        histDf_1=histDf.merge(
+          df_last_date[['Ticker','ctvMerc']],
+          on='Ticker',
+          how='left',
+          suffixes=('','_ieri')
+        )
+        histDf_1['ctvMerc_ieri'] = (histDf_1['ctvMerc_ieri'].fillna(0))#se ho nuovi titoli e quindi ieri è vuoto
+        histDf_1['ctvMerc_ieri'] = ( histDf_1['ctvMerc_ieri'] .astype(str).str.replace(',','.',regex=False))
+        histDf_1['ctvMerc_ieri'] = pd.to_numeric(histDf_1['ctvMerc_ieri'] ,errors='coerce')
+        valoreMercatroIeri = df_Port_last_date['Valore Mercato'].iloc[0]
+        valoreMercatroIeri = float(str(valoreMercatroIeri).replace(',','.'))
+
+        valoreMercatroIeriNoBTP = df_Port_last_date['valore mercato senza BTP'].iloc[0]
+        valoreMercatroIeriNoBTP = float(str(valoreMercatroIeriNoBTP).replace(',','.'))
+
+        print(f"Valore Mercato di Ieri  {valoreMercatroIeri}")
+        print(f"Valore Mercato di Ieri senza btp  {valoreMercatroIeriNoBTP}")
+        print(histDf_1.to_string())
+        #Rendimento titolo = prezzo oggi/ieri
+        #histDf_1['RendimentoTitolo'] = (histDf_1['ctvMerc']/histDf_1['ctvMerc_ieri'])-1
+        histDf_1['RendimentoTitolo'] = np.where(
+          histDf_1['ctvMerc_ieri'] == 0,
+          0,
+          histDf_1['ctvMerc']/histDf_1['ctvMerc_ieri']-1
+        )
+        #Peso di ieri
+        histDf_1['PesoIeri'] = histDf_1['ctvMerc_ieri'] / valoreMercatroIeri
+        #Contributo titolo
+        histDf_1['ContribTitol'] =  histDf_1['PesoIeri'] * histDf_1['RendimentoTitolo']
+
+        #Peso di ieri senza i btp, prima creo maschera per mettere a 0 i btp
+        mask = (
+          (histDf_1['Ticker'] == "CRIPTALIA") |
+          (histDf_1['Ticker'].str.startswith('BTP')) |
+          (histDf_1['Ticker'].str.startswith('BOT')) 
+        )
+        histDf_1['PesoIeriNoBTP'] = np.where(
+          mask,
+          0,
+          histDf_1['ctvMerc_ieri'] / valoreMercatroIeriNoBTP
+        )
+        #histDf_1['PesoIeriNoBTP'] = histDf_1['ctvMerc_ieri'] / valoreMercatroIeriNoBTP
+        #Contributo titolo
+        histDf_1['ContribTitolNoBTP'] =  histDf_1['PesoIeriNoBTP'] * histDf_1['RendimentoTitolo']
+
+        #print(histDf_1.to_string())
+        
+        numRowsHistDf = len(histDf_1)
         endRow = startRow+numRowsHistDf
         #trasformo in lista
-        histList = histDf.values.tolist()
+        histList = histDf_1.values.tolist()
         ######Cambio funzione perchè la prima si blocca alla fine del file se non ci sono piu righe..
         #write_range('tab_calendar!A'+str(startRow)+':I'+str(endRow),histList,newPrj)
-        appendRow('tab_calendar!A:I',histList,newPrj)
-        ########## TAB_TOTALI #########
-        totTab = Portfolio.totalhistory(self,histDf,int(i+rowToWr))
+        appendRow('tab_calendar!A:O',histList,newPrj)
+        ########## COMPILO TAB_TOTALI #########
+        totTab = Portfolio.totalhistory(self,histDf_1,int(i+rowToWr))
         #aggiorno nuova startRow
         startRow = startRow+numRowsHistDf
         i += 1
@@ -649,8 +726,9 @@ class Portfolio:
     return 'OK'
   
   def totalhistory(self,histDf,i):
-    print('Stampo histdataframe')
+    print('Stampo Totale del portafoglio')
     print(histDf.to_string())
+    
     histDf_no_Btp_1 = histDf
     if histDf.empty == False:
       #DATI PORTAFOLGIO COMPLETO
@@ -709,6 +787,12 @@ class Portfolio:
       else:
         rendim_perc_no_btp = rendim_no_btp*100/tot_val_invest
 
+      print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      #costruiamo la parte di rendimento portafoglio
+      sumContribTitoli = histDf['ContribTitol'].sum()
+      sumContribTitoliNoBTP = histDf['ContribTitolNoBTP'].sum()
+      print(f"Somma contributi titoli con btp {sumContribTitoli} senza btp  {sumContribTitoliNoBTP} ")
+      
       #SCRIVO I DATI
       arrTot = [[histDf['dataHist'].iloc[0],
         histDf.loc['total']['TotInvest'],
@@ -719,10 +803,10 @@ class Portfolio:
         rendimMerc,
         mercato,
         delta,mercato_vwce,rendimMerc_vwce,delta_vwce,
-        tot_val_merc,tot_val_invest,rendim_no_btp,rendim_perc_no_btp]]
+        tot_val_merc,tot_val_invest,rendim_no_btp,rendim_perc_no_btp,sumContribTitoli,sumContribTitoliNoBTP]]
 
       print(f'Array totale del giorno {arrTot}')
-      appendRow('tab_caltot!A:P',arrTot,newPrj)
+      appendRow('tab_caltot!A:R',arrTot,newPrj)
       #write_range('tab_caltot!A'+str(i)+':I'+str(i),arrTot,newPrj)
       return 'OK'
     return 'KO'
