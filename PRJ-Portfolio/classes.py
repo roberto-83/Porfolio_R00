@@ -786,11 +786,24 @@ class Portfolio:
         rendim_perc_no_btp = 0
       else:
         rendim_perc_no_btp = rendim_no_btp*100/tot_val_invest
-
+      print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      #Prendo i dati attuali (che corripondono alla riga vecchia)
+      #il controllo delle date viene fatto su funzione precedente per cui in questa fase leggo ultima riga.
+      dtTotActual = read_range('tab_caltot!A:V',newPrj)
+      last_row = dtTotActual.iloc[-1]
+      print("XXXX stampo array ieri  XXXX")
+      print(last_row.to_string())
+      valIeriPort = float(str(last_row['ETF MY PORT']).replace(',','.'))
+      valIeriPortNoBTP = float(str(last_row['ETF MY PORT NO BTP']).replace(',','.'))
+      
       print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       #costruiamo la parte di rendimento portafoglio
       sumContribTitoli = histDf['ContribTitol'].sum()
       sumContribTitoliNoBTP = histDf['ContribTitolNoBTP'].sum()
+      etfMyPort = valIeriPort * (1+sumContribTitoli)
+      etfMyPortNoBTP = valIeriPortNoBTP * (1+sumContribTitoliNoBTP)
+      etfSP500 = 100*mercato/454.119995117188
+      eftvWCE = 100*mercato_vwce/106.620003
       print(f"Somma contributi titoli con btp {sumContribTitoli} senza btp  {sumContribTitoliNoBTP} ")
       
       #SCRIVO I DATI
@@ -803,10 +816,11 @@ class Portfolio:
         rendimMerc,
         mercato,
         delta,mercato_vwce,rendimMerc_vwce,delta_vwce,
-        tot_val_merc,tot_val_invest,rendim_no_btp,rendim_perc_no_btp,sumContribTitoli,sumContribTitoliNoBTP]]
+        tot_val_merc,tot_val_invest,rendim_no_btp,rendim_perc_no_btp,
+        sumContribTitoli,sumContribTitoliNoBTP,etfMyPort,etfMyPortNoBTP,etfSP500,eftvWCE]]
 
       print(f'Array totale del giorno {arrTot}')
-      appendRow('tab_caltot!A:R',arrTot,newPrj)
+      appendRow('tab_caltot!A:V',arrTot,newPrj)
       #write_range('tab_caltot!A'+str(i)+':I'+str(i),arrTot,newPrj)
       return 'OK'
     return 'KO'
