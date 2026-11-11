@@ -1583,65 +1583,117 @@ _ANALYST_CACHE = {}
 _MACRO_CACHE = {}
 
 def get_analyst_score(ticker_symbol):
-    """Restituisce score e dati consensus; N/D se Yahoo non fornisce copertura."""
+    """
+    Consensus Yahoo robusto:
+    - usa SOLO l'ultima rilevazione disponibile (non somma snapshot mensili duplicati);
+    - somma Strong Buy + Buy;
+    - calcola la quota Buy sul totale dei giudizi;
+    - scarta target price palesemente fuori scala rispetto allo spot.
+    I valori BUY_PCT e TARGET_UPSIDE sono restituiti in punti percentuali (es. 65 = 65%).
+    """
     if ticker_symbol in _ANALYST_CACHE:
         return _ANALYST_CACHE[ticker_symbol]
+
     out = {
         "ANALYST_SCORE": np.nan,
         "ANALYST_BUY_PCT": np.nan,
         "ANALYST_TARGET_UPSIDE": np.nan,
         "ANALYST_COUNT": 0,
     }
+
     try:
         yt = yf.Ticker(ticker_symbol)
-        targets = yt.analyst_price_targets or {}
-        target_mean = targets.get("mean")
-        hist = yt.recommendations
+
+        # Prezzo corrente: ultimo Close valido.
         spot = None
         try:
-            hist_price = yt.history(period="5d")
-            if not hist_price.empty:
-                spot = float(hist_price["Close"].dropna().iloc[-1])
-        except Exception:
-            pass
+            hist_price = yt.history(period="10d", auto_adjust=True)
+            if hist_price is not None and not hist_price.empty and "Close" in hist_price:
+                close = pd.to_numeric(hist_price["Close"], errors="coerce").dropna()
+                if not close.empty:
+                    spot = float(close.iloc[-1])
+        except Exception as exc:
+            print(f"Prezzo Yahoo non disponibile per {ticker_symbol}: {exc}")
 
+        # Raccomandazioni: le colonne possono avere maiuscole/minuscole diverse.
         buy_pct = np.nan
         analyst_count = 0
-        if hist is not None and not hist.empty:
-            recent = hist.tail(20)
-            cols = {str(c).lower(): c for c in recent.columns}
-            buy_col = cols.get("strongbuy") or cols.get("buy")
-            hold_col = cols.get("hold")
-            sell_col = cols.get("sell")
-            strong_sell_col = cols.get("strongsell")
-            if buy_col:
-                buy = pd.to_numeric(recent[buy_col], errors="coerce").fillna(0).sum()
-                total = buy
-                for col in (hold_col, sell_col, strong_sell_col):
-                    if col:
-                        total += pd.to_numeric(recent[col], errors="coerce").fillna(0).sum()
-                analyst_count = int(total)
+        try:
+            rec = yt.recommendations
+            if rec is not None and not rec.empty:
+                # L'ultima riga è lo snapshot più recente: non sommare più mesi.
+                row = rec.iloc[-1]
+                normalized = {
+                    re.sub(r"[^a-z]", "", str(col).lower()): col
+                    for col in rec.columns
+                }
+
+                def count_for(*names):
+                    for name in names:
+                        col = normalized.get(name)
+                        if col is not None:
+                            value = pd.to_numeric(row[col], errors="coerce")
+                            if pd.notna(value):
+                                return max(0.0, float(value))
+                    return 0.0
+
+                strong_buy = count_for("strongbuy")
+                buy = count_for("buy")
+                hold = count_for("hold")
+                sell = count_for("sell")
+                strong_sell = count_for("strongsell")
+
+                total_buy = strong_buy + buy
+                total = total_buy + hold + sell + strong_sell
+                analyst_count = int(round(total))
+
                 if total > 0:
-                    buy_pct = float(buy / total * 100)
+                    buy_pct = (total_buy / total) * 100.0
+        except Exception as exc:
+            print(f"Raccomandazioni Yahoo non disponibili per {ticker_symbol}: {exc}")
 
+        # Target medio: verifica unità/scala prima di usarlo.
         upside = np.nan
-        if target_mean and spot and spot > 0:
-            upside = (float(target_mean) / spot - 1) * 100
+        try:
+            targets = yt.analyst_price_targets
+            if targets is not None and spot is not None and spot > 0:
+                target_mean = pd.to_numeric(targets.get("mean"), errors="coerce")
+                if pd.notna(target_mean) and float(target_mean) > 0:
+                    ratio = float(target_mean) / spot
+                    # Un target tra 20% e 300% dello spot è ammesso.
+                    # Fuori da questo intervallo spesso indica dato/scala errati.
+                    if 0.20 <= ratio <= 3.00:
+                        upside = (ratio - 1.0) * 100.0
+                    else:
+                        print(
+                            f"Target analisti scartato per {ticker_symbol}: "
+                            f"target={float(target_mean):.4f}, spot={spot:.4f}, "
+                            f"rapporto={ratio:.2f}"
+                        )
+        except Exception as exc:
+            print(f"Target Yahoo non disponibile per {ticker_symbol}: {exc}")
 
+        # Score consensus solo sulle componenti realmente disponibili.
         components = []
-        if not pd.isna(buy_pct):
-            components.append((buy_pct, 0.60))
-        if not pd.isna(upside):
-            # 0% upside=50 punti; +20%=100; -20%=0
-            components.append((_clip_score(50 + upside * 2.5), 0.40))
+        if pd.notna(buy_pct):
+            components.append((float(buy_pct), 0.60))
+        if pd.notna(upside):
+            # 0% upside=50 punti; +20%=100; -20%=0.
+            components.append((_clip_score(50.0 + float(upside) * 2.5), 0.40))
+
         if components:
             weight = sum(w for _, w in components)
-            out["ANALYST_SCORE"] = round(sum(v*w for v, w in components)/weight, 1)
+            out["ANALYST_SCORE"] = round(
+                sum(value * weight_i for value, weight_i in components) / weight, 1
+            )
+
         out["ANALYST_BUY_PCT"] = buy_pct
         out["ANALYST_TARGET_UPSIDE"] = upside
         out["ANALYST_COUNT"] = analyst_count
+
     except Exception as exc:
         print(f"Consensus non disponibile per {ticker_symbol}: {exc}")
+
     _ANALYST_CACHE[ticker_symbol] = out
     return out
 
@@ -1650,34 +1702,64 @@ def get_macro_score(ticker_symbol):
     """Score settoriale relativo a SPY su 60 sedute; proxy USA, non indice locale."""
     if ticker_symbol in _MACRO_CACHE:
         return _MACRO_CACHE[ticker_symbol]
+
     sector_map = {
         "ENI.MI": "energy", "SPM.MI": "energy", "TEN.MI": "energy",
         "ISP.MI": "banks", "BFF.MI": "banks", "UCG.MI": "banks",
         "BAMI.MI": "banks", "BPE.MI": "banks", "FBK.MI": "banks",
-        "TPRO.MI": "semiconductors", "STMMI.MI": "semiconductors",
+        "TPRO.MI": "semiconductors", "STM.MI": "semiconductors",
         "DNR.MI": "industrials", "ARIS.MI": "industrials",
         "GVS.MI": "healthcare",
     }
+
     sector = sector_map.get(ticker_symbol, "default")
     proxy = MACRO_PROXY[sector]
+
+    # Nessun confronto duplicato quando il proxy stesso è SPY.
+    if proxy == "SPY":
+        _MACRO_CACHE[ticker_symbol] = 50.0
+        return 50.0
+
     try:
-        data = yf.download([proxy, "SPY"], period="6mo", interval="1d",
-                           auto_adjust=True, progress=False)["Close"].dropna()
-        if data.empty or proxy not in data or "SPY" not in data:
-            _MACRO_CACHE[ticker_symbol] = np.nan
-            return np.nan
-        returns = data.pct_change(60).dropna()
+        raw = yf.download(
+            tickers=[proxy, "SPY"],
+            period="6mo",
+            interval="1d",
+            auto_adjust=True,
+            progress=False,
+            threads=False,
+        )
+        if raw is None or raw.empty or "Close" not in raw:
+            raise ValueError("Storico prezzi proxy/SPY vuoto")
+
+        close = raw["Close"]
+        # Compatibilità con le diverse versioni di yfinance/MultiIndex.
+        if isinstance(close, pd.Series):
+            close = close.to_frame()
+        if isinstance(close.columns, pd.MultiIndex):
+            close.columns = [
+                next((str(x) for x in col if str(x) in (proxy, "SPY")), str(col[-1]))
+                for col in close.columns
+            ]
+
+        close = close.loc[:, ~close.columns.duplicated()]
+        if proxy not in close.columns or "SPY" not in close.columns:
+            raise ValueError(f"Colonne Close non trovate: {list(close.columns)}")
+
+        close = close[[proxy, "SPY"]].apply(pd.to_numeric, errors="coerce").dropna()
+        returns = close.pct_change(60).dropna()
         if returns.empty:
-            return np.nan
+            raise ValueError("Dati insufficienti per rendimento a 60 sedute")
+
         relative = float(returns[proxy].iloc[-1] - returns["SPY"].iloc[-1])
-        score = round(_clip_score(50 + relative * 250), 1)
+        score = round(_clip_score(50.0 + relative * 250.0), 1)
         _MACRO_CACHE[ticker_symbol] = score
         return score
+
     except Exception as exc:
         print(f"Macro score non disponibile per {ticker_symbol}: {exc}")
         _MACRO_CACHE[ticker_symbol] = np.nan
         return np.nan
-
 
 def build_call_score(technical, analyst, macro):
     """Pesi 50/25/25; se un dato manca, restituisce N/D anziché inventarlo."""
@@ -1688,6 +1770,30 @@ def build_call_score(technical, analyst, macro):
         return np.nan
     weight = sum(w for _, w in valid)
     return round(sum(v*w for v, w in valid)/weight, 1)
+
+
+def get_call_verdict(opportunity_score, analyst_score, macro_score, spread_pct, long_edge_pct):
+    """
+    Regola prudenziale di screening, NON probabilità di profitto né segnale automatico.
+    BUY = candidato da approfondire solo se tutti i filtri sono disponibili e coerenti.
+    """
+    vals = [opportunity_score, analyst_score, macro_score, spread_pct, long_edge_pct]
+    if any(v is None or pd.isna(v) for v in vals):
+        return "WAIT"
+
+    opp = float(opportunity_score)
+    analyst = float(analyst_score)
+    macro = float(macro_score)
+    spread = float(spread_pct)
+    long_edge = float(long_edge_pct)
+
+    if opp < 50 or spread > 0.20 or long_edge < -0.10:
+        return "AVOID"
+
+    if opp >= 80 and analyst >= 55 and macro >= 50 and spread <= 0.10 and long_edge > 0:
+        return "BUY"
+
+    return "WAIT"
 
 
 def process_ticker_row(row):
@@ -1739,7 +1845,14 @@ def process_ticker_row(row):
             "EXPECTED_MOVE_IV": 0,
             "LONG_EDGE_PCT": 0,
             "SHORT_EDGE_PCT": 0,
-            "OPPORTUNITY_SCORE": 0
+            "OPPORTUNITY_SCORE": np.nan,
+            "ANALYST_SCORE": np.nan,
+            "ANALYST_BUY_PCT": np.nan,
+            "ANALYST_TARGET_UPSIDE": np.nan,
+            "ANALYST_COUNT": 0,
+            "MACRO_SCORE": np.nan,
+            "CALL_SCORE": np.nan,
+            "CALL_VERDICT": "WAIT"
 
         }
 
@@ -1763,7 +1876,18 @@ def process_ticker_row(row):
 
     analyst_data = get_analyst_score(ticker)
     macro_score = get_macro_score(ticker)
-    call_score = build_call_score(result["opportunity_score"], analyst_data["ANALYST_SCORE"], macro_score)
+    call_score = build_call_score(
+        result["opportunity_score"],
+        analyst_data["ANALYST_SCORE"],
+        macro_score
+    )
+    call_verdict = get_call_verdict(
+        result.get("opportunity_score"),
+        analyst_data.get("ANALYST_SCORE"),
+        macro_score,
+        result.get("spread_pct"),
+        result.get("long_edge_pct"),
+    )
 
     output = {
         "PREZZO STRIKE CALL": strike_effettivo,
@@ -1798,11 +1922,19 @@ def process_ticker_row(row):
         "SHORT_EDGE_PCT": result["short_edge_pct"],
         "OPPORTUNITY_SCORE": result["opportunity_score"],
         "ANALYST_SCORE": analyst_data["ANALYST_SCORE"],
-        "ANALYST_BUY_PCT": analyst_data["ANALYST_BUY_PCT"],
-        "ANALYST_TARGET_UPSIDE": analyst_data["ANALYST_TARGET_UPSIDE"],
+        # Memorizzati come frazioni: 0.65 = 65% in Google Sheets.
+        "ANALYST_BUY_PCT": (
+            analyst_data["ANALYST_BUY_PCT"] / 100
+            if pd.notna(analyst_data["ANALYST_BUY_PCT"]) else np.nan
+        ),
+        "ANALYST_TARGET_UPSIDE": (
+            analyst_data["ANALYST_TARGET_UPSIDE"] / 100
+            if pd.notna(analyst_data["ANALYST_TARGET_UPSIDE"]) else np.nan
+        ),
         "ANALYST_COUNT": analyst_data["ANALYST_COUNT"],
         "MACRO_SCORE": macro_score,
-        "CALL_SCORE": call_score
+        "CALL_SCORE": call_score,
+        "CALL_VERDICT": call_verdict
     }
 
     return output
@@ -1890,7 +2022,7 @@ def optionsCalc():
         "IV_MID", "HV_RIFERIMENTO", "SPREAD_PCT",
         "OPPORTUNITY_SCORE", "ANALYST_SCORE",
         "ANALYST_BUY_PCT", "ANALYST_TARGET_UPSIDE", "ANALYST_COUNT",
-        "MACRO_SCORE", "CALL_SCORE"
+        "MACRO_SCORE", "CALL_SCORE", "CALL_VERDICT"
     ]
     colonne_presenti = [c for c in colonne_output if c in listTicker.columns]
     listTicker = listTicker[colonne_presenti]
