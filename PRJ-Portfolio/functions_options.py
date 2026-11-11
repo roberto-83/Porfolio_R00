@@ -1558,7 +1558,9 @@ def process_ticker_row(row):
     # Prendo i dati dalla riga del DataFrame
     # ------------------------------------------------------------
 
-    # Ricalcolo sempre lo strike dalla chain: scelgo quello quotato piu\u0300 vicino allo spot.\n    strike = None\n    scad = row["SCADENZA CALL"]
+    # None attiva la selezione automatica dello strike piu vicino allo spot
+    strike = None
+    scad = row["SCADENZA CALL"]
     ticker = row["TICKER"]
     print(f"Inizio con il processo per ticker {ticker}, strike {strike} e scadenza {scad}")
 
@@ -1670,7 +1672,13 @@ def numero_a_colonna_excel(n):
 def optionsCalc():
     #Leggo dati da Google Sheet
     listTicker = read_range("tab_opzion_calc!A:F",newPrj)
-    # Scadenza mensile standard: terzo venerdi del mese tra due mesi.\n    # Non uso TODAY()+60 perche\u0301 potrebbe cadere in una data non negoziata.\n    oggi = pd.Timestamp.now(tz="Europe/Rome").tz_localize(None).normalize()\n    scadenza_target = terzo_venerdi_mese(oggi, mesi_avanti=2)\n    listTicker["SCADENZA CALL"] = scadenza_target.strftime("%d/%m/%Y")\n    print(f"Scadenza CALL impostata automaticamente: {scadenza_target:%d/%m/%Y}")\n\n    #Normalizzo
+    # Scadenza mensile standard: terzo venerdi del mese tra due mesi.
+    # Non uso TODAY()+60 perche potrebbe cadere in una data non negoziata.
+    oggi = pd.Timestamp.now(tz="Europe/Rome").tz_localize(None).normalize()
+    scadenza_target = terzo_venerdi_mese(oggi, mesi_avanti=2)
+    listTicker["SCADENZA CALL"] = scadenza_target.strftime("%d/%m/%Y")
+    print(f"Scadenza CALL impostata automaticamente: {scadenza_target:%d/%m/%Y}")
+
     listTicker["PREZZO STRIKE CALL"] = (
         listTicker["PREZZO STRIKE CALL"]
         .astype(str)
