@@ -503,66 +503,76 @@ def analyzeOptions(
     # TROVA STRIKE SOTTO SPOT
     # ============================================================
 
-    def trova_strike_piu_vicino_spot(html, spot):
-        """
-        Estrae gli strike dalla catena Borsa Italiana e seleziona quello
-        con distanza assoluta minima dallo spot.
-        La riga standard della chain contiene almeno due quotazioni CALL
-        prima dello strike e due quotazioni PUT dopo lo strike.
-        """
-        soup = BeautifulSoup(html, "html.parser")
-        strike_disponibili = set()
+    def trova_strike_sotto_spot(
+        html,
+        spot
+    ):
+
+        strike_disponibili = []
+
+        tutti_i_numeri = []
+
+        soup = BeautifulSoup(
+            html,
+            "html.parser"
+        )
 
         for table in soup.find_all("table"):
+
             for row in table.find_all("tr"):
-                cells = row.find_all("td")
-                if len(cells) < 5:
-                    continue
 
-                values = [
-                    parse_number(cell.get_text(" ", strip=True))
-                    for cell in cells
-                ]
+                for cell in row.find_all(
+                    ["td", "th"]
+                ):
 
-                for i, value in enumerate(values):
-                    if value is None or i < 2 or (len(values) - i - 1) < 2:
-                        continue
+                    testo = cell.get_text(
+                        " ",
+                        strip=True
+                    )
 
-                    left_numeric = [x for x in values[:i] if x is not None]
-                    right_numeric = [x for x in values[i + 1:] if x is not None]
+                    n = parse_number(testo)
 
-                    if len(left_numeric) >= 2 and len(right_numeric) >= 2:
-                        if value > 0:
-                            strike_disponibili.add(float(value))
+                    if n is not None:
+
+                        tutti_i_numeri.append(n)
+
+                        if n < spot:
+
+                            strike_disponibili.append(n)
+
+        print(
+            f"SPOT: {spot}"
+        )
+
+        print(
+            "TUTTI I NUMERI LETTI:",
+            tutti_i_numeri
+        )
+
+        print(
+            "NUMERI SOTTO LO SPOT:",
+            strike_disponibili
+        )
 
         if not strike_disponibili:
-            print("!!! NESSUNO STRIKE IDENTIFICABILE NELLA OPTION CHAIN !!!")
+
+            print(
+                f"!!! NESSUNO STRIKE "
+                f"SOTTO LO SPOT {spot} !!!"
+            )
+
             return None
 
-        strike = min(strike_disponibili, key=lambda k: abs(k - float(spot)))
-        print(f"SPOT: {spot}")
-        print(f"STRIKE DISPONIBILI: {sorted(strike_disponibili)}")
-        print(f"STRIKE PIU' VICINO ALLO SPOT: {strike}")
+        strike = max(
+            strike_disponibili
+        )
+
+        print(
+            "STRIKE AUTOMATICO "
+            f"SELEZIONATO: {strike}"
+        )
+
         return strike
-
-
-    def terzo_venerdi_mese(data_riferimento, mesi_avanti=2):
-        """
-        Terzo venerdì del mese distante `mesi_avanti` mesi.
-        TODAY()+60 non garantisce una scadenza effettivamente quotata.
-        """
-        data_riferimento = pd.Timestamp(data_riferimento)
-        mese_indice = data_riferimento.year * 12 + (data_riferimento.month - 1) + mesi_avanti
-        anno = mese_indice // 12
-        mese = mese_indice % 12 + 1
-
-        primo_giorno = pd.Timestamp(year=anno, month=mese, day=1)
-        giorni_al_primo_venerdi = (4 - primo_giorno.weekday()) % 7
-        primo_venerdi = primo_giorno + pd.Timedelta(days=giorni_al_primo_venerdi)
-        return primo_venerdi + pd.Timedelta(days=14)
-
-
-
 
 
     # ============================================================
@@ -1224,7 +1234,7 @@ def analyzeOptions(
             )
 
             strike_effettivo = (
-                trova_strike_piu_vicino_spot(
+                trova_strike_sotto_spot(
                     html,
                     S
                 )
@@ -1285,9 +1295,9 @@ def analyzeOptions(
                 }
 
 
-            print(f"Strike automatico selezionato: {strike_effettivo}")
+            print("Strike automatico selezionato: {strike_effettivo}")
         else:
-            print(f"Strike inserito manualmente: {strike_effettivo}")
+            print("Strike inserito manualmente: {strike_effettivo}")
 
 
         # ========================================================
@@ -1455,9 +1465,6 @@ def analyzeOptions(
         else:
             giudizio = ("Dati insufficienti per il confronto.")
 
-        # Nessun punteggio artificiosamente alto se manca il confronto IV/HV.
-        if giudizio == "Dati insufficienti per il confronto.":
-            indicatori["opportunity_score"] = 0
 
         # ========================================================
         # RISULTATO
@@ -1552,17 +1559,147 @@ def analyzeOptions(
 # FUNZIONE EFFETTIVA
 # ============================================================
 
+
+
+# ============================================================
+# ANALYST CONSENSUS + MACRO SCORE (fonti gratuite, dati opzionali)
+# ============================================================
+
+MACRO_PROXY = {
+    "energy": "XLE",
+    "semiconductors": "SOXX",
+    "banks": "KBE",
+    "industrials": "XLI",
+    "healthcare": "XLV",
+    "utilities": "XLU",
+    "consumer": "XLY",
+    "default": "SPY",
+}
+
+def _clip_score(value):
+    return max(0.0, min(100.0, float(value)))
+
+_ANALYST_CACHE = {}
+_MACRO_CACHE = {}
+
+def get_analyst_score(ticker_symbol):
+    """Restituisce score e dati consensus; N/D se Yahoo non fornisce copertura."""
+    if ticker_symbol in _ANALYST_CACHE:
+        return _ANALYST_CACHE[ticker_symbol]
+    out = {
+        "ANALYST_SCORE": np.nan,
+        "ANALYST_BUY_PCT": np.nan,
+        "ANALYST_TARGET_UPSIDE": np.nan,
+        "ANALYST_COUNT": 0,
+    }
+    try:
+        yt = yf.Ticker(ticker_symbol)
+        targets = yt.analyst_price_targets or {}
+        target_mean = targets.get("mean")
+        hist = yt.recommendations
+        spot = None
+        try:
+            hist_price = yt.history(period="5d")
+            if not hist_price.empty:
+                spot = float(hist_price["Close"].dropna().iloc[-1])
+        except Exception:
+            pass
+
+        buy_pct = np.nan
+        analyst_count = 0
+        if hist is not None and not hist.empty:
+            recent = hist.tail(20)
+            cols = {str(c).lower(): c for c in recent.columns}
+            buy_col = cols.get("strongbuy") or cols.get("buy")
+            hold_col = cols.get("hold")
+            sell_col = cols.get("sell")
+            strong_sell_col = cols.get("strongsell")
+            if buy_col:
+                buy = pd.to_numeric(recent[buy_col], errors="coerce").fillna(0).sum()
+                total = buy
+                for col in (hold_col, sell_col, strong_sell_col):
+                    if col:
+                        total += pd.to_numeric(recent[col], errors="coerce").fillna(0).sum()
+                analyst_count = int(total)
+                if total > 0:
+                    buy_pct = float(buy / total * 100)
+
+        upside = np.nan
+        if target_mean and spot and spot > 0:
+            upside = (float(target_mean) / spot - 1) * 100
+
+        components = []
+        if not pd.isna(buy_pct):
+            components.append((buy_pct, 0.60))
+        if not pd.isna(upside):
+            # 0% upside=50 punti; +20%=100; -20%=0
+            components.append((_clip_score(50 + upside * 2.5), 0.40))
+        if components:
+            weight = sum(w for _, w in components)
+            out["ANALYST_SCORE"] = round(sum(v*w for v, w in components)/weight, 1)
+        out["ANALYST_BUY_PCT"] = buy_pct
+        out["ANALYST_TARGET_UPSIDE"] = upside
+        out["ANALYST_COUNT"] = analyst_count
+    except Exception as exc:
+        print(f"Consensus non disponibile per {ticker_symbol}: {exc}")
+    _ANALYST_CACHE[ticker_symbol] = out
+    return out
+
+
+def get_macro_score(ticker_symbol):
+    """Score settoriale relativo a SPY su 60 sedute; proxy USA, non indice locale."""
+    if ticker_symbol in _MACRO_CACHE:
+        return _MACRO_CACHE[ticker_symbol]
+    sector_map = {
+        "ENI.MI": "energy", "SPM.MI": "energy", "TEN.MI": "energy",
+        "ISP.MI": "banks", "BFF.MI": "banks", "UCG.MI": "banks",
+        "BAMI.MI": "banks", "BPE.MI": "banks", "FBK.MI": "banks",
+        "TPRO.MI": "semiconductors", "STMMI.MI": "semiconductors",
+        "DNR.MI": "industrials", "ARIS.MI": "industrials",
+        "GVS.MI": "healthcare",
+    }
+    sector = sector_map.get(ticker_symbol, "default")
+    proxy = MACRO_PROXY[sector]
+    try:
+        data = yf.download([proxy, "SPY"], period="6mo", interval="1d",
+                           auto_adjust=True, progress=False)["Close"].dropna()
+        if data.empty or proxy not in data or "SPY" not in data:
+            _MACRO_CACHE[ticker_symbol] = np.nan
+            return np.nan
+        returns = data.pct_change(60).dropna()
+        if returns.empty:
+            return np.nan
+        relative = float(returns[proxy].iloc[-1] - returns["SPY"].iloc[-1])
+        score = round(_clip_score(50 + relative * 250), 1)
+        _MACRO_CACHE[ticker_symbol] = score
+        return score
+    except Exception as exc:
+        print(f"Macro score non disponibile per {ticker_symbol}: {exc}")
+        _MACRO_CACHE[ticker_symbol] = np.nan
+        return np.nan
+
+
+def build_call_score(technical, analyst, macro):
+    """Pesi 50/25/25; se un dato manca, restituisce N/D anziché inventarlo."""
+    values = [(technical, 0.50), (analyst, 0.25), (macro, 0.25)]
+    valid = [(float(v), w) for v, w in values
+             if v is not None and not pd.isna(v)]
+    if len(valid) < 2:
+        return np.nan
+    weight = sum(w for _, w in valid)
+    return round(sum(v*w for v, w in valid)/weight, 1)
+
+
 def process_ticker_row(row):
 
     # ------------------------------------------------------------
     # Prendo i dati dalla riga del DataFrame
     # ------------------------------------------------------------
 
-    # None attiva la selezione automatica dello strike piu vicino allo spot
-    strike = None
+    strike = row["PREZZO STRIKE CALL"]
     scad = row["SCADENZA CALL"]
     ticker = row["TICKER"]
-    print(f"Inizio con il processo per ticker {ticker}, strike {strike} e scadenza {scad}")
+    print(f"Inizio con il processo per ticker {ticker} e scadenza {scad}")
 
     # ------------------------------------------------------------
     # Controllo valori mancanti
@@ -1624,6 +1761,10 @@ def process_ticker_row(row):
     # Creo una riga piatta
     # ------------------------------------------------------------
 
+    analyst_data = get_analyst_score(ticker)
+    macro_score = get_macro_score(ticker)
+    call_score = build_call_score(result["opportunity_score"], analyst_data["ANALYST_SCORE"], macro_score)
+
     output = {
         "PREZZO STRIKE CALL": strike_effettivo,
         "SPOT": result["spot"],
@@ -1655,7 +1796,13 @@ def process_ticker_row(row):
         "EXPECTED_MOVE_IV": result["expected_move_iv"],
         "LONG_EDGE_PCT": result["long_edge_pct"],
         "SHORT_EDGE_PCT": result["short_edge_pct"],
-        "OPPORTUNITY_SCORE": result["opportunity_score"]
+        "OPPORTUNITY_SCORE": result["opportunity_score"],
+        "ANALYST_SCORE": analyst_data["ANALYST_SCORE"],
+        "ANALYST_BUY_PCT": analyst_data["ANALYST_BUY_PCT"],
+        "ANALYST_TARGET_UPSIDE": analyst_data["ANALYST_TARGET_UPSIDE"],
+        "ANALYST_COUNT": analyst_data["ANALYST_COUNT"],
+        "MACRO_SCORE": macro_score,
+        "CALL_SCORE": call_score
     }
 
     return output
@@ -1669,37 +1816,10 @@ def numero_a_colonna_excel(n):
 
     return risultato
 
-def terzo_venerdi_mese(data_riferimento, mesi_avanti=2):
-    """
-    Restituisce il terzo venerdì del mese distante `mesi_avanti` mesi.
-    Funzione a livello modulo, quindi richiamabile da optionsCalc().
-    """
-    data_riferimento = pd.Timestamp(data_riferimento)
-    mese_indice = (
-        data_riferimento.year * 12
-        + (data_riferimento.month - 1)
-        + mesi_avanti
-    )
-    anno = mese_indice // 12
-    mese = mese_indice % 12 + 1
-
-    primo_giorno = pd.Timestamp(year=anno, month=mese, day=1)
-    giorni_al_primo_venerdi = (4 - primo_giorno.weekday()) % 7
-    primo_venerdi = primo_giorno + pd.Timedelta(days=giorni_al_primo_venerdi)
-
-    return primo_venerdi + pd.Timedelta(days=14)
-
-
 def optionsCalc():
     #Leggo dati da Google Sheet
     listTicker = read_range("tab_opzion_calc!A:F",newPrj)
-    # Scadenza mensile standard: terzo venerdi del mese tra due mesi.
-    # Non uso TODAY()+60 perche potrebbe cadere in una data non negoziata.
-    oggi = pd.Timestamp.now(tz="Europe/Rome").tz_localize(None).normalize()
-    scadenza_target = terzo_venerdi_mese(oggi, mesi_avanti=2)
-    listTicker["SCADENZA CALL"] = scadenza_target.strftime("%d/%m/%Y")
-    print(f"Scadenza CALL impostata automaticamente: {scadenza_target:%d/%m/%Y}")
-
+    #Normalizzo
     listTicker["PREZZO STRIKE CALL"] = (
         listTicker["PREZZO STRIKE CALL"]
         .astype(str)
@@ -1763,8 +1883,20 @@ def optionsCalc():
     print("=" * 70)
 
     print(listTicker.to_string())
-    #Rimuovo i NaN mettendoli a zero
-    listTicker.fillna(0, inplace=True)
+    # Output compatto per Google Sheets: i calcoli intermedi restano nel codice.
+    colonne_output = [
+        "DATA", "ISIN", "TICKER", "TITOLO",
+        "PREZZO STRIKE CALL", "SCADENZA CALL", "SPOT",
+        "IV_MID", "HV_RIFERIMENTO", "SPREAD_PCT",
+        "OPPORTUNITY_SCORE", "ANALYST_SCORE",
+        "ANALYST_BUY_PCT", "ANALYST_TARGET_UPSIDE", "ANALYST_COUNT",
+        "MACRO_SCORE", "CALL_SCORE"
+    ]
+    colonne_presenti = [c for c in colonne_output if c in listTicker.columns]
+    listTicker = listTicker[colonne_presenti]
+
+    # Mantengo N/D vuoto: zero significherebbe un dato reale pari a zero.
+    listTicker = listTicker.replace({np.nan: ""})
     #cambio formato data
     listTicker['DATA'] = listTicker['DATA'].astype(str)
     #Converto in lista
