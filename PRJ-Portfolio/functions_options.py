@@ -1669,6 +1669,27 @@ def numero_a_colonna_excel(n):
 
     return risultato
 
+def terzo_venerdi_mese(data_riferimento, mesi_avanti=2):
+    """
+    Restituisce il terzo venerdì del mese distante `mesi_avanti` mesi.
+    Funzione a livello modulo, quindi richiamabile da optionsCalc().
+    """
+    data_riferimento = pd.Timestamp(data_riferimento)
+    mese_indice = (
+        data_riferimento.year * 12
+        + (data_riferimento.month - 1)
+        + mesi_avanti
+    )
+    anno = mese_indice // 12
+    mese = mese_indice % 12 + 1
+
+    primo_giorno = pd.Timestamp(year=anno, month=mese, day=1)
+    giorni_al_primo_venerdi = (4 - primo_giorno.weekday()) % 7
+    primo_venerdi = primo_giorno + pd.Timedelta(days=giorni_al_primo_venerdi)
+
+    return primo_venerdi + pd.Timedelta(days=14)
+
+
 def optionsCalc():
     #Leggo dati da Google Sheet
     listTicker = read_range("tab_opzion_calc!A:F",newPrj)
