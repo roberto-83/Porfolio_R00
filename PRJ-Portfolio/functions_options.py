@@ -503,76 +503,66 @@ def analyzeOptions(
     # TROVA STRIKE SOTTO SPOT
     # ============================================================
 
-    def trova_strike_sotto_spot(
-        html,
-        spot
-    ):
-
-        strike_disponibili = []
-
-        tutti_i_numeri = []
-
-        soup = BeautifulSoup(
-            html,
-            "html.parser"
-        )
+    def trova_strike_piu_vicino_spot(html, spot):
+        """
+        Estrae gli strike dalla catena Borsa Italiana e seleziona quello
+        con distanza assoluta minima dallo spot.
+        La riga standard della chain contiene almeno due quotazioni CALL
+        prima dello strike e due quotazioni PUT dopo lo strike.
+        """
+        soup = BeautifulSoup(html, "html.parser")
+        strike_disponibili = set()
 
         for table in soup.find_all("table"):
-
             for row in table.find_all("tr"):
+                cells = row.find_all("td")
+                if len(cells) < 5:
+                    continue
 
-                for cell in row.find_all(
-                    ["td", "th"]
-                ):
+                values = [
+                    parse_number(cell.get_text(" ", strip=True))
+                    for cell in cells
+                ]
 
-                    testo = cell.get_text(
-                        " ",
-                        strip=True
-                    )
+                for i, value in enumerate(values):
+                    if value is None or i < 2 or (len(values) - i - 1) < 2:
+                        continue
 
-                    n = parse_number(testo)
+                    left_numeric = [x for x in values[:i] if x is not None]
+                    right_numeric = [x for x in values[i + 1:] if x is not None]
 
-                    if n is not None:
-
-                        tutti_i_numeri.append(n)
-
-                        if n < spot:
-
-                            strike_disponibili.append(n)
-
-        print(
-            f"SPOT: {spot}"
-        )
-
-        print(
-            "TUTTI I NUMERI LETTI:",
-            tutti_i_numeri
-        )
-
-        print(
-            "NUMERI SOTTO LO SPOT:",
-            strike_disponibili
-        )
+                    if len(left_numeric) >= 2 and len(right_numeric) >= 2:
+                        if value > 0:
+                            strike_disponibili.add(float(value))
 
         if not strike_disponibili:
-
-            print(
-                f"!!! NESSUNO STRIKE "
-                f"SOTTO LO SPOT {spot} !!!"
-            )
-
+            print("!!! NESSUNO STRIKE IDENTIFICABILE NELLA OPTION CHAIN !!!")
             return None
 
-        strike = max(
-            strike_disponibili
-        )
-
-        print(
-            "STRIKE AUTOMATICO "
-            f"SELEZIONATO: {strike}"
-        )
-
+        strike = min(strike_disponibili, key=lambda k: abs(k - float(spot)))
+        print(f"SPOT: {spot}")
+        print(f"STRIKE DISPONIBILI: {sorted(strike_disponibili)}")
+        print(f"STRIKE PIU' VICINO ALLO SPOT: {strike}")
         return strike
+
+
+    def terzo_venerdi_mese(data_riferimento, mesi_avanti=2):
+        """
+        Terzo venerdì del mese distante `mesi_avanti` mesi.
+        TODAY()+60 non garantisce una scadenza effettivamente quotata.
+        """
+        data_riferimento = pd.Timestamp(data_riferimento)
+        mese_indice = data_riferimento.year * 12 + (data_riferimento.month - 1) + mesi_avanti
+        anno = mese_indice // 12
+        mese = mese_indice % 12 + 1
+
+        primo_giorno = pd.Timestamp(year=anno, month=mese, day=1)
+        giorni_al_primo_venerdi = (4 - primo_giorno.weekday()) % 7
+        primo_venerdi = primo_giorno + pd.Timedelta(days=giorni_al_primo_venerdi)
+        return primo_venerdi + pd.Timedelta(days=14)
+
+
+
 
 
     # ============================================================
@@ -1234,7 +1224,7 @@ def analyzeOptions(
             )
 
             strike_effettivo = (
-                trova_strike_sotto_spot(
+                trova_strike_piu_vicino_spot(
                     html,
                     S
                 )
@@ -1295,9 +1285,9 @@ def analyzeOptions(
                 }
 
 
-            print("Strike automatico selezionato: {strike_effettivo}")
+            print(f"Strike automatico selezionato: {strike_effettivo}")
         else:
-            print("Strike inserito manualmente: {strike_effettivo}")
+            print(f"Strike inserito manualmente: {strike_effettivo}")
 
 
         # ========================================================
@@ -1465,6 +1455,9 @@ def analyzeOptions(
         else:
             giudizio = ("Dati insufficienti per il confronto.")
 
+        # Nessun punteggio artificiosamente alto se manca il confronto IV/HV.
+        if giudizio == "Dati insufficienti per il confronto.":
+            indicatori["opportunity_score"] = 0
 
         # ========================================================
         # RISULTATO
@@ -1565,8 +1558,7 @@ def process_ticker_row(row):
     # Prendo i dati dalla riga del DataFrame
     # ------------------------------------------------------------
 
-    strike = row["PREZZO STRIKE CALL"]
-    scad = row["SCADENZA CALL"]
+    # Ricalcolo sempre lo strike dalla chain: scelgo quello quotato piu\u0300 vicino allo spot.\n    strike = None\n    scad = row["SCADENZA CALL"]
     ticker = row["TICKER"]
     print(f"Inizio con il processo per ticker {ticker}, strike {strike} e scadenza {scad}")
 
@@ -1678,7 +1670,7 @@ def numero_a_colonna_excel(n):
 def optionsCalc():
     #Leggo dati da Google Sheet
     listTicker = read_range("tab_opzion_calc!A:F",newPrj)
-    #Normalizzo
+    # Scadenza mensile standard: terzo venerdi del mese tra due mesi.\n    # Non uso TODAY()+60 perche\u0301 potrebbe cadere in una data non negoziata.\n    oggi = pd.Timestamp.now(tz="Europe/Rome").tz_localize(None).normalize()\n    scadenza_target = terzo_venerdi_mese(oggi, mesi_avanti=2)\n    listTicker["SCADENZA CALL"] = scadenza_target.strftime("%d/%m/%Y")\n    print(f"Scadenza CALL impostata automaticamente: {scadenza_target:%d/%m/%Y}")\n\n    #Normalizzo
     listTicker["PREZZO STRIKE CALL"] = (
         listTicker["PREZZO STRIKE CALL"]
         .astype(str)
